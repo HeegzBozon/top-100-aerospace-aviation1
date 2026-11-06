@@ -14,11 +14,11 @@ export const BALLOT_DISTINCTION =
 
 // What the Crosscheck measures. This line is fixed and is never reworded per surface.
 export const CROSSCHECK_LINE =
-  'Measure each record by its contribution to aerospace and aviation.';
+  'Measure each professional by their contribution to aerospace and aviation.';
 
 // What the Crosscheck is, said plainly: the smallest form of a ranked-choice ballot.
 export const CROSSCHECK_IS =
-  'A mini ranked-choice ballot — four records, one order, every review a complete ballot.';
+  'A mini ranked-choice ballot — four professionals, one order, every review a complete ballot.';
 
 // The office the ballot confers, and the word for the work.
 //
@@ -32,7 +32,7 @@ export const ANALYSIS = 'Analysis';
 
 // What the office asks, in one line, wherever the invitation is made.
 export const ANALYSIS_IS =
-  'Voting here is analysis. An Analyst measures four records against each other, one small ranked-choice ballot at a time, and every order they leave is kept.';
+  'Voting here is analysis. An Analyst measures four professionals against each other, one small ranked-choice ballot at a time, and every order they leave is kept.';
 
 // The office in full.
 //
@@ -41,7 +41,7 @@ export const ANALYSIS_IS =
 // all Analysts, and the work is the same three things wherever it is taken up — find,
 // measure, and put the record in the way of the people it should reach.
 export const ANALYST_OFFICE_IS =
-  'An Analyst is not a voter, and not a judge. An Analyst finds the people doing the work, measures them against each other, and makes sure the record reaches the people it should reach.';
+  'An Analyst is not a voter, and not a judge. An Analyst finds the people doing the work, measures them against each other, and makes sure their work reaches the people it should reach.';
 
 export const ANALYST_DUTIES = [
   {
@@ -52,7 +52,7 @@ export const ANALYST_DUTIES = [
   {
     key: 'measure',
     label: 'Measure',
-    line: 'Take up the Crosscheck. Four records at a time, put in order — the comparison is the finding, and every review is kept.',
+    line: 'Take up the Crosscheck. Four professionals at a time, put in order — the comparison is the finding, and every review is kept.',
   },
   {
     key: 'carry',

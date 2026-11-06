@@ -241,7 +241,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     if (four.length < 4) {
       base44.entities.CrosscheckHold.delete(hold.id).catch(() => {});
       setHolds((prev) => prev.slice(1));
-      toast({ title: 'That review has retired', description: 'One of its records has left the field.' });
+      toast({ title: 'That review has retired', description: 'One of the four has left the field.' });
       return;
     }
     setHeldId(hold.id);
@@ -487,7 +487,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           Not enough nominees to vote
         </h2>
         <p className="text-xs max-w-xs leading-relaxed" style={{ color: ink.soft }}>
-          The Crosscheck needs at least four records in the field. Check back once the season is seeded.
+          The Crosscheck needs at least four professionals in the field. Check back once the season is seeded.
         </p>
       </div>
     );
@@ -671,7 +671,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       </div>
 
       {/* The briefing: what the two surfaces are for, and the ladder each one is measured by. */}
-      <MissionBriefing open={guideOpen} onOpenChange={setGuideOpen} section="vote" />
+      <MissionBriefing
+        open={guideOpen}
+        onOpenChange={setGuideOpen}
+        section="vote"
+        hasStarted={reviews > 0}
+      />
 
       {/* The card's information panel (anonymized) */}
       <AnimatePresence>

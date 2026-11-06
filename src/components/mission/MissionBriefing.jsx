@@ -10,8 +10,8 @@ import {
   CROSSCHECK_LINE,
 } from '@/components/voting/ballotNaming';
 
-// The committee's briefing: two surfaces, one objective each, and the key results that
-// say the objective has been reached. It replaces the old voter guide — which walked the
+// The committee's briefing: two surfaces, one objective each, and the method in three lines.
+// It replaces the old voter guide — which walked the
 // ballot's mechanics and read as instructions — with the work itself stated first, so a
 // new Fellow knows what the two surfaces are FOR before being told how to hold the keys.
 // It opens once, on the first pass through either surface, and is one press away after.
@@ -34,33 +34,25 @@ const BRIEFINGS = [
       },
       {
         label: 'One list, held in order',
-        line: 'Position one reads as position one. Move an entry up and the names below it make room; nothing is dropped off the tail. Every entry carries the reason you wrote for it.',
+        line: 'Position one reads as position one. Move an entry up and the names below it make room; nothing is dropped off the tail. Every entry carries the reason you wrote for them.',
       },
       {
         label: 'Nothing counts until you submit',
         line: 'Build it, rearrange it, sit with it. The Manifest keeps your order as you work and is written to the record once, when you submit it.',
       },
     ],
-    results: [
-      'Name one person you vouch for',
-      'Build your list in order',
-      'Write a reason for each name',
-      'Check the field you have built',
-      'Submit your nominations',
-    ],
   },
   {
     key: 'vote',
     kicker: `${CROSSCHECK} · mini ranked choice`,
     lede: 'Mini ranked choice',
-    objective: 'Assemble a crew from four records.',
+    objective: 'Assemble a crew from four professionals.',
     body:
-      'Four records, shuffled. Three taps, in order. A, B, C.',
-    results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
+      'Four professionals, shuffled. Three taps, in order. A, B, C.',
     steps: [
       {
         label: 'First tap — Commander',
-        line: 'The record you would put in command.',
+        line: 'The professional you would put in command.',
       },
       {
         label: 'Second tap — Pilot',
@@ -68,13 +60,13 @@ const BRIEFINGS = [
       },
       {
         label: 'Third tap — Flight Engineer',
-        line: 'The fourth record takes the seat left standing. Set finished.',
+        line: 'The fourth professional takes the seat left standing. Set finished.',
       },
     ],
     more: {
       label: 'More on the Crosscheck',
       lines: [
-        'The same method as the Manifest, four records deep. The four are shuffled for you, so the comparison is never your own.',
+        'The same method as the Manifest, four professionals deep. The four are shuffled for you, so the comparison is never your own.',
         'Every set you finish is one complete ballot. Skip a set and nothing is recorded. Hold it and it returns exactly as it was shuffled.',
       ],
     },
@@ -84,43 +76,12 @@ const BRIEFINGS = [
     note: CROSSCHECK_LINE,
     keys: [
       ['arrows / wheel', 'walk the four'],
-      ['Enter', 'place the record'],
+      ['Enter', 'place them'],
       ['card key', 'place that card'],
-      ['\u24d8 on a card', 'read its file'],
+      ['\u24d8 on a card', 'read their file'],
     ],
   },
 ];
-
-function KeyResults({ kicker, results }) {
-  return (
-    <>
-      <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}45` }}>
-        Key results
-      </p>
-      <ul aria-label={`${kicker} key results`} className="mt-1">
-        {results.map((result, i) => (
-          <li
-            key={result}
-            className="flex items-center gap-2.5 border-b py-[5px] last:border-b-0"
-            style={{ borderColor: `${brand.navy}0F` }}
-          >
-            <span className="w-4 shrink-0 text-[9.5px] font-bold tabular-nums" style={{ color: '#B87333' }}>
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <span className="text-[11.5px] font-medium" style={{ color: `${brand.navy}CC` }}>
-              {result}
-            </span>
-            <span
-              className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full"
-              style={{ border: `1px solid ${brand.navy}33` }}
-              aria-hidden
-            />
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
 
 // The method behind the manuscript: what a ranked ballot is, stated flat and in order,
 // before the ladder that says the work has been done. Nothing here names a tally or a
@@ -156,10 +117,13 @@ function Steps({ steps }) {
   );
 }
 
-export default function MissionBriefing({ open, onOpenChange, section = null }) {
+export default function MissionBriefing({ open, onOpenChange, section = null, hasStarted = false }) {
   // A surface's own briefing, or the whole committee's when none is named.
   const briefs = section ? BRIEFINGS.filter((brief) => brief.key === section) : BRIEFINGS;
   const single = briefs.length === 1 ? briefs[0] : null;
+  // The press that closes the briefing names the work waiting behind it: a Fellow who has
+  // already weighed a set is not beginning, they are taking the next one.
+  const press = single?.key === 'vote' ? (hasStarted ? 'Next set' : 'First set') : 'Begin';
 
   // The briefing stands over the surface it was opened from, so the console's keys are
   // its while it is up: a turn reads it down, and the confirm key or the way back closes
@@ -183,7 +147,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
 
         <div ref={bodyRef} className="max-h-[76vh] overflow-y-auto p-5">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: '#8F5C2C' }}>
-            {single?.lede || 'Mission briefing · objectives & key results'}
+            {single?.lede || 'Mission briefing · two duties'}
           </p>
           <DialogTitle className="mt-1 font-heading text-[21px] leading-tight" style={{ color: brand.navy }}>
             {single ? single.objective : 'Two duties, one Analyst.'}
@@ -191,7 +155,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
           <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
             {single
               ? single.body
-              : `${BALLOT_DISTINCTION} Each surface has a single objective. The key results are the ladder that says you have reached it.`}
+              : `${BALLOT_DISTINCTION} Each surface has a single objective.`}
           </p>
 
           {single?.note && (
@@ -243,7 +207,6 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
                       ))}
                     </div>
                   )}
-                  <KeyResults kicker={brief.kicker} results={brief.results} />
                 </>
               ) : (
                 <>
@@ -268,8 +231,6 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
                   <p className="mt-1 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
                     {brief.body}
                   </p>
-
-                  <KeyResults kicker={brief.kicker} results={brief.results} />
                 </>
               )}
             </section>
@@ -287,7 +248,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 10px -6px rgba(7,17,31,0.8)',
             }}
           >
-            Begin <ArrowRight className="h-3.5 w-3.5" />
+            {press} <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </DialogContent>

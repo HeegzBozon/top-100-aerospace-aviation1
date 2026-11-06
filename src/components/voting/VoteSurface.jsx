@@ -5,6 +5,7 @@ import { brand, ink } from '@/components/nominate/NominateConfig';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VotingProgressPanel from '@/components/voting/VotingProgressPanel';
 import LiveBallotFeed from '@/components/voting/LiveBallotFeed';
+import FellowQuickEdit from '@/components/voting/FellowQuickEdit';
 import { useToast } from '@/components/ui/use-toast';
 
 const fmtDate = (value) => {
@@ -235,14 +236,17 @@ export default function VoteSurface({ user }) {
           />
         </div>
 
-        {/* The operator watches the field while it is being weighed. The Fellow's own
-            ladder is not repeated here: it stands once, at the head of the set, and opens
-            from there. */}
-        {isAdmin && (
-          <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
+        {/* The column beside the set. An operator watches the field while it is being
+            weighed; a Fellow is handed their own record, because the line that reads wrong
+            on a card is corrected in the workspace, not here. The Fellow's ladder is not
+            repeated in this column: it stands once, at the head of the set. */}
+        <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
+          {isAdmin ? (
             <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
-          </aside>
-        )}
+          ) : (
+            <FellowQuickEdit />
+          )}
+        </aside>
       </div>
     </div>
   );
