@@ -53,22 +53,22 @@ const BRIEFINGS = [
     key: 'vote',
     kicker: `${CROSSCHECK} · mini ranked choice`,
     lede: 'Mini ranked choice',
-    objective: 'Put four records in order.',
+    objective: 'Assemble a crew from four records.',
     body:
-      'This is the same method as the Manifest, four records deep — a mini ranked-choice ballot. Four records are dealt together and the house picks which four, so you are never choosing your own comparison. All you do is put them in order: the one that leads, then the next, then the next. Three taps finish a set, because the fourth record takes the last place by itself. Every set you finish is one complete ballot. A set you would rather not weigh can be skipped, and nothing is recorded from it — or held, and it comes back exactly as it was dealt.',
+      'The Crosscheck is the same method as the Manifest, four records deep — a mini ranked-choice ballot. The four are shuffled together and set in front of you, so you are never choosing your own comparison. Read it as crewing a flight: the record you would put in command takes the Commander’s seat at one, the next takes the Pilot’s seat at two, the next the Flight Engineer’s at three, and the fourth record takes the seat left standing. Three taps finish a set, because the fourth seat fills itself. Every set you finish is one complete ballot. A set you would rather not weigh can be skipped, and nothing is recorded from it — or held, and it comes back exactly as it was shuffled.',
     results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
     steps: [
       {
-        label: 'Ranked choice, four deep',
-        line: 'Not one pick out of four. An order across all four, so every place you give counts and nothing is thrown away.',
+        label: 'Four records, four seats',
+        line: 'Not one pick out of four. A whole crew in order — Commander, Pilot, Flight Engineer, and the seat left standing — so every seat you fill counts and nothing is thrown away.',
       },
       {
-        label: 'Three taps and the set is complete',
-        line: 'Tap the record that leads, then the next, then the next. The fourth places itself, so a set is never left half-ordered.',
+        label: 'Three taps and the crew is complete',
+        line: 'Tap the record you would put in command, then the next, then the next. The fourth takes the seat that is left, so a crew is never half-assembled.',
       },
       {
         label: 'One set, one ballot',
-        line: 'Four records, one order, one complete ballot. Skip a set and nothing is recorded from it; hold it and it comes back as it was dealt.',
+        line: 'Four records, one order, one complete ballot. Skip a set and nothing is recorded from it; hold it and it comes back exactly as it was shuffled.',
       },
     ],
     // The measure itself, and the keys that hold it. Both stand here rather than in print

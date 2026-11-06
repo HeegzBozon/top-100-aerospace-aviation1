@@ -10,7 +10,7 @@ export const CROSSCHECK = 'The Crosscheck';
 
 // The distinction the two surfaces turn on, stated the same way everywhere.
 export const BALLOT_DISTINCTION =
-  "Both are an Analyst's duties. In the Manifest you choose who to back; in the Crosscheck the house chooses who you compare.";
+  "Both are an Analyst's duties. In the Manifest you choose who to back; in the Crosscheck the four are shuffled for you, so the comparison is never your own.";
 
 // What the Crosscheck measures. This line is fixed and is never reworded per surface.
 export const CROSSCHECK_LINE =
@@ -72,9 +72,14 @@ export const ANALYST_STANDING =
   'The office belongs to every Fellow, reader and subscriber. If you are here, you already hold it.';
 
 // A review the voter sets aside. A set is measured across all four, so nothing is scored
-// from one that is skipped, and a held one comes back exactly as it was dealt.
+// from one that is skipped, and a held one comes back exactly as it was shuffled.
 export const CROSSCHECK_SKIP_LABEL = 'Skip';
 export const CROSSCHECK_HOLD_LABEL = 'Save for later';
 
 // Where a record stands in the set, printed on the card.
-export const PLACE_LABELS = ['First', 'Second', 'Third', 'Fourth'];
+//
+// A mini ballot is read as crewing a flight: the record you would put in command is the
+// Commander, then the Pilot, then the Flight Engineer, and the fourth record takes the seat
+// left standing. The card prints the seat rather than the ordinal so the framing holds where
+// the choosing actually happens; the briefing names the third seat in full.
+export const PLACE_LABELS = ['Commander', 'Pilot', 'Engineer', 'Fourth seat'];

@@ -50,15 +50,18 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
   const rungs = data?.rungs || [];
   const waiting = loading && !data;
 
-  // The test reading is a different instrument, not a turned-down one. A test run has no
-  // marks to be held against — it moves no rating, no ladder and no report — so the panel
-  // prints the three counts the house actually wants from a walkthrough and says plainly
-  // that none of them is part of the count.
+  // The test reading is the full instrument, held to its own scale. A test run has no marks
+  // to be measured against — it moves no rating, no ladder and no report — so the panel
+  // prints what a walkthrough actually produces: how many runs, how many comparisons, who
+  // walked them, how fast they are landing, and how deep each tester has gone on the
+  // ballot's own milestone ladder.
   if (readingTests) {
+    const testers = Number(data?.voters) || 0;
+    const pace = Number(data?.recentComparisons) || 0;
     const figures = [
       { label: 'Test runs', value: ballots },
       { label: 'Comparisons', value: comparisons },
-      { label: 'Testers', value: Number(data?.voters) || 0 },
+      { label: 'Testers', value: testers },
     ];
     return (
       <div>
@@ -94,9 +97,54 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
           ))}
         </div>
 
-        <p className="mt-2 text-[7.5px] leading-snug" style={{ color: ink.soft }}>
-          The house&rsquo;s own walkthroughs. A test run writes its seven comparisons and moves nothing: no
-          rating, no ladder, no report.
+        <p className="mt-1.5 text-[7px] tabular-nums" style={{ color: ink.soft }}>
+          <span style={{ color: brand.navy }}>{commas(pace)}</span> comparisons in the last 15 minutes
+        </p>
+
+        {/* The same milestone ladder the Fellows are read on, counted across the testers
+            instead: how far each walkthrough has taken the ballot. */}
+        <div className="mt-2.5" style={{ borderTop: RULE, paddingTop: 8 }}>
+          <div className="flex items-baseline justify-between gap-2">
+            <p className={MARK_LABEL} style={{ color: ink.soft }}>
+              Testers past each rung
+            </p>
+            <p className="text-[6.5px] tabular-nums" style={{ color: ink.soft }}>
+              {commas(comparisons)} comparisons
+            </p>
+          </div>
+          {waiting ? (
+            <div className="mt-1 flex gap-1">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-6 flex-1 animate-pulse rounded" style={{ background: 'rgba(30,58,90,0.05)' }} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-1 flex gap-1">
+              {rungs.map((rung) => (
+                <div
+                  key={rung.sets}
+                  className="flex-1 rounded px-1 py-1 text-center"
+                  style={{ background: rung.reached ? 'rgba(184,115,51,0.10)' : 'rgba(30,58,90,0.04)' }}
+                >
+                  <p
+                    className="text-[9px] font-bold tabular-nums leading-none"
+                    style={{ color: rung.reached ? brand.navy : ink.soft }}
+                  >
+                    {rung.reached}
+                  </p>
+                  <p className="mt-0.5 text-[6px] font-bold uppercase tracking-[0.06em]" style={{ color: ink.soft }}>
+                    {rung.sets}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="mt-2 text-[7.5px] leading-relaxed" style={{ color: ink.soft }}>
+          The house&rsquo;s own walkthroughs, shuffled and weighed exactly as a Fellow weighs them. A test run
+          writes its seven comparisons and moves nothing: no rating, no ladder, no report. The Fellows&rsquo;
+          figures never include a test set.
         </p>
       </div>
     );
