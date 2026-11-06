@@ -16,11 +16,21 @@ const TABS = [
   { key: 'reviews', label: 'Latest reviews' },
 ];
 
+// Two records stand side by side in the same cohort: what the Fellows are weighing, and
+// what the house's own walkthroughs wrote. Every set cast by an administrator is stamped
+// as a test, so this is one switch over one query rather than two panels.
+const SCOPES = [
+  { key: 'community', label: 'Community' },
+  { key: 'test', label: 'Test' },
+];
+
 const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
 
 export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 }) {
-  const { data, loading, error, updatedAt, refresh } = useLiveBallotFeed(seasonId, refreshToken);
+  const [scope, setScope] = useState('community');
+  const { data, loading, error, updatedAt, refresh } = useLiveBallotFeed(seasonId, refreshToken, scope);
   const [tab, setTab] = useState('progress');
+  const readingTests = scope === 'test';
 
   return (
     <div
@@ -40,16 +50,49 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 })
             Live monitor
           </p>
         </span>
-        <button
-          type="button"
-          onClick={refresh}
-          aria-label="Refresh the monitor"
-          className="flex h-5 w-5 items-center justify-center rounded-full transition-colors"
-          style={{ background: `${brand.navy}08` }}
-        >
-          <RefreshCw className={`h-2.5 w-2.5 ${loading ? 'animate-spin' : ''}`} style={{ color: ink.soft }} />
-        </button>
+        <span className="flex shrink-0 items-center gap-1.5">
+          {/* Which record is being read. Copper on the test side, because a test run is
+              never part of the count. */}
+          <span className="flex items-center gap-0.5" role="group" aria-label="Which ballot to read">
+            {SCOPES.map((entry) => {
+              const active = scope === entry.key;
+              return (
+                <button
+                  key={entry.key}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setScope(entry.key)}
+                  className="rounded px-1.5 py-[2px] text-[6.5px] font-bold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+                  style={
+                    active
+                      ? entry.key === 'test'
+                        ? { background: 'rgb(var(--editorial-copper-rgb))', color: 'rgb(var(--editorial-cream-rgb))' }
+                        : { background: `${brand.navy}14`, border: `1px solid ${brand.navy}22`, color: brand.navy }
+                      : { background: 'transparent', border: `1px solid ${brand.navy}0D`, color: ink.soft }
+                  }
+                >
+                  {entry.label}
+                </button>
+              );
+            })}
+          </span>
+          <button
+            type="button"
+            onClick={refresh}
+            aria-label="Refresh the monitor"
+            className="flex h-5 w-5 items-center justify-center rounded-full transition-colors"
+            style={{ background: `${brand.navy}08` }}
+          >
+            <RefreshCw className={`h-2.5 w-2.5 ${loading ? 'animate-spin' : ''}`} style={{ color: ink.soft }} />
+          </button>
+        </span>
       </div>
+
+      {readingTests && (
+        <p className="px-3 pb-1.5 text-[7px] font-bold uppercase tracking-[0.16em]" style={{ color: ink.label }}>
+          House test runs · held out of the count
+        </p>
+      )}
 
       <div className="flex gap-1 px-3 pb-2" role="tablist" aria-label="Monitor reading">
         {TABS.map((entry) => {
@@ -90,9 +133,9 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 })
             </button>
           </div>
         ) : tab === 'progress' ? (
-          <SignalProgress data={data} loading={loading} pool={pool} />
+          <SignalProgress data={data} loading={loading} pool={pool} scope={scope} />
         ) : (
-          <LatestReviews data={data} loading={loading} updatedAt={updatedAt} />
+          <LatestReviews data={data} loading={loading} updatedAt={updatedAt} scope={scope} />
         )}
       </div>
 

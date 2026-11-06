@@ -59,7 +59,13 @@ function anchorsOf(rows) {
 
 // The counting cohort's ballots as they land. Read only, admins only: the feed watches
 // the record, it never writes to it.
-export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
+//
+// Every set cast by an administrator is stamped as a test, so the record holds two
+// readings side by side. `scope` chooses which one is being read: 'community' is the
+// Fellows' weighing, 'test' is the house's own walkthroughs. The two never mix in one
+// figure — a test run is held out of measurement, and the monitor never blends them.
+export default function useLiveBallotFeed(seasonId, refreshToken = 0, scope = 'community') {
+  const isTestScope = scope === 'test';
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(Boolean(seasonId));
   const [error, setError] = useState(null);
@@ -75,27 +81,29 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
     setData(null);
     setError(null);
     setLoading(Boolean(seasonId));
-  }, [seasonId]);
+  }, [seasonId, scope]);
 
   const load = useCallback(async () => {
     if (!seasonId) return;
     try {
       const since = new Date(Date.now() - PACE_WINDOW_MIN * 60000).toISOString();
+      // The stamp the whole reading is cut on: one scope, one filter, every query.
+      const stamped = isTestScope ? true : false;
       // How much of the field has been weighed at least once, and the comparisons an
       // administrator's own test runs have written: the first sets the reading's own
       // coverage line, the second is held out of every figure above it.
       const [tallies, recent, pace, weighed, tests] = await Promise.all([
         base44.entities.PairwiseVote.aggregate({
-          query: { season_id: seasonId, is_test: false },
+          query: { season_id: seasonId, is_test: stamped },
           groupBy: 'voter_email',
         }),
         base44.entities.PairwiseVote.filter(
-          { season_id: seasonId },
+          { season_id: seasonId, is_test: stamped },
           { sort: '-created_date', limit: RECENT_ROWS }
         ),
         base44.entities.PairwiseVote.count({
           season_id: seasonId,
-          is_test: false,
+          is_test: stamped,
           created_date: { $gte: since },
         }),
         base44.entities.Nominee.count({ pairwise_appearance_count: { $gt: 0 } }),
@@ -124,6 +132,7 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
 
       if (!mounted.current) return;
       setData({
+        scope: isTestScope ? 'test' : 'community',
         voters: voterRows.length,
         comparisons,
         reviews,
@@ -144,7 +153,7 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
     } finally {
       if (mounted.current) setLoading(false);
     }
-  }, [seasonId]);
+  }, [seasonId, isTestScope]);
 
   useEffect(() => {
     load();

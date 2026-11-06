@@ -38,9 +38,10 @@ const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
 // pool sets for it. Printed as an instrument rather than a chart — one figure in the
 // largest hand on the plate, one measure under it, and the scale the figure is standing
 // on printed along the foot. Nothing here is a forecast: every number is a count.
-export default function SignalProgress({ data, loading, pool: poolSize = 0 }) {
+export default function SignalProgress({ data, loading, pool: poolSize = 0, scope = 'community' }) {
   // The pool is reported by the ballot itself — the field the cards are actually dealt
   // from — so the marks and the Crosscheck can never be reading different fields.
+  const readingTests = scope === 'test';
   const pool = Number(poolSize) || 0;
   const ballots = Number(data?.reviews) || 0;
   const comparisons = Number(data?.comparisons) || 0;
@@ -48,6 +49,58 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0 }) {
   const testComparisons = Number(data?.testComparisons) || 0;
   const rungs = data?.rungs || [];
   const waiting = loading && !data;
+
+  // The test reading is a different instrument, not a turned-down one. A test run has no
+  // marks to be held against — it moves no rating, no ladder and no report — so the panel
+  // prints the three counts the house actually wants from a walkthrough and says plainly
+  // that none of them is part of the count.
+  if (readingTests) {
+    const figures = [
+      { label: 'Test runs', value: ballots },
+      { label: 'Comparisons', value: comparisons },
+      { label: 'Testers', value: Number(data?.voters) || 0 },
+    ];
+    return (
+      <div>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[8px] font-bold uppercase tracking-[0.24em]" style={{ color: ink.label }}>
+            Test runs recorded
+          </p>
+          <span
+            className="rounded-full px-1.5 py-[2px] text-[6px] font-bold uppercase tracking-[0.12em]"
+            style={{
+              background: 'rgb(var(--editorial-copper-rgb))',
+              color: 'rgb(var(--editorial-cream-rgb))',
+            }}
+          >
+            {waiting ? 'Reading' : 'Not measured'}
+          </span>
+        </div>
+
+        <div className="mt-2.5 grid grid-cols-3">
+          {figures.map((figure, index) => (
+            <div
+              key={figure.label}
+              className={index === 0 ? 'pr-2' : index === 1 ? 'px-2' : 'pl-2'}
+              style={index ? { borderLeft: RULE } : undefined}
+            >
+              <p className={MARK_LABEL} style={{ color: ink.soft }}>
+                {figure.label}
+              </p>
+              <p className="mt-0.5 font-heading text-[17px] leading-none" style={{ color: brand.navy }}>
+                {waiting ? '—' : commas(figure.value)}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-2 text-[7.5px] leading-snug" style={{ color: ink.soft }}>
+          The house&rsquo;s own walkthroughs. A test run writes its seven comparisons and moves nothing: no
+          rating, no ladder, no report.
+        </p>
+      </div>
+    );
+  }
 
   const marks = MARKS.map((mark) => ({
     ...mark,
