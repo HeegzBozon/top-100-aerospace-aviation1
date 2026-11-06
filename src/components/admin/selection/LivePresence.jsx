@@ -1,15 +1,18 @@
 import useLivePresence from './useLivePresence';
 
-// Who is on the wire this minute — the site's live readers, and the campus floor beneath
-// them. The reading is taken again every minute; nothing here is a stored figure.
+// Who is on the wire this minute — the accounts standing on the platform, and the campus
+// floor beneath them. Read again every minute; nothing here is a stored figure.
 //
-// Each source answers for itself: a property that will not answer still leaves the campus
-// floor readable, so one dead feed never blanks the whole strip.
+// The two sources answer for themselves: a floor that will not answer still leaves the
+// signed-in count readable, so one dead feed never blanks the whole strip.
 
 const num = (value) => (Number(value) || 0).toLocaleString();
 
 const clock = (date) =>
   date ? date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : '';
+
+// A surface printed for a hand rather than a keyboard: /profiles/abc → profiles/abc.
+const surface = (route) => String(route || '/').replace(/^\//, '') || 'title screen';
 
 function Reading({ label, value, note, down }) {
   return (
@@ -21,22 +24,20 @@ function Reading({ label, value, note, down }) {
         <span className="font-heading text-[22px] leading-none tabular-nums">
           {down ? '—' : num(value)}
         </span>
-        {note && !down && (
-          <span className="truncate text-[9px] text-editorial-navy/40">{note}</span>
-        )}
+        {note && !down && <span className="truncate text-[9px] text-editorial-navy/40">{note}</span>}
       </p>
     </div>
   );
 }
 
 export default function LivePresence() {
-  const { state, site, campus, readAt } = useLivePresence();
+  const { state, people, campus, readAt } = useLivePresence();
 
-  const readers = Number(site?.active) || 0;
+  const online = Number(people?.online) || 0;
+  const standing = people?.standing || [];
   const onFloor = Number(campus?.total) || 0;
   const rooms = campus?.rooms || [];
-  const busiest = site?.pages?.[0] || null;
-  const quiet = state === 'ready' && readers === 0 && onFloor === 0;
+  const quiet = state === 'ready' && online === 0 && onFloor === 0;
 
   return (
     <div className="rounded-xl border border-editorial-navy/10 bg-card px-3 py-2.5">
@@ -58,10 +59,10 @@ export default function LivePresence() {
         <>
           <div className="mt-1 grid grid-cols-2 gap-3">
             <Reading
-              label="On the site"
-              value={readers}
-              note="last 30 min"
-              down={site?.state === 'error' || site?.state === 'empty'}
+              label="Signed in"
+              value={online}
+              note="last 3 min"
+              down={state === 'loading' && online === 0}
             />
             <Reading
               label="On campus"
@@ -85,17 +86,21 @@ export default function LivePresence() {
             </div>
           )}
 
-          <p className="mt-1.5 truncate text-[9px] leading-relaxed text-editorial-navy/40">
+          <div className="mt-1.5 text-[9px] leading-relaxed text-editorial-navy/40">
             {state === 'loading' && 'Taking the reading…'}
-            {state === 'ready' && quiet && 'The building is quiet: nobody reading, nobody on the floor.'}
-            {state === 'ready' && !quiet && busiest && (
-              <>
-                Most read now:{' '}
-                <span className="text-editorial-navy/60">{busiest.label}</span> ·{' '}
-                {num(busiest.users)}
-              </>
+            {state === 'ready' && quiet && 'The building is quiet: nobody signed in, nobody on the floor.'}
+            {state === 'ready' && !quiet && standing.length > 0 && (
+              <p className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+                {standing.slice(0, 5).map((person) => (
+                  <span key={person.name + person.route} className="truncate text-editorial-navy/60">
+                    {person.name}
+                    <span className="text-editorial-navy/30"> · {surface(person.route)}</span>
+                  </span>
+                ))}
+                {online > 5 && <span>+{online - 5}</span>}
+              </p>
             )}
-          </p>
+          </div>
         </>
       )}
     </div>

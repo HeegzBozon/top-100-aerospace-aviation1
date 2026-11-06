@@ -1,75 +1,12 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
 
-// Who is on the wire right now. Two readings, both live, both admin-only:
-//   site   — the app's own property, read in realtime (the last half hour of readers)
-//   campus — the Colony's rooms, read from the meeting service's own presence
-// Nothing here is durable: it is a reading of this minute, taken again next minute.
+// Who is on the wire right now — read from two live sources and never stored twice:
+//   people — the accounts that have beaten inside the window (see usePresenceBeacon)
+//   campus — the Colony's own room presence, from the meeting service
+// The reading is taken again by the surface every minute; these rows are not a ledger.
 
-const GA = 'https://analyticsdata.googleapis.com/v1beta';
 const DAILY = 'https://api.daily.co/v1';
-
-// Resolved once per warm isolate, so a minute-by-minute reading does not re-walk the
-// account tree every time.
-let cachedProperty = null;
-
-async function resolveProperty(token) {
-  if (cachedProperty) return cachedProperty;
-  const headers = { Authorization: `Bearer ${token}` };
-  const acctRes = await fetch('https://analyticsadmin.googleapis.com/v1alpha/accounts', { headers });
-  const accounts = (await acctRes.json()).accounts || [];
-  for (const account of accounts.slice(0, 10)) {
-    const propsRes = await fetch(
-      `https://analyticsadmin.googleapis.com/v1alpha/properties?filter=parent:${account.name}`,
-      { headers }
-    );
-    const properties = (await propsRes.json()).properties || [];
-    if (properties.length) {
-      cachedProperty = properties[0].name;
-      return cachedProperty;
-    }
-  }
-  return null;
-}
-
-async function readSite(base44) {
-  try {
-    const { accessToken } = await base44.asServiceRole.connectors.getConnection('google_analytics');
-    const propertyId = await resolveProperty(accessToken);
-    if (!propertyId) return { state: 'empty', active: 0, pages: [] };
-
-    const post = (body) =>
-      fetch(`${GA}/${propertyId}:runRealtimeReport`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-    const [totalRes, pagesRes] = await Promise.all([
-      post({ metrics: [{ name: 'activeUsers' }] }),
-      post({
-        metrics: [{ name: 'activeUsers' }],
-        dimensions: [{ name: 'unifiedScreenName' }],
-        orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
-        limit: 4,
-      }),
-    ]);
-
-    const [totalData, pagesData] = await Promise.all([totalRes.json(), pagesRes.json()]);
-    if (totalData.error) return { state: 'error', active: 0, pages: [], reason: totalData.error.message };
-
-    const active = Number(totalData.rows?.[0]?.metricValues?.[0]?.value || 0);
-    const pages = (pagesData.rows || [])
-      .map((row) => ({
-        label: row.dimensionValues?.[0]?.value || '(not set)',
-        users: Number(row.metricValues?.[0]?.value || 0),
-      }))
-      .filter((page) => page.users > 0);
-
-    return { state: 'ready', active, pages };
-  } catch (error) {
-    return { state: 'error', active: 0, pages: [], reason: error.message };
-  }
-}
+const WINDOW_MS = 3 * 60 * 1000;
 
 // colony-media-hub-2 → Media hub
 function labelFor(name) {
@@ -116,7 +53,34 @@ Deno.serve(async (req) => {
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
-  const [site, campus] = await Promise.all([readSite(base44), readCampus()]);
+  const cutoff = Date.now() - WINDOW_MS;
 
-  return Response.json({ site, campus, readAt: new Date().toISOString() });
+  // The beats are read newest first and the window is applied here, so a reading never
+  // depends on how a timestamp is compared in the query.
+  const [rows, campus] = await Promise.all([
+    base44.asServiceRole.entities.Presence
+      .list({ sort: '-last_seen_at', limit: 400 })
+      .catch(() => []),
+    readCampus(),
+  ]);
+
+  // One reading per person: whoever beat last speaks for them, whichever device it was.
+  const seen = new Map();
+  const live = rows.filter((row) => new Date(row.last_seen_at).getTime() >= cutoff);
+  for (const row of live) {
+    const key = String(row.user_email || '').toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.set(key, {
+      name: row.user_name || key,
+      route: row.route || '/',
+      last_seen_at: row.last_seen_at,
+    });
+  }
+  const people = [...seen.values()];
+
+  return Response.json({
+    people: { online: people.length, standing: people.slice(0, 24) },
+    campus,
+    readAt: new Date().toISOString(),
+  });
 });

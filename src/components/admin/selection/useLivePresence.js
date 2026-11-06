@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getLivePresence } from '@/functions/getLivePresence';
 
-// The reading of this minute: how many are on the site, and how many are standing on the
-// campus floor. Taken again once a minute while the surface is on the glass, and never
+// The reading of this minute: who is signed in and standing on the platform, and who is on
+// the campus floor. Taken again once a minute while the surface is on the glass, and never
 // while the tab is put away — a hidden surface has no reader to report to.
 
 const POLL_MS = 60 * 1000;
@@ -18,8 +18,12 @@ export default function useLivePresence() {
       try {
         const res = await getLivePresence({});
         if (cancelled) return;
-        setData(res?.data || null);
-        setState(res?.data ? 'ready' : 'error');
+        if (!res?.data) {
+          setState('error');
+          return;
+        }
+        setData(res.data);
+        setState('ready');
       } catch {
         if (!cancelled) setState('error');
       }
@@ -38,7 +42,7 @@ export default function useLivePresence() {
 
   return {
     state,
-    site: data?.site || null,
+    people: data?.people || null,
     campus: data?.campus || null,
     readAt: data?.readAt ? new Date(data.readAt) : null,
   };
