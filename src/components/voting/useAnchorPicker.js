@@ -117,5 +117,8 @@ export default function useAnchorPicker({ count, labelAt, active, setKey, onChoo
     touchPicker();
   }, [setKey]);
 
-  return cursor;
+  // The cursor and the way to move it: the surface marks the card the ring is standing
+  // on, and a press made by another key — a digit on the radio — carries the ring with
+  // it, so the confirm key acts on the card the hand just chose rather than on the first.
+  return { cursor, land };
 }

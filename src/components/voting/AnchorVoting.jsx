@@ -234,7 +234,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // of its own numbers.
   const radio = useConsoleFace() === 'radio';
   const setKey = currentSet.map((n) => n.id).join('|');
-  const cursor = useAnchorPicker({
+  const { cursor, land: landOn } = useAnchorPicker({
     count: currentSet.length,
     labelAt: (i) => currentSet[i]?.name || `Candidate ${String.fromCharCode(65 + i)}`,
     active: standing,
@@ -260,6 +260,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       ? (key) => {
           const i = VOTE_KEYS.indexOf(key);
           if (i < 0 || !currentSet[i]) return false;
+          // The ring follows the key that was pressed, so the card marked on the glass
+          // and the card being marked are the same card.
+          landOn(i);
           handleSelect(currentSet[i]);
           return true;
         }
@@ -289,6 +292,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       const i = info ? n - count - 1 : n - 1;
       const nominee = currentSet[i];
       if (!(i >= 0 && i < count) || !nominee) return false;
+      // The ring lands on the card the digit names, so # and the centre key act on it
+      // rather than on the first card of the set.
+      landOn(i);
       if (info) {
         setPanelNominee(nominee);
         setPanelToken(String.fromCharCode(65 + i));
@@ -297,7 +303,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       }
       return true;
     });
-  }, [radio, phase, currentSet, reading]);
+  }, [radio, phase, currentSet, reading, landOn]);
 
   // The desk's own keyboard answers the same way: X, Y, A and B vote for the four
   // faces exactly as the console's keys do, so the legends printed on the cards hold
