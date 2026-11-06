@@ -194,8 +194,8 @@ export default function VoteSurface({ user }) {
                 : 'No cohort is counting right now. Your contribution record is kept.'}
             </p>
             <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: ink.soft }}>
-              In the Manifest you choose who to back. In the Crosscheck the house chooses who you
-              compare. Analysis resumes with the next window.
+              In the Manifest you choose who to back. In the Crosscheck the four are shuffled for
+              you, so the comparison is never your own. Analysis resumes with the next window.
             </p>
           </div>
 

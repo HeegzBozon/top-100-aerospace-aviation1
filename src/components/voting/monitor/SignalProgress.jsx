@@ -142,7 +142,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
         </div>
 
         <p className="mt-2 text-[7.5px] leading-relaxed" style={{ color: ink.soft }}>
-          The house&rsquo;s own walkthroughs, shuffled and weighed exactly as a Fellow weighs them. A test run
+          Walkthroughs, shuffled and weighed exactly as a Fellow weighs them. A test run
           writes its seven comparisons and moves nothing: no rating, no ladder, no report. The Fellows&rsquo;
           figures never include a test set.
         </p>

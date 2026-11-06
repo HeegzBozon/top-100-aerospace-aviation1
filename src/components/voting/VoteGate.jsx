@@ -100,10 +100,10 @@ export default function VoteGate({ source }) {
                   kind: 'Mini ranked choice',
                   line: CROSSCHECK_IS,
                   steps: [
-                    'The house deals four records together — you do not choose the set.',
-                    'Tap the record that leads the four, then the one that follows it.',
-                    'The third tap completes the order: the fourth record places itself.',
-                    'Every set you finish is a complete ballot. Skip one and nothing is scored from it; save it for later and it returns as it was dealt.',
+                    'Four records are shuffled together and set in front of you — you do not choose the set.',
+                    'Crew them: tap the record you would put in command, then the next, then the next.',
+                    'The third tap completes the order. The fourth record takes the seat left standing.',
+                    'Every set you finish is a complete ballot. Skip one and nothing is scored from it; save it for later and it returns as it was shuffled.',
                   ],
                 },
               ].map((ballot) => (

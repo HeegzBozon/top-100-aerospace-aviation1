@@ -90,7 +90,7 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 })
 
       {readingTests && (
         <p className="px-3 pb-1.5 text-[7px] font-bold uppercase tracking-[0.16em]" style={{ color: ink.label }}>
-          House test runs · held out of the count
+          Test runs · held out of the count
         </p>
       )}
 
