@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
+import CommitteeMasthead from '@/components/my-top100/CommitteeMasthead';
 import ListCanvas from '@/components/my-top100/ListCanvas';
 import ManifestMasthead from '@/components/my-top100/ManifestMasthead';
 import BallotStatusBanner from '@/components/my-top100/BallotStatusBanner';
@@ -198,7 +198,7 @@ export default function MyTop100() {
 
   // Count hub sessions per device. After a Fellow has opened the hub a few
   // times, the Nominate tab becomes the default landing — they've graduated
-  // past the Start Here orientation.
+  // past the Pre-Flight orientation.
   useEffect(() => {
     try {
       const c = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
@@ -554,9 +554,9 @@ export default function MyTop100() {
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
-    { key: 'start', label: 'Start Here', hint: "An Analyst's two duties, and where to begin", icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Nominate', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
-    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
+    { key: 'start', label: 'Pre-Flight', hint: "An Analyst's two duties, and where to begin", icon: Rocket, node: startNode },
+    { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
+    { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
   ];
 
   const shownTab = glass ? glassOpen : activeTab;
@@ -576,8 +576,7 @@ export default function MyTop100() {
         />
       ) : (
         <>
-      <ListBuilderHeader
-        listName={listName}
+      <CommitteeMasthead
         count={rankings.length}
         isPublished={isPublished}
         saving={saving}
@@ -591,18 +590,18 @@ export default function MyTop100() {
         listCount={rankings.length}
       />
 
-      {/* ── START HERE TAB ── */}
+      {/* ── PRE-FLIGHT TAB ── */}
       {activeTab === 'start' && startNode}
 
-      {/* ── FINALIZE BALLOT TAB (the organizing column, then the order itself) ── */}
+      {/* ── THE MANIFEST (the guide at the margin, the publication itself on the page) ── */}
       {activeTab === 'nominate' && (
-        <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl px-4 pb-28 lg:px-6 lg:pb-10">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-8">
-              <div className="lg:sticky lg:top-[68px] lg:w-[350px] lg:shrink-0">
+        <div className="flex-1 overflow-y-auto bg-editorial-sand/45">
+          <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-5 lg:px-6 lg:pb-12 lg:pt-7">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+              <aside className="border-t-2 border-editorial-copper pt-4 lg:sticky lg:top-[64px] lg:w-[330px] lg:shrink-0">
                 {builderPanel}
-              </div>
-              <div className="min-w-0 flex-1 lg:max-w-2xl">
+              </aside>
+              <div className="min-w-0 flex-1 border border-editorial-copper/25 bg-editorial-cream px-5 py-6 lg:max-w-2xl lg:px-8 lg:py-7">
                 {listBlock}
               </div>
             </div>
