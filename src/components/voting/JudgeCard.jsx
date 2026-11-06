@@ -2,17 +2,38 @@ import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import { PLACE_LABELS } from '@/components/voting/ballotNaming';
-import HonoreeStack from '@/components/voting/HonoreeStack';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
 
-// Career-stage broad bands — never a job title. The institution measures;
-// the card surfaces a band, not a role.
-const CAREER_STAGE_BAND = {
-  early: 'Early Career',
-  mid: 'Mid-Career',
-  senior: 'Senior',
-  executive: 'Executive',
-};
+
+// The pitch is held to a tweet's worth. Everything longer belongs in the card's file.
+const PITCH_MAX = 140;
+
+// Cut at a word, never mid-word, and only mark the cut when there was one.
+function clipPitch(text) {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (t.length <= PITCH_MAX) return t;
+  const cut = t.slice(0, PITCH_MAX);
+  const at = cut.lastIndexOf(' ');
+  const head = (at > PITCH_MAX * 0.6 ? cut.slice(0, at) : cut).replace(/[.,;:—–-]$/, '');
+  return `${head}…`;
+}
+
+// The record's summary usually opens on the candidate's own name, which the plate has
+// already set above it. That opening is taken off, so the pitch starts on the work.
+function pitchLine(nominee) {
+  const raw = String(nominee.description || nominee.impact_summary || '').replace(/\s+/g, ' ').trim();
+  const name = String(nominee.name || '').trim();
+  let text = raw;
+  if (name) {
+    const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    [name, name.split(/\s+/)[0]].forEach((part) => {
+      if (!part) return;
+      text = text.replace(new RegExp(`^${escape(part)}(?:[’']s)?\\b[\\s,—–-]*`, 'i'), '');
+    });
+  }
+  if (!text) return '';
+  return clipPitch(text.charAt(0).toUpperCase() + text.slice(1));
+}
 
 // The card is a printed plate: warm stock under a machined rule, a face in a well, a name
 // set in the display serif, and the story quoted beneath it in the same hand. Structure,
@@ -41,18 +62,18 @@ function initials(name) {
 // The ring walks these cards while a set is standing: the card the cursor is on
 // carries a copper ring, so where the wheel is pointing is legible on the glass.
 // `dense` is the radio's card: the same plate with its stock tightened, so four of them
-// stand in the glass at once with nothing to scroll. Every row that says what the card
-// IS stays — the face, the name, the band, the years, the pair of keys — and the story
-// is the one block given up first when the case is short.
-export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, honoreeVolumes = [], onInfo, onSelect }) {
+// stand in the glass at once with nothing to scroll. The face, the name and the pair of
+// keys always stay; the one word, the story and the pitch are what the plate is FOR.
+export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
+  // The card is a call sheet, not a dossier: one word, the six word story, and the
+  // pitch. The volumes, the biography, the career and the counted signals are all read
+  // in the card's own file — nothing else is printed on the face of the plate.
+  const oneWord = DISCIPLINE_LABELS[nominee.discipline] || nominee.industry || '';
   const story = nominee.six_word_story || '';
-  const bio = nominee.bio || '';
-  const discipline = DISCIPLINE_LABELS[nominee.discipline] || nominee.industry || nominee.professional_role || '';
-  const stageBand = CAREER_STAGE_BAND[nominee.trajectory_metrics?.career_stage] || '';
-  const band = [discipline, stageBand].filter(Boolean).join(' · ');
+  const pitch = pitchLine(nominee);
   const anchored = Boolean(position);
 
   // The rule across the head of the plate says where the record stands in the set: rose
@@ -124,16 +145,6 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             >
               {name}
             </p>
-            {band && (
-              <p
-                className={`mt-0.5 truncate font-bold uppercase leading-tight md:mt-1 md:text-[9.5px] ${
-                  dense ? "text-[7.5px] tracking-[0.1em]" : "text-[8.5px] tracking-[0.13em]"
-                }`}
-                style={{ color: ink.soft }}
-              >
-                {band}
-              </p>
-            )}
           </div>
 
           <div className="flex flex-col items-end gap-1 shrink-0">
@@ -150,35 +161,41 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           </div>
         </div>
 
-        {/* A returning honoree: the archive already carries them, so the card says so
-            before the story is read. One line only — the latest distinction on a chip,
-            the rest of the record stacked behind a count — so a candidate six volumes
-            deep costs the plate exactly what a candidate one volume deep costs. */}
-        <HonoreeStack volumes={honoreeVolumes} />
-
-        {/* Six word story, set in the display hand under a rose-gold hairline. */}
-        {story ? (
-          <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
-            <span aria-hidden className="block h-px w-7" style={{ background: `${brand.gold}99` }} />
+        {/* One word, the story, the pitch — that is the whole face of the plate. The
+            block is centred in whatever height the set gives it, so a short record reads
+            as composed rather than as a gap left under the type. */}
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 overflow-hidden md:gap-2.5">
+          {oneWord ? (
             <p
-              className={`mt-1 line-clamp-3 font-heading italic leading-snug md:mt-1.5 md:line-clamp-2 md:text-[15px] lg:text-[17px] ${
+              className={`truncate font-heading uppercase leading-none tracking-[0.06em] md:text-[26px] lg:text-[30px] ${
+                dense ? "text-[16px]" : "text-[20px]"
+              }`}
+              style={{ color: ink.label }}
+            >
+              {oneWord}
+            </p>
+          ) : null}
+
+          {story ? (
+            <p
+              className={`line-clamp-2 font-heading italic leading-snug md:text-[15px] lg:text-[17px] ${
                 dense ? "text-[11px]" : "text-[13px]"
               }`}
               style={{ color: brand.navy }}
             >
               <span style={{ color: brand.gold }}>&ldquo;</span>{story}<span style={{ color: brand.gold }}>&rdquo;</span>
             </p>
-          </div>
-        ) : (
-          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: ink.label }}>No story on file</p>
-        )}
+          ) : null}
 
-        {/* Biography snippet — the desk has room for it on the face of the card. */}
-        {/* Two lines on a desk, never three: the plate is one of four sharing the picture,
-            and the rest of the record is a press away in the card's own file. */}
-        {bio && (
-          <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-[13px]" style={{ color: ink.soft }}>{bio}</p>
-        )}
+          {pitch ? (
+            <p
+              className={`line-clamp-3 leading-snug md:text-[12.5px] ${dense ? "text-[9.5px]" : "text-[11px]"}`}
+              style={{ color: ink.soft }}
+            >
+              {pitch}
+            </p>
+          ) : null}
+        </div>
 
         {/* The foot of the card on the glass: the key that votes for it, printed the way
             the device prints its own legends, and the card's one door beside it. */}

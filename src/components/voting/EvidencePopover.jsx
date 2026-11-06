@@ -4,7 +4,7 @@ import {
   Award, Briefcase, FileText, Lightbulb, Quote, Rocket, Users, X,
 } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
-import { careerTrajectory, metricCounts } from '@/components/voting/anonymize';
+import { careerTrajectory, disciplineLabel, metricCounts } from '@/components/voting/anonymize';
 import HonoreeChip from '@/components/voting/HonoreeChip';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { useNavHint } from '@/components/handheld/faceHint';
@@ -25,6 +25,15 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
   const story = nominee.six_word_story || '';
   const bio = nominee.bio || '';
   const contribution = nominee.description || nominee.impact_summary || '';
+  // The band the card used to print: the field and the career stage, never a title.
+  // It is set at the head of the file so the plate itself carries only the three lines.
+  const stageBand = {
+    early: 'Early Career',
+    mid: 'Mid-Career',
+    senior: 'Senior',
+    executive: 'Executive',
+  }[nominee.trajectory_metrics?.career_stage] || '';
+  const band = [disciplineLabel(nominee), stageBand].filter(Boolean).join(' · ');
   const trajectory = careerTrajectory(nominee);
   const counts = metricCounts(nominee);
 
@@ -215,7 +224,14 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold truncate" style={{ color: brand.navy }}>{name}</h3>
-              <p className="hidden text-[11px] truncate md:block" style={{ color: ink.soft }}>Evidence of judgment</p>
+              <p className="hidden text-[11px] truncate md:block" style={{ color: ink.soft }}>
+                {band || 'Evidence of judgment'}
+              </p>
+              {band && (
+                <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: ink.label }}>
+                  {band}
+                </p>
+              )}
               {/* On the glass the wheel is the reader, so the panel says so. */}
               <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: ink.soft }}>
                 {keyHint({ walk: 'Sections', open: 'Open' })}
