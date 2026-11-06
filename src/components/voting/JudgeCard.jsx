@@ -64,7 +64,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
       : `linear-gradient(90deg, ${brand.navy}14, ${brand.gold}8A 50%, ${brand.navy}14)`;
 
   return (
-    <div className="relative h-full min-h-0">
+    <div className="relative h-full min-h-0 min-w-0">
       <motion.div
         whileTap={selectable ? { scale: 0.98 } : undefined}
         onClick={() => selectable && onSelect()}

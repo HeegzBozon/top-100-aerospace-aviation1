@@ -199,8 +199,10 @@ export default function VoteSurface({ user }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 pt-2 md:px-5 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch lg:gap-6 lg:pb-4 lg:pt-4">
-        <div className="flex min-w-0 flex-1 flex-col lg:min-h-0">
+      {/* The row takes the whole height it is given on every machine, so the set below
+          is sized to the picture rather than to its own contents. */}
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 px-2 pt-1 md:px-5 lg:flex-row lg:items-stretch lg:gap-6 lg:pb-4 lg:pt-4">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <AnchorVoting
             user={user}
             activeSeason={target}
@@ -210,7 +212,7 @@ export default function VoteSurface({ user }) {
         </div>
 
         {(context.progress || isAdmin) && (
-          <aside className="flex shrink-0 flex-col gap-3 lg:w-[290px] lg:overflow-y-auto lg:pb-6">
+          <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[290px] lg:overflow-y-auto lg:pb-6">
             {/* The operator watches the field while it is being weighed. A set cast by an
                 admin is a test of the flow, so the monitor stands on its own rather than
                 beside a ladder that does not move. */}

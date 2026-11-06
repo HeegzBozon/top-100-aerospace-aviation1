@@ -10,17 +10,17 @@ const EASE_IN = [0.4, 0, 0.2, 1];
 
 const cardVariants = {
   dealt: ({ calm }) =>
-    calm ? { opacity: 0 } : { opacity: 0, x: 26, y: 14, rotate: 1.2, scale: 0.96, filter: 'blur(4px)' },
+    calm ? { opacity: 0 } : { opacity: 0, x: 22, y: 10, scale: 0.97 },
+  // Transform and opacity only: no blur, no rotation, so every frame stays on the
+  // compositor and the deal holds its rate on a phone.
   standing: ({ index, calm }) => ({
     opacity: 1,
     x: 0,
     y: 0,
-    rotate: 0,
     scale: 1,
-    filter: 'blur(0px)',
     transition: calm
       ? { duration: 0.2 }
-      : { type: 'spring', stiffness: 280, damping: 26, delay: 0.05 + index * 0.07 },
+      : { duration: 0.42, ease: EASE_OUT, delay: 0.04 + index * 0.05 },
   }),
   away: ({ mode, order, calm }) => {
     if (calm) return { opacity: 0, transition: { duration: 0.15 } };
@@ -29,11 +29,10 @@ const cardVariants = {
     }
     return {
       opacity: 0,
-      x: -30,
-      y: -8,
-      rotate: -1.4,
-      scale: 0.94,
-      transition: { duration: 0.32, ease: EASE_IN, delay: order * 0.06 },
+      x: -26,
+      y: -6,
+      scale: 0.95,
+      transition: { duration: 0.26, ease: EASE_IN, delay: order * 0.045 },
     };
   },
 };
@@ -41,7 +40,13 @@ const cardVariants = {
 export function DealtCard({ index, order = 0, mode, children }) {
   const calm = useReducedMotion();
   return (
-    <motion.div className="grid min-h-0 min-w-0" variants={cardVariants} custom={{ index, order, mode, calm }}>
+    // The single track is held to the cell: an `auto` track would grow to the card's
+    // widest content and push it over its neighbour.
+    <motion.div
+      className="grid min-h-0 min-w-0 grid-cols-[minmax(0,1fr)] grid-rows-[minmax(0,1fr)] will-change-transform"
+      variants={cardVariants}
+      custom={{ index, order, mode, calm }}
+    >
       {children}
     </motion.div>
   );

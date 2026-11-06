@@ -21,6 +21,7 @@ import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import MissionBriefing from '@/components/mission/MissionBriefing';
+import ReviewProgressStrip from '@/components/voting/ReviewProgressStrip';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -463,10 +464,11 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const hasControls = phase === 'ordering' || phase === 'review';
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row lg:min-h-0 relative">
+    <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
-      <div className="flex-1 flex flex-col min-w-0 px-2.5 pt-0.5 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
-        <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 lg:min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 px-2.5 pt-1 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
+        <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
+        {lane && <ReviewProgressStrip progress={lane.progress} label={nextRung} />}
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
         {/* The desk states the measure above the cards. On the glass the same words are
@@ -619,7 +621,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             at once, so the grid takes its rows from the height it is given. */}
         <CrosscheckDeal
           dealKey={setKey}
-          className="grid grid-cols-2 grid-rows-[repeat(2,minmax(156px,1fr))] gap-2 sm:gap-3 lg:grid-rows-2 lg:gap-4 flex-1 lg:min-h-0"
+          className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 lg:gap-4 flex-1 min-h-0"
         >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);
