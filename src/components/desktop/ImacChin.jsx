@@ -62,6 +62,13 @@ export default function ImacChin({ shelf, finish, pack, packs, options, finishKe
     band.step(direction);
   };
 
+  // SCAN crosses a whole band of surfaces in one press, which is the only way to work a
+  // list of thirty channels without turning the knob thirty times.
+  const scan = () => {
+    setMode("CH");
+    band.seek(1);
+  };
+
   const tuneIn = () => {
     if (band.target) navigate(band.target.to);
   };
@@ -102,8 +109,8 @@ export default function ImacChin({ shelf, finish, pack, packs, options, finishKe
           <RadioKey
             label="SCAN"
             glyph={ChevronRight}
-            onClick={() => tune(1)}
-            title="Scan to the next channel"
+            onClick={scan}
+            title="Scan — seek the next band of surfaces"
           />
           <RadioKey
             label="MEM"

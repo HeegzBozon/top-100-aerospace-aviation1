@@ -49,5 +49,23 @@ export default function useRadioBand() {
       return (from + direction + size) % size;
     });
 
-  return { channels, current, index, target, tuning, step };
+  // SCAN is coarse tuning: it seeks the next band rather than the next channel, so the
+  // two-handed habit a transceiver is worked with holds — the knob nudges one stop, the
+  // scan key crosses a whole group of surfaces at a time. It is never a second copy of
+  // the knob.
+  const seek = (direction) =>
+    setDial((previous) => {
+      const size = channels.length;
+      if (!size) return previous;
+      const standing = previous === null ? current : previous;
+      const from = ((standing >= 0 ? standing : 0) + size) % size;
+      const band = channels[from].band;
+      for (let step = 1; step < size; step += 1) {
+        const at = (((from + direction * step) % size) + size) % size;
+        if (channels[at].band !== band) return at;
+      }
+      return from;
+    });
+
+  return { channels, current, index, target, tuning, step, seek };
 }

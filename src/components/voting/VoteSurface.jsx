@@ -224,7 +224,7 @@ export default function VoteSurface({ user }) {
     >
       {/* The row takes the whole height it is given on every machine, so the set below
           is sized to the picture rather than to its own contents. */}
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 px-2 pt-1 md:px-5 lg:flex-row lg:items-stretch lg:gap-6 lg:pb-4 lg:pt-4">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-3 px-2 pt-1 md:px-5 lg:flex-row lg:items-stretch lg:gap-4 lg:pb-2 lg:pt-2">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <AnchorVoting
             user={user}

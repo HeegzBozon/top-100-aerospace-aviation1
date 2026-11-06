@@ -2,7 +2,7 @@ import {
   Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, Gamepad2, GraduationCap,
   Globe2, Heart, Info, Landmark, Layers, LayoutGrid, LogIn, LogOut, Mail,
   MessageCircle, Network, Newspaper, PartyPopper, Radar, Rocket, Scissors, Send, Shield,
-  ShoppingBag, Ticket, Trophy, User, UserPlus, Users,
+  ShoppingBag, Ticket, Trophy, User, UserPlus, Users, Vote,
 } from "lucide-react";
 
 // THE APPLICATIONS THIS MACHINE RUNS.
@@ -43,6 +43,9 @@ export const APP_GROUPS = [
     label: "Affiliation",
     items: [
       { label: "Selection Committee", to: "/selection-committee", icon: Award, shelf: true },
+      // The weighing itself, on the band and in the memory list: a Fellow tunes to the
+      // Crosscheck directly rather than opening the hub and finding it there.
+      { label: "The Ballot", to: "/vote", icon: Vote, membersOnly: true },
       { label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy, shelf: true },
       { label: "Season Archive", to: "/ArchiveLanding", icon: BookOpen },
       { label: "Top Viral Posts", to: "/viralpost2026", icon: Newspaper },

@@ -21,11 +21,19 @@ import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honor
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import MissionBriefing from '@/components/mission/MissionBriefing';
 import ReviewProgressStrip from '@/components/voting/ReviewProgressStrip';
+import useGlass from '@/hooks/useGlass';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
 // standing, so the share moves to the ring's play zone for as long as the keys are held.
 const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
+
+// On a desk the same four cards answer the letters a hand already rests on: D F on the
+// top row and J K on the bottom, each directly under the card it votes for, with E R and
+// Y U on the row above opening those same four files. The pair is read as one block of
+// the keyboard because it is one block: what the plate prints is what the hand presses.
+const DESK_VOTE_KEYS = ['D', 'F', 'J', 'K'];
+const DESK_INFO_KEYS = ['E', 'R', 'Y', 'U'];
 
 // One review is ten XP on the ladder (see base44/shared/votingProgress.ts). Held here so
 // the tally can say how many reviews stand between a Fellow and the next rung.
@@ -316,6 +324,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // reading order — 1–4 vote, 5–8 open the same four files — and each card prints both
   // of its own numbers.
   const radio = useConsoleFace() === 'radio';
+  // Which machine is standing here. The glass prints the console's own legends; the desk
+  // prints the letters of the keyboard it is being worked from.
+  const glass = useGlass();
+  const desk = !glass;
   const setKey = currentSet.map((n) => n.id).join('|');
   const { cursor, land: landOn } = useAnchorPicker({
     count: currentSet.length,
@@ -400,18 +412,56 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     return registerDigits((digit) => (digitKeys.current ? digitKeys.current(digit) : false));
   }, [radio, phase, currentSet, reading]);
 
-  // The desk's own keyboard answers the same way: X, Y, A and B vote for the four
-  // faces exactly as the console's keys do, so the legends printed on the cards hold
-  // on a laptop. A field being written into keeps its letters.
+  // The desk answers with the letters under the fingers rather than the console's own
+  // face keys: D F and J K vote for the card standing under each of them, E R and Y U
+  // open the same four files. Held in a ref and re-pointed every render for the same
+  // reason the face keys are — the mark it makes has to read the order as it now stands.
+  const deskKeys = useRef(null);
+  deskKeys.current =
+    desk && phase === 'ordering' && currentSet.length === 4
+      ? (key) => {
+          const voteAt = DESK_VOTE_KEYS.indexOf(key);
+          const infoAt = DESK_INFO_KEYS.indexOf(key);
+          // Anything else is the reader's, not the ballot's: no other key on the desk
+          // belongs to this surface, so nothing else is ever taken from it.
+          if (voteAt < 0 && infoAt < 0) return false;
+          // While a file or the briefing is open the keys belong to the reader, so a
+          // press is taken and does nothing rather than marking a card behind the panel.
+          if (reading) return true;
+          if (voteAt >= 0) {
+            const nominee = currentSet[voteAt];
+            if (!nominee) return false;
+            landOn(voteAt);
+            handleSelect(nominee);
+            return true;
+          }
+          const nominee = currentSet[infoAt];
+          if (!nominee) return false;
+          landOn(infoAt);
+          setPanelNominee(nominee);
+          setPanelToken(String.fromCharCode(65 + infoAt));
+          return true;
+        }
+      : null;
+
+  // The desk's own keyboard: the two rows of letters above, and the console's face keys
+  // as well for a laptop that is being worked with the glass legends in mind. A field
+  // being written into keeps its letters.
   useEffect(() => {
-    if (!voteKeys.current) return undefined;
+    if (!deskKeys.current && !voteKeys.current) return undefined;
     const onKeyDown = (event) => {
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       const target = event.target;
       if (target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
       const key = String(event.key || '').toUpperCase();
-      if (!VOTE_KEYS.includes(key)) return;
-      if (voteKeys.current && voteKeys.current(key)) event.preventDefault();
+      if (deskKeys.current && deskKeys.current(key)) {
+        event.preventDefault();
+        return;
+      }
+      if (VOTE_KEYS.includes(key) && voteKeys.current) {
+        voteKeys.current(key);
+        event.preventDefault();
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -468,7 +518,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
-      <div className="flex-1 flex flex-col min-h-0 min-w-0 px-2.5 pt-1 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 px-2.5 pt-1 pb-2 md:px-4 md:pt-3 md:pb-4 lg:px-6 lg:pt-2 lg:pb-2">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
         {/* One instrument across the head of the set: the office, the tally, the
             experience and the measure. Everything the ladder reports lives here. */}
@@ -576,7 +626,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             at once, so the grid takes its rows from the height it is given. */}
         <CrosscheckDeal
           dealKey={setKey}
-          className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 lg:gap-4 flex-1 min-h-0"
+          className="grid grid-cols-2 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2 sm:gap-3 lg:gap-3 flex-1 min-h-0"
         >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);
@@ -599,8 +649,14 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
-                infoKeyLabel={radio ? String(idx + 1 + currentSet.length) : null}
+                keyLabel={radio ? String(idx + 1) : glass ? VOTE_KEYS[idx] : DESK_VOTE_KEYS[idx]}
+                infoKeyLabel={
+                  radio
+                    ? String(idx + 1 + currentSet.length)
+                    : glass
+                      ? null
+                      : DESK_INFO_KEYS[idx]
+                }
                 dense={radio}
               />
               </DealtCard>

@@ -70,7 +70,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
         onClick={() => selectable && onSelect()}
         role="button"
         tabIndex={selectable ? 0 : -1}
-        className={`isolate flex h-full min-h-0 flex-col overflow-hidden md:gap-2.5 md:rounded-[18px] md:p-4 md:pt-4 ${
+        className={`isolate flex h-full min-h-0 flex-col overflow-hidden md:gap-2 md:rounded-[16px] md:p-3 md:pt-3 ${
           dense ? "gap-1.5 rounded-[14px] p-2 pt-2.5" : "gap-2 rounded-[18px] p-2.5 pt-3"
         }`}
         style={{
@@ -101,7 +101,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
         {/* Identity row */}
         <div className="flex shrink-0 items-start gap-2 md:gap-3">
           <div
-            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-[13px] font-bold md:h-14 md:w-14 md:text-base ${
+            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-[13px] font-bold md:h-12 md:w-12 md:text-[15px] ${
               dense ? "h-8 w-8 text-[11px]" : "h-10 w-10 text-[13px]"
             }`}
             style={{
@@ -174,8 +174,10 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
         )}
 
         {/* Biography snippet — the desk has room for it on the face of the card. */}
+        {/* Two lines on a desk, never three: the plate is one of four sharing the picture,
+            and the rest of the record is a press away in the card's own file. */}
         {bio && (
-          <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-sm lg:line-clamp-3" style={{ color: ink.soft }}>{bio}</p>
+          <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-[13px]" style={{ color: ink.soft }}>{bio}</p>
         )}
 
         {/* The foot of the card on the glass: the key that votes for it, printed the way
@@ -184,7 +186,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           <span
             aria-hidden="true"
             title={`${keyLabel} votes for ${name}`}
-            className={`flex shrink-0 items-center justify-center font-heading md:h-9 md:w-9 md:text-[11px] ${
+            className={`flex shrink-0 items-center justify-center font-heading md:h-8 md:w-8 md:text-[11px] ${
               dense ? "h-[30px] w-[30px] rounded-[9px] text-[11px]" : "h-[38px] w-[38px] rounded-[11px] text-[12px]"
             }`}
             style={{
@@ -205,7 +207,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             onClick={(e) => { e.stopPropagation(); onInfo(); }}
             aria-label={`More information about ${name}${infoKeyLabel ? ` — key ${infoKeyLabel}` : ""}`}
             title={infoKeyLabel ? `${infoKeyLabel} opens ${name}` : `More information about ${name}`}
-            className={`relative flex shrink-0 items-center justify-center transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:h-9 md:w-9 ${
+            className={`relative flex shrink-0 items-center justify-center transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:h-8 md:w-8 ${
               dense ? "h-[30px] w-[30px] rounded-[9px]" : "h-[38px] w-[38px] rounded-[11px]"
             }`}
             style={{

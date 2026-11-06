@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { CalendarCheck } from "lucide-react";
+import { Vote as VoteIcon } from "lucide-react";
 import { SHELF } from "@/components/shell/appRegistry";
 import { useDeskDockSlots } from "./deskDockSlots";
 import "./deskDock.css";
@@ -54,9 +54,12 @@ export default function DesktopDock() {
 
           <span className="ds-seam" aria-hidden="true" />
 
-          <Link to="/rsvp" className="ds-seal">
-            <CalendarCheck className="ds-glyph" strokeWidth={2.2} />
-            <span>RSVP</span>
+          {/* The one primary on the shelf is the work itself. A Fellow reaches the
+              Crosscheck from anywhere on the machine, in one press, and lands on the
+              weighing rather than on the hub it sits inside. */}
+          <Link to="/vote" className="ds-seal" aria-label="The ballot — the Crosscheck">
+            <VoteIcon className="ds-glyph" strokeWidth={2.2} />
+            <span>Vote</span>
           </Link>
         </>
       )}

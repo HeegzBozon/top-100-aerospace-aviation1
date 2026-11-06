@@ -31,6 +31,10 @@ function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+// The surface the committee was last left on, held for the session rather than the
+// device: a Fellow's place in their own work, not a setting.
+const COMMITTEE_TAB_KEY = 'top100_committee_tab';
+
 export default function MyTop100() {
   const [user, setUser] = useState(null);
   const [myList, setMyList] = useState(null);
@@ -52,6 +56,13 @@ export default function MyTop100() {
     // on the ballot, not on the orientation copy in front of it.
     const requested = new URLSearchParams(window.location.search).get('tab');
     if (['start', 'nominate', 'vote'].includes(requested)) return requested;
+    // Where the session was left, this morning or an hour ago: a Fellow working the
+    // committee comes back to the surface they were on rather than being walked back to
+    // the Manifest every time. The session's own note, so tomorrow opens afresh.
+    try {
+      const held = sessionStorage.getItem(COMMITTEE_TAB_KEY);
+      if (['start', 'nominate', 'vote'].includes(held)) return held;
+    } catch { /* nothing held */ }
     try {
       const priorVisits = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
       // Engaged = already submitted at least one nomination on this device.
@@ -195,6 +206,13 @@ export default function MyTop100() {
       active = false;
     };
   }, []);
+
+  // The surface the committee was left on, kept for the life of the session. The deep
+  // link still wins — an address that names a tab is an instruction, not a memory.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('tab')) return;
+    try { sessionStorage.setItem(COMMITTEE_TAB_KEY, activeTab); } catch { /* ignore */ }
+  }, [activeTab]);
 
   // Count hub sessions per device. After a Fellow has opened the hub a few
   // times, the Nominate tab becomes the default landing — they've graduated
