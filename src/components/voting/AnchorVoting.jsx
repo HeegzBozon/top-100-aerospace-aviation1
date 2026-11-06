@@ -14,6 +14,7 @@ import {
   CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL,
 } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
+import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { useConsoleFace } from '@/components/handheld/consoleMode';
@@ -194,7 +195,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const skipSet = useCallback(() => {
     if (phase !== 'ordering') return;
     setPhase('skipped');
-    setTimeout(() => advance(), 1600);
+    setTimeout(() => advance(), 700);
   }, [phase, advance]);
 
   // Holding a review keeps the four records exactly as the house dealt them, so the Fellow
@@ -287,7 +288,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       onRecorded?.(res.data);
 
       setPhase('success');
-      setTimeout(() => advance({ set: currentSet, order: ordered }), 900);
+      setTimeout(() => advance({ set: currentSet, order: ordered }), 700);
     } catch (e) {
       toast({
         variant: 'destructive',
@@ -531,7 +532,17 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 className="rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
                 style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
               >
-                {testing ? 'test · ' : ''}{reviews} {reviews === 1 ? 'review' : 'reviews'}
+                {testing ? 'test · ' : ''}
+                <motion.span
+                  key={reviews}
+                  className="inline-block"
+                  initial={{ y: -6, opacity: 0, color: brand.gold }}
+                  animate={{ y: 0, opacity: 1, color: `${brand.navy}80` }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {reviews}
+                </motion.span>{' '}
+                {reviews === 1 ? 'review' : 'reviews'}
               </span>
               {nextRung && (
                 <span
@@ -604,15 +615,23 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
         {/* Four candidates, twice two — on the glass the whole set has to stand in view
             at once, so the grid takes its rows from the height it is given. */}
-        <div className="grid grid-cols-2 grid-rows-2 gap-1.5 sm:gap-3 lg:gap-4 flex-1 min-h-0">
+        <CrosscheckDeal
+          dealKey={setKey}
+          className="grid grid-cols-2 grid-rows-2 gap-1.5 sm:gap-3 lg:gap-4 flex-1 min-h-0"
+        >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);
             // The plates answer a tap only while the set is being ordered: once the third
             // record is placed, the fourth places itself and the set is read, not pressed.
             const selectable = phase === 'ordering' && !reading;
             return (
-              <JudgeCard
+              <DealtCard
                 key={nominee.id}
+                index={idx}
+                order={Math.max(0, (positionOf(nominee.id) || idx + 1) - 1)}
+                mode={phase === 'skipped' ? 'passed' : 'filed'}
+              >
+              <JudgeCard
                 nominee={nominee}
                 token={token}
                 position={positionOf(nominee.id)}
@@ -625,9 +644,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 infoKeyLabel={radio ? String(idx + 1 + currentSet.length) : null}
                 dense={radio}
               />
+              </DealtCard>
             );
           })}
-        </div>
+        </CrosscheckDeal>
 
         {/* Success pulse */}
         <AnimatePresence>
@@ -639,7 +659,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
               style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
             >
-              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Review recorded · 7 comparisons
+              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Review recorded
+              <span className="font-semibold" style={{ color: brand.gold }}>+{XP_PER_REVIEW} XP</span>
             </motion.div>
           )}
         </AnimatePresence>
