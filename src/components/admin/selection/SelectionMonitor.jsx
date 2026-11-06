@@ -112,31 +112,40 @@ export default function SelectionMonitor({ onOpenMenu }) {
       : data?.cohorts?.find((c) => c.id === scope)?.cohort_label || 'Selected cohort';
 
   return (
-    <div className="space-y-3">
-      {/* The figures stand at the head of the surface; the reading follows immediately. */}
-      <MonitorStats totals={totals} />
+    <div className="flex flex-col gap-2 md:block md:space-y-3">
+      {/* On a phone the instrument IS the surface: the reading leads, the keys that change
+          it sit directly under it, and the counts arrive beneath both — so the state of the
+          signal is legible on the first screen, with nothing to scroll past. On a desk the
+          strip still leads, as it always has. */}
+      <div className="order-3 md:order-none">
+        <MonitorStats totals={totals} />
+      </div>
 
       {/* Which ledger is on the glass — the community's, or the internal test sets. Both
           counts are always carried, so a test ballot is never invisible from the surface. */}
-      <ReadingSwitch
-        mode={mode}
-        onMode={setMode}
-        live={totals?.comparisons_live}
-        test={totals?.comparisons_test}
-      />
+      <div className="order-2 md:order-none">
+        <ReadingSwitch
+          mode={mode}
+          onMode={setMode}
+          live={totals?.comparisons_live}
+          test={totals?.comparisons_test}
+        />
+      </div>
 
-      {/* How far the pool has been reached, and how many marks the reading still needs
-          before it holds still. Counted from the live ledger alone. */}
-      <SignalProgress
-        totals={totals}
-        scopeLabel={scopeLabel}
-        standings={data?.standings || []}
-        mode={mode}
-      />
+      {/* How far the pool has been reached, and how many mini ballots the reading still
+          needs before it holds still. Counted from the live ledger alone. */}
+      <div className="order-1 md:order-none">
+        <SignalProgress
+          totals={totals}
+          scopeLabel={scopeLabel}
+          standings={data?.standings || []}
+          mode={mode}
+        />
+      </div>
 
       {/* Two readings of the same room: where the field stands, and what has just landed
           in it. */}
-      <Tabs defaultValue="standings">
+      <Tabs defaultValue="standings" className="order-4 md:order-none">
         <TabsList className="grid h-auto w-full grid-cols-2 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
           <TabsTrigger value="standings" className="px-2 text-[11px] md:px-4 md:text-sm">
             Standings

@@ -10,14 +10,18 @@ import {
 
 // The monitor's progress instrument, read in the units the season's design math uses.
 //
-// The unit of turnout is the set: one vote, four cards, five comparisons. Progress is
-// therefore measured as sets cast against the design's floor and ideal, and as the depth
-// those sets have bought each nominee — comparisons per nominee, appearances per nominee.
-// A share of the pool that has merely been touched is not progress on its own, so it is
-// printed beside the depth rather than in place of it.
+// The unit of turnout is the mini ballot: one sitting of a ballot — four cards, five marks.
+// Progress is therefore measured as mini ballots cast against the design's floor and ideal,
+// and as the depth those sittings have bought each nominee — comparisons and appearances
+// per nominee. A share of the pool that has merely been touched is not progress on its own,
+// so it is printed beside the depth rather than in place of it.
 //
-// Each reading counts only its own ledger: the community's sets, or the operator's test
+// Each reading counts only its own ledger: the community's sittings, or the operator's test
 // walk-through. Neither can move the other.
+//
+// The surface is read at a glance on a phone, so the figure, its measure and the two depth
+// readings are all above the fold; the assumptions that qualify them are printed once, in a
+// short line, and the long form of the caveat waits for a desk.
 
 const num = (value) => Math.round(Number(value) || 0).toLocaleString();
 const dec = (value) =>
@@ -34,8 +38,8 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
   const marks = Number(live ? totals?.comparisons_live : totals?.comparisons_test) || 0;
   const heldApart = Number(live ? totals?.comparisons_test : totals?.comparisons_live) || 0;
 
-  // One vote is one set of five comparisons, so turnout is read straight off the marks.
-  const sets = marks / COMPARISONS_PER_SET;
+  // One sitting is five marks, so turnout is read straight off the ledger.
+  const miniBallots = marks / COMPARISONS_PER_SET;
 
   // Who this reading's marks have reached. The ledger resolves the community's figure in one
   // pass; until that reading is on the wire, the count comes from the board's own appearance
@@ -50,12 +54,11 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
   }));
   const floor = ladder[0];
   const ideal = ladder[2];
-  const band = bandForSets(sets, pool);
+  const band = bandForSets(miniBallots, pool);
 
-  const depth = comparisonsPerNominee(sets, pool);
-  const appearances = appearancesPerNominee(sets, pool);
-  const toFloor = Math.max(0, floor.sets - sets);
-  const measure = share(sets, ideal.sets);
+  const depth = comparisonsPerNominee(miniBallots, pool);
+  const appearances = appearancesPerNominee(miniBallots, pool);
+  const toFloor = Math.max(0, floor.sets - miniBallots);
 
   if (!pool) {
     return (
@@ -66,7 +69,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
         <p className="mt-1.5 font-heading text-base text-editorial-navy">No pool is standing here yet</p>
         <p className="mx-auto mt-1 max-w-sm text-[11px] leading-relaxed text-editorial-navy/55">
           The targets are read against the nominees eligible in this scope. Once a pool is
-          settled, this instrument will report the sets cast against it.
+          settled, this instrument will report the mini ballots cast against it.
         </p>
       </div>
     );
@@ -74,13 +77,13 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
 
   return (
     <div className="rounded-xl border border-editorial-navy/10 bg-card px-3 py-2.5">
-      {/* Head: what is being counted, and which scenario the run of sets has reached. */}
+      {/* Head: what is being counted, and which scenario the run has reached. */}
       <div className="flex items-baseline justify-between gap-2">
         <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-editorial-label">
           Signal progress
         </p>
         <span className="flex items-center gap-1.5">
-          <span className="text-[9px] uppercase tracking-[0.14em] text-editorial-navy/40">
+          <span className="hidden text-[9px] uppercase tracking-[0.14em] text-editorial-navy/40 md:inline">
             {scopeLabel || 'Scope'}
           </span>
           <span className="rounded-full border border-editorial-copper/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-editorial-copper">
@@ -89,19 +92,24 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
         </span>
       </div>
 
-      {/* The headline: sets cast, against the floor and the ideal. */}
-      <div className="mt-1.5 flex items-end justify-between gap-3">
-        <p className="flex items-baseline gap-1 font-heading leading-none text-editorial-navy">
-          <span className="text-[30px] tabular-nums">{num(sets)}</span>
-          <span className="text-[13px] tabular-nums text-editorial-navy/35">
-            / {num(floor.sets)} floor
-          </span>
-        </p>
-        <p className="pb-0.5 text-right text-[10px] leading-tight text-editorial-navy/55">
+      {/* The figure: mini ballots against the floor, with the ideal beside it. */}
+      <div className="mt-1 flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/45">
+            Mini ballots cast
+          </p>
+          <p className="mt-0.5 flex items-baseline gap-1 font-heading leading-none text-editorial-navy">
+            <span className="text-[30px] tabular-nums">{num(miniBallots)}</span>
+            <span className="text-[12px] tabular-nums text-editorial-navy/35">
+              / {num(floor.sets)} floor
+            </span>
+          </p>
+        </div>
+        <p className="shrink-0 pb-0.5 text-right text-[10px] leading-tight text-editorial-navy/55">
           {toFloor > 0 ? (
             <>
-              <span className="font-semibold tabular-nums text-editorial-navy">{num(toFloor)}</span> sets
-              to the floor
+              <span className="font-semibold tabular-nums text-editorial-navy">{num(toFloor)}</span> to
+              the floor
             </>
           ) : (
             <span className="font-semibold text-editorial-navy">Floor cleared</span>
@@ -115,7 +123,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
       <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-editorial-navy/10">
         <div
           className="h-full rounded-full bg-editorial-copper transition-[width] duration-500"
-          style={{ width: `${measure}%` }}
+          style={{ width: `${share(miniBallots, ideal.sets)}%` }}
         />
         <span
           className="absolute inset-y-0 w-px bg-editorial-navy/45"
@@ -124,8 +132,8 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
         />
       </div>
 
-      {/* The second axis: the depth those sets have bought each nominee. */}
-      <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-editorial-navy/10 pt-2">
+      {/* The second axis: the depth those sittings have bought each nominee. */}
+      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-editorial-navy/10 pt-2">
         <div>
           <p className="text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/45">
             {live ? 'Comparisons per nominee' : 'Test comparisons per nominee'}
@@ -152,19 +160,19 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
         </div>
       </div>
 
-      {/* The scenarios, in order, with the set total each one asks of this pool. */}
+      {/* The scenarios, in order, with the sitting total each one asks of this pool. */}
       <div className="mt-2 flex items-end gap-1">
         {ladder.map((step) => {
-          const cleared = sets >= step.sets;
+          const cleared = miniBallots >= step.sets;
           return (
-            <div key={step.key} className="flex-1">
+            <div key={step.key} className="min-w-0 flex-1">
               <div
                 className={`h-1 rounded-full transition-colors duration-300 ${
                   cleared ? 'bg-editorial-copper' : 'bg-editorial-navy/10'
                 }`}
               />
               <p
-                className={`mt-1 text-[8px] uppercase tracking-[0.1em] ${
+                className={`mt-1 truncate text-[8px] uppercase tracking-[0.1em] ${
                   band?.key === step.key
                     ? 'font-semibold text-editorial-copper'
                     : cleared
@@ -172,19 +180,33 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
                       : 'text-editorial-navy/25'
                 }`}
               >
-                {step.label} <span className="tabular-nums">{num(step.sets)}</span>
+                {step.label}
+              </p>
+              <p
+                className={`text-[8px] tabular-nums leading-tight ${
+                  cleared ? 'text-editorial-navy/40' : 'text-editorial-navy/25'
+                }`}
+              >
+                {num(step.sets)}
               </p>
             </div>
           );
         })}
       </div>
 
-      {/* Reach, printed beside the depth: the totals only hold if the allocator spreads sets. */}
-      <p className="mt-1.5 text-[9px] leading-relaxed text-editorial-navy/40">
+      {/* Reach, printed beside the depth: the totals only hold if the allocator spreads
+          sittings. Short form on a phone, full caveat on a desk. */}
+      <p className="mt-1.5 text-[9px] leading-relaxed text-editorial-navy/40 md:hidden">
+        {num(reached)} of {num(pool)} nominees {live ? 'weighed' : 'walked'} once.{' '}
+        {live
+          ? `Live sets only${heldApart > 0 ? `; ${num(heldApart)} test marks held apart` : ''}.`
+          : `Test sets only; ${num(heldApart)} community marks outside this view.`}
+      </p>
+      <p className="mt-1.5 hidden text-[9px] leading-relaxed text-editorial-navy/40 md:block">
         {num(reached)} of {num(pool)} nominees {live ? 'weighed' : 'walked'} at least once. Five
-        comparisons to the set, four card appearances, five set targets scaled from a pool of 550.
-        The totals hold only if the sets are spread evenly; precision is read at the cut line, not
-        from volume alone.
+        marks to the mini ballot, four card appearances, five set targets scaled from a pool of 550.
+        The totals hold only if the sittings are spread evenly; precision is read at the cut line,
+        not from volume alone.
         {live
           ? heldApart > 0
             ? ` ${num(heldApart)} test comparisons are held apart from this figure.`

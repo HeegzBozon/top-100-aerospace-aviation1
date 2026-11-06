@@ -15,9 +15,12 @@ const FIGURES = [
   { key: 'ballots', label: 'Ballots', note: 'whole orderings' },
   { key: 'mini', label: 'Mini ballots', note: 'four cards, five marks' },
   { key: 'comparisons', label: 'Marks', note: 'nominee against nominee' },
-  { key: 'pool', label: 'In pool' },
-  { key: 'contributors', label: 'Fellows' },
+  { key: 'pool', label: 'In pool', wide: true },
+  { key: 'contributors', label: 'Fellows', wide: true },
 ];
+
+// A phone carries only the three levels of the vote itself; the audience behind them is a
+// desk reading, and hiding it here leaves the signal instrument the head of the glass.
 
 // A mini ballot is the set as the record writes it: five marks to the sitting.
 const valueFor = (total, totals) =>
@@ -39,7 +42,9 @@ export default function MonitorStats({ totals }) {
           <div
             key={figure.key}
             title={figure.note}
-            className="rounded-lg border border-editorial-navy/10 bg-white px-1.5 py-1.5"
+            className={`rounded-lg border border-editorial-navy/10 bg-white px-1.5 py-1.5 ${
+              figure.wide ? 'hidden md:block' : ''
+            }`}
           >
             <dt className="text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.12em] text-editorial-navy/45">
               {figure.label}
@@ -53,7 +58,7 @@ export default function MonitorStats({ totals }) {
 
       {/* Traffic, read from the property: three readings in one line, and the shape of
           the days behind them. */}
-      <div className="flex items-center gap-2 rounded-lg border border-editorial-navy/10 bg-white px-2 py-1.5">
+      <div className="hidden items-center gap-2 rounded-lg border border-editorial-navy/10 bg-white px-2 py-1.5 md:flex">
         <div className="shrink-0">
           <p className="text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.12em] text-editorial-navy/45">
             Site traffic
