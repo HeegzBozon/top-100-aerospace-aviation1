@@ -149,4 +149,4 @@ export const isStepDone = (values, step) => {
 };
 
 export const HOUSE_BLUEPRINT = () =>
-  VOLUME_IV_BLUEPRINT.sections.map((section, i) => ({ ...section, id: `sec-${section.id}`, order: i }));
+  VOLUME_IV_BLUEPRINT.sections.map((section, i) => ({ ...section, order: i }));
