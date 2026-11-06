@@ -468,7 +468,20 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       {/* Voting surface */}
       <div className="flex-1 flex flex-col min-h-0 min-w-0 px-2.5 pt-1 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
-        {lane && <ReviewProgressStrip progress={lane.progress} label={nextRung} />}
+        {/* One instrument across the head of the set: the office, the tally, the
+            experience and the measure. Everything the ladder reports lives here. */}
+        {lane && (
+          <ReviewProgressStrip
+            progress={lane.progress}
+            levelName={testing ? `Test · ${lane.name}` : lane.name}
+            reviews={reviews}
+            xp={lane.xp}
+            nextRung={nextRung}
+            flash={phase === 'success'}
+            flashLabel={`Recorded · +${XP_PER_REVIEW} XP`}
+            label={nextRung}
+          />
+        )}
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
         {/* The desk states the measure above the cards. On the glass the same words are
@@ -527,34 +540,6 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             >
               <Info className="h-3 w-3" />
             </button>
-            {/* The tally, read from the record rather than from this sitting, and under it
-                the rung it is carrying the Fellow towards. */}
-            <div className="ml-auto flex shrink-0 flex-col items-end leading-none">
-              <span
-                className="rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
-                style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
-              >
-                {testing ? 'test · ' : ''}
-                <motion.span
-                  key={reviews}
-                  className="inline-block"
-                  initial={{ y: -6, opacity: 0, color: brand.gold }}
-                  animate={{ y: 0, opacity: 1, color: `${brand.navy}80` }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {reviews}
-                </motion.span>{' '}
-                {reviews === 1 ? 'review' : 'reviews'}
-              </span>
-              {nextRung && (
-                <span
-                  className="mt-1 text-[8.5px] font-semibold uppercase tracking-[0.12em] tabular-nums md:text-[9px]"
-                  style={{ color: `${brand.navy}50` }}
-                >
-                  {nextRung}
-                </span>
-              )}
-            </div>
           </motion.div>
         </AnimatePresence>
 
@@ -653,24 +638,6 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           })}
         </CrosscheckDeal>
 
-        {/* Success pulse — laid over the foot of the set rather than below it, so the
-            cards keep their size while the review is filed. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center md:bottom-5">
-        <AnimatePresence>
-          {phase === 'success' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="flex items-center justify-center gap-2 rounded-full bg-editorial-cream px-3.5 py-1.5 text-[11px] font-bold shadow-lg md:text-xs"
-              style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
-            >
-              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Review recorded
-              <span className="font-semibold" style={{ color: brand.gold }}>+{XP_PER_REVIEW} XP</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        </div>
         </div>
       </div>
 
