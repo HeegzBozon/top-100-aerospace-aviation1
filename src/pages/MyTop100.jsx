@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
 import ListCanvas from '@/components/my-top100/ListCanvas';
+import ManifestMasthead from '@/components/my-top100/ManifestMasthead';
 import BallotStatusBanner from '@/components/my-top100/BallotStatusBanner';
 import { useToast } from '@/components/ui/use-toast';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
@@ -13,7 +14,7 @@ import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
-import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
+import { Loader2, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import GlassNominateSurface from '@/components/my-top100/GlassNominateSurface';
@@ -418,40 +419,6 @@ export default function MyTop100() {
   }
 
   // Shared editable name block (reused in both layouts)
-  const ListNameEditor = (
-    <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-      {isEditingName ? (
-        <div className="flex items-center gap-2 flex-1">
-          <input
-            autoFocus
-            value={listName}
-            onChange={e => setListName(e.target.value)}
-            onBlur={() => { setIsEditingName(false); scheduleSave(rankings, listName); }}
-            onKeyDown={e => e.key === 'Enter' && setIsEditingName(false)}
-            className="flex-1 text-xl font-bold bg-transparent outline-none border-b-2 pb-0.5"
-            style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif", borderColor: brand.gold }}
-            maxLength={60}
-          />
-          <button onClick={() => setIsEditingName(false)}>
-            <Check className="w-4 h-4" style={{ color: brand.gold }} />
-          </button>
-        </div>
-      ) : (
-        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setIsEditingName(true)}>
-          <h1 className="text-xl font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-            {listName}
-          </h1>
-          <Pencil className="w-3.5 h-3.5" style={{ color: `${brand.navy}40` }} />
-        </button>
-      )}
-      {saving && (
-        <span className="text-[10px] flex items-center gap-1" style={{ color: `${brand.navy}40` }}>
-          <Loader2 className="w-3 h-3 animate-spin" /> Saving...
-        </span>
-      )}
-    </div>
-  );
-
   // Opening a surface: the tab the desk reads, and the panel the console holds.
   const openTab = (key) => {
     setActiveTab(key);
@@ -462,7 +429,19 @@ export default function MyTop100() {
   // same artifact, so it is written once.
   const listBlock = (
     <>
-      {ListNameEditor}
+      <ManifestMasthead
+        listName={listName}
+        editing={isEditingName}
+        onChange={setListName}
+        onBeginEdit={() => setIsEditingName(true)}
+        onEndEdit={() => {
+          setIsEditingName(false);
+          scheduleSave(rankings, listName);
+        }}
+        saving={saving}
+        count={rankings.length}
+        note="In order, strongest first — the order is the finding. Yours to edit and publish."
+      />
       <BallotStatusBanner
         rankings={rankings}
         votingOpen={votingOpen}

@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import { GripVertical, X, ChevronUp, ChevronDown, Lock } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { GripVertical, X, ChevronUp, ChevronDown, Lock, Plus } from 'lucide-react';
 import ListEmptyState from '@/components/my-top100/ListEmptyState';
 
-const RANK_COLORS = {
-  1: { bg: '#FFD700', text: '#7a5200' },
-  2: { bg: '#C0C0C0', text: '#444' },
-  3: { bg: '#cd7f32', text: '#fff' },
-};
-
+// The Manifest, set as a roll.
+//
+// One record to a line, numbered down the margin, parted by hairlines rather than boxed
+// in cards — the order is the thing being read, so the numbers carry the structure and the
+// furniture stays out of the way. The order is the Fellow's own: the hand that moves a
+// record is the only thing that reorders it.
 export default function ListCanvas({
   rankings,
   onReorder,
@@ -27,10 +26,13 @@ export default function ListCanvas({
   if (rankings.length === 0) {
     if (readOnly) {
       return (
-        <div className="px-4 py-10 text-center">
-          <Lock className="w-5 h-5 mx-auto mb-2" style={{ color: `${brand.navy}40` }} />
-          <p className="text-sm" style={{ color: `${brand.navy}50` }}>
-            No nominees — voting has closed.
+        <div className="border-t border-editorial-copper py-12 text-center">
+          <Lock className="mx-auto mb-3 h-4 w-4 text-editorial-navy/35" aria-hidden="true" />
+          <p className="font-body text-[11px] font-bold uppercase tracking-[0.18em] text-editorial-navy/55">
+            Nothing listed
+          </p>
+          <p className="mt-2 font-body text-[12px] leading-relaxed text-editorial-navy/45">
+            Analysis has closed for this cycle.
           </p>
         </div>
       );
@@ -39,88 +41,81 @@ export default function ListCanvas({
   }
 
   return (
-    <div className="px-4 py-4 min-w-0">
+    <div className="min-w-0">
       <Reorder.Group
         axis="y"
         values={rankings}
         onReorder={readOnly ? () => {} : onReorder}
-        className="space-y-2"
+        className="border-t border-editorial-copper"
       >
         <AnimatePresence>
           {rankings.map((item, index) => {
-            const rank = index + 1;
-            const rankStyle = RANK_COLORS[rank];
+            const place = index + 1;
+            const leads = place <= 3;
+            const isDragging = dragging === item.nominee_id;
 
             return (
               <Reorder.Item
                 key={item.nominee_id}
                 value={item}
+                drag={readOnly ? false : true}
                 onDragStart={readOnly ? undefined : () => setDragging(item.nominee_id)}
                 onDragEnd={readOnly ? undefined : () => setDragging(null)}
-                drag={readOnly ? false : true}
               >
                 <motion.div
                   layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20, height: 0 }}
-                  className="flex items-center gap-3 p-3 rounded-2xl border"
-                  style={{
-                    background: dragging === item.nominee_id ? `${brand.navy}06` : 'white',
-                    borderColor: dragging === item.nominee_id ? `${brand.gold}60` : `${brand.navy}08`,
-                    boxShadow: dragging === item.nominee_id
-                      ? '0 8px 24px rgba(10,18,30,0.12)'
-                      : '0 1px 4px rgba(10,18,30,0.04)',
-                    cursor: readOnly ? 'default' : 'grab',
-                  }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className={`flex items-center gap-3 border-b border-editorial-navy/10 px-1 py-3 transition-colors sm:gap-4 ${
+                    isDragging ? 'bg-editorial-sand' : 'hover:bg-editorial-sand/40'
+                  } ${readOnly ? '' : 'cursor-grab'}`}
                 >
-                  {/* Rank number */}
-                  <div
-                    className="h-8 w-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold"
-                    style={
-                      rankStyle
-                        ? { background: rankStyle.bg, color: rankStyle.text }
-                        : { background: `${brand.navy}10`, color: `${brand.navy}80` }
-                    }
+                  <span
+                    className={`w-7 shrink-0 text-right font-heading text-[19px] leading-none tabular-nums ${
+                      leads ? 'text-editorial-copper' : 'text-editorial-navy/35'
+                    }`}
                   >
-                    {rank}
-                  </div>
+                    {place}
+                  </span>
 
-                  {/* Avatar + info (click to view profile) */}
                   <button
                     type="button"
                     onClick={() => onViewProfile?.(item)}
-                    className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
                   >
-                    <div
-                      className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold overflow-hidden"
-                      style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-                    >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-editorial-copper/35 bg-editorial-navy font-heading text-sm text-editorial-cream">
                       {item.nominee_avatar ? (
-                        <img src={item.nominee_avatar} alt={item.nominee_name} className="w-full h-full object-cover" />
+                        <img
+                          src={item.nominee_avatar}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         item.nominee_name?.[0]?.toUpperCase()
                       )}
-                    </div>
+                    </span>
 
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-heading text-[15px] leading-snug text-editorial-navy">
                         {item.nominee_name}
-                      </p>
+                      </span>
                       {item.nominee_title && (
-                        <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
-                          {item.nominee_title}{item.nominee_company ? ` · ${item.nominee_company}` : ''}
-                        </p>
+                        <span className="mt-0.5 block truncate font-body text-[9.5px] uppercase tracking-[0.14em] text-editorial-navy/50">
+                          {item.nominee_title}
+                          {item.nominee_company ? ` · ${item.nominee_company}` : ''}
+                        </span>
                       )}
-                    </div>
+                    </span>
                   </button>
 
-                  {/* Actions */}
-                  {!readOnly && (
-                    <div className="flex items-center gap-1 shrink-0">
-                      {/* Move up/down on mobile (alternative to drag for accessibility) */}
-                      <div className="flex flex-col gap-0.5">
+                  {readOnly ? (
+                    <Lock className="h-3.5 w-3.5 shrink-0 text-editorial-navy/25" aria-hidden="true" />
+                  ) : (
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      <div className="flex flex-col">
                         <button
+                          type="button"
                           onClick={() => {
                             if (index > 0) {
                               const next = [...rankings];
@@ -128,12 +123,14 @@ export default function ListCanvas({
                               onReorder(next);
                             }
                           }}
-                          className="h-4 w-4 flex items-center justify-center rounded opacity-40 hover:opacity-100"
                           disabled={index === 0}
+                          aria-label={`Move ${item.nominee_name} up`}
+                          className="flex h-4 w-4 items-center justify-center rounded text-editorial-navy/35 transition-colors hover:text-editorial-navy disabled:opacity-20"
                         >
-                          <ChevronUp className="w-3 h-3" style={{ color: brand.navy }} />
+                          <ChevronUp className="h-3 w-3" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => {
                             if (index < rankings.length - 1) {
                               const next = [...rankings];
@@ -141,27 +138,25 @@ export default function ListCanvas({
                               onReorder(next);
                             }
                           }}
-                          className="h-4 w-4 flex items-center justify-center rounded opacity-40 hover:opacity-100"
                           disabled={index === rankings.length - 1}
+                          aria-label={`Move ${item.nominee_name} down`}
+                          className="flex h-4 w-4 items-center justify-center rounded text-editorial-navy/35 transition-colors hover:text-editorial-navy disabled:opacity-20"
                         >
-                          <ChevronDown className="w-3 h-3" style={{ color: brand.navy }} />
+                          <ChevronDown className="h-3 w-3" />
                         </button>
                       </div>
 
-                      <GripVertical className="w-4 h-4 mx-1" style={{ color: `${brand.navy}30` }} />
+                      <GripVertical className="mx-0.5 h-4 w-4 text-editorial-navy/20" aria-hidden="true" />
 
                       <button
+                        type="button"
                         onClick={() => onRemove(item.nominee_id)}
-                        className="h-7 w-7 rounded-full flex items-center justify-center transition-all active:scale-90"
-                        style={{ background: `${brand.navy}08` }}
+                        aria-label={`Remove ${item.nominee_name}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-editorial-navy/40 transition-colors hover:bg-editorial-copper/10 hover:text-editorial-copper"
                       >
-                        <X className="w-3 h-3" style={{ color: `${brand.navy}60` }} />
+                        <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                  )}
-
-                  {readOnly && (
-                    <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: `${brand.navy}30` }} />
                   )}
                 </motion.div>
               </Reorder.Item>
@@ -170,15 +165,22 @@ export default function ListCanvas({
         </AnimatePresence>
       </Reorder.Group>
 
-      {/* Add more CTA at the bottom of list */}
       {!readOnly && total < 100 && (
         <motion.button
-          whileTap={{ scale: 0.97 }}
+          type="button"
+          whileTap={{ scale: 0.995 }}
           onClick={onAddMore}
-          className="mt-4 w-full py-3.5 rounded-2xl border-2 border-dashed text-sm font-semibold transition-all"
-          style={{ borderColor: `${brand.navy}20`, color: `${brand.navy}60` }}
+          className="mt-5 flex w-full items-center justify-between gap-3 border border-dashed border-editorial-copper/50 px-4 py-3.5 text-left transition-colors hover:bg-editorial-copper/5"
         >
-          + Add More ({100 - total} slots remaining)
+          <span className="flex items-center gap-2">
+            <Plus className="h-3.5 w-3.5 text-editorial-copper" aria-hidden="true" />
+            <span className="font-body text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-navy">
+              Add a record
+            </span>
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-[0.14em] text-editorial-navy/45 tabular-nums">
+            {100 - total} places open
+          </span>
         </motion.button>
       )}
     </div>
