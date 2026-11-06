@@ -1,32 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Award, Briefcase, FileText, Lightbulb, Quote, Rocket, Users, X,
-} from 'lucide-react';
+import { MessageSquarePlus, Pencil, X } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
-import { careerTrajectory, disciplineLabel, metricCounts } from '@/components/voting/anonymize';
-import HonoreeChip from '@/components/voting/HonoreeChip';
+import { disciplineLabel } from '@/components/voting/anonymize';
+import { buildEvidenceSections } from '@/components/voting/evidenceSections';
+import RecordContributionSheet from '@/components/voting/RecordContributionSheet';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { useNavHint } from '@/components/handheld/faceHint';
 
-// The candidate's own information panel — the card's one door. Everything the
-// institution holds on them, kept anonymized: the six word story (the first draft of
-// this year's flightography expansion), the biography, the contribution evidence, the
-// career record, and the counted signals.
+// The candidate's own file — the card's one door.
 //
-// It is read with the click wheel (docs/handheld-cursor-rules.md): the sections are
-// registered as a picker, so rotation walks them and the console's strip names the one
-// under the cursor. A turn at either end is kept and spent reading on down the panel,
-// so the wheel is never dead and the picture behind the panel never moves. A is taken
-// and does nothing through the panel; B, or the cross, puts it away.
+// It reads as a short profile rather than as four headings: the story, the record, the
+// standing, the flightography, the education, the recognition, the counted signals, the
+// innovation, the ecosystem, the credential, the volumes, and the keys out to the
+// record's artifacts. The sections are composed in evidenceSections from whatever the
+// record actually holds, so the file deepens as the record does and a sparse one stays
+// short. The chip strip across the head is the index; it is also what the click wheel
+// walks, so the strip's labels are the sections' own, in the same order.
+//
+// A is taken and does nothing through the panel; B, or the cross, puts it away.
 export default function EvidencePopover({ nominee, token, volumes = [], onClose }) {
   const keyHint = useNavHint();
   const name = nominee.name || 'Evidence of judgment';
-  const story = nominee.six_word_story || '';
-  const bio = nominee.bio || '';
-  const contribution = nominee.description || nominee.impact_summary || '';
-  // The band the card used to print: the field and the career stage, never a title.
-  // It is set at the head of the file so the plate itself carries only the three lines.
   const stageBand = {
     early: 'Early Career',
     mid: 'Mid-Career',
@@ -34,99 +29,8 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
     executive: 'Executive',
   }[nominee.trajectory_metrics?.career_stage] || '';
   const band = [disciplineLabel(nominee), stageBand].filter(Boolean).join(' · ');
-  const trajectory = careerTrajectory(nominee);
-  const counts = metricCounts(nominee);
 
-  const signals = [
-    { label: 'Team led', value: counts.teamSize, icon: Users },
-    { label: 'Patents', value: counts.patents, icon: FileText },
-    { label: 'Startups', value: counts.startups, icon: Lightbulb },
-    { label: 'Publications', value: counts.publications, icon: FileText },
-    { label: 'Missions', value: counts.missions, icon: Rocket },
-    { label: 'Awards', value: counts.awards, icon: Award },
-  ].filter((s) => s.value > 0);
-
-  // What the panel holds, in the order it is drawn. The ring's labels are read from
-  // this same list, so what the strip names is always what stands under it.
-  const sections = [
-    {
-      key: 'story',
-      label: 'Six word story',
-      icon: Quote,
-      body: story ? (
-        <p className="text-base font-bold italic leading-relaxed" style={{ color: brand.navy }}>
-          <span style={{ color: brand.gold }}>&ldquo;</span>{story}<span style={{ color: brand.gold }}>&rdquo;</span>
-        </p>
-      ) : (
-        <Empty note="Not yet written — pending backfill." />
-      ),
-    },
-    {
-      key: 'bio',
-      label: 'Professional biography',
-      body: bio ? <Prose>{bio}</Prose> : <Empty note="Not yet on file — pending backfill." />,
-    },
-    // The volumes this person stood in, badged the way the card badges them: the same
-    // archived record, read wherever the evidence of judgment is read. A candidate with
-    // no contribution text still shows their volume, because the record is the evidence.
-    ...(contribution || volumes.length
-      ? [{
-          key: 'impact',
-          label: 'Contribution evidence',
-          icon: Award,
-          body: (
-            <div className="space-y-2">
-              {volumes.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {volumes.map((volume) => (
-                    <HonoreeChip key={volume.seasonId} volume={volume} size="lg" />
-                  ))}
-                </div>
-              )}
-              {contribution && <Prose>{contribution}</Prose>}
-            </div>
-          ),
-        }]
-      : []),
-    {
-      key: 'flight',
-      label: 'Flightography',
-      icon: Briefcase,
-      body: trajectory.length ? (
-        <div className="space-y-2.5">
-          {trajectory.map((c, i) => (
-            <div key={i} className="text-xs">
-              <p className="font-semibold" style={{ color: brand.navy }}>
-                {c.role || 'Role'}{c.period && <span style={{ color: ink.soft }}> · {c.period}</span>}
-              </p>
-              {c.description && <p className="mt-0.5 leading-relaxed" style={{ color: ink.soft }}>{c.description}</p>}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <Empty note="Career history not yet captured." />
-      ),
-    },
-    ...(signals.length
-      ? [{
-          key: 'signals',
-          label: 'Signals',
-          body: (
-            <div className="grid grid-cols-2 gap-2">
-              {signals.map((s) => (
-                <div key={s.label} className="rounded-lg p-2.5" style={{ background: 'white', border: `1px solid ${brand.navy}10` }}>
-                  <div className="mb-0.5 flex items-center gap-1.5">
-                    <s.icon className="h-3 w-3" style={{ color: brand.gold }} />
-                    <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: ink.soft }}>{s.label}</span>
-                  </div>
-                  <p className="text-lg font-bold" style={{ color: brand.navy }}>{s.value}</p>
-                </div>
-              ))}
-            </div>
-          ),
-        }]
-      : []),
-  ];
+  const sections = buildEvidenceSections({ nominee, volumes });
 
   const labels = sections.map((s) => s.label);
   const labelsRef = useRef(labels);
@@ -146,19 +50,17 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
   const apiRef = useRef(null);
   if (!apiRef.current) {
     const land = (target) => {
-      const list = labelsRef.current;
-      if (target < 0 || target >= list.length) return null;
+      const list_ = labelsRef.current;
+      if (target < 0 || target >= list_.length) return null;
       setCursor(target);
-      return list[target];
+      return list_[target];
     };
 
     apiRef.current = {
       labels: () => labelsRef.current,
       index: () => cursorRef.current,
       goTo: (i) => land(i),
-      // A turn at either end is kept, and spends itself reading on down the panel, so
-      // the wheel keeps doing something useful and the strip goes on naming the
-      // section it is standing in.
+      // A turn at either end is kept, and spends itself reading on down the panel.
       step: (step) => {
         const label = land(cursorRef.current + step);
         if (label) return label;
@@ -166,7 +68,6 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
         return labelsRef.current[cursorRef.current] || null;
       },
       page: (direction) => apiRef.current.step(direction),
-      // The panel is a read: A is taken and does nothing through it.
       enter: () => true,
       back: () => {
         onCloseRef.current?.();
@@ -193,6 +94,8 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
     body.scrollTo({ top, behavior: 'smooth' });
   }, [cursor, sectionKeys]);
 
+  const [sheet, setSheet] = useState(null);
+
   return (
     <>
       <motion.div
@@ -210,40 +113,56 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
           onClick={(e) => e.stopPropagation()}
-          className="hh-glass-panel-card w-full max-w-lg max-h-[85vh] rounded-3xl overflow-hidden flex flex-col"
+          className="hh-glass-panel-card flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl"
           style={{ background: brand.cream, boxShadow: '0 24px 70px rgba(10,18,30,0.35)' }}
         >
           {/* Header */}
-          <div className="flex items-center gap-3 px-5 py-3.5 border-b shrink-0" style={{ borderColor: `${brand.navy}08`, background: 'white' }}>
-            <div className="h-9 w-9 rounded-lg overflow-hidden flex items-center justify-center text-xs font-bold shrink-0" style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}>
+          <div className="flex shrink-0 items-center gap-3 border-b px-5 py-3.5" style={{ borderColor: `${brand.navy}08`, background: 'white' }}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg text-xs font-bold" style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}>
               {nominee.avatar_url || nominee.photo_url ? (
                 <img src={nominee.avatar_url || nominee.photo_url} alt={name} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 (nominee.name || token).trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase()
               )}
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold truncate" style={{ color: brand.navy }}>{name}</h3>
-              <p className="hidden text-[11px] truncate md:block" style={{ color: ink.soft }}>
-                {band || 'Evidence of judgment'}
-              </p>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-sm font-bold" style={{ color: brand.navy }}>{name}</h3>
               {band && (
-                <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: ink.label }}>
+                <p className="truncate text-[9px] font-bold uppercase tracking-[0.16em]" style={{ color: ink.label }}>
                   {band}
                 </p>
               )}
-              {/* On the glass the wheel is the reader, so the panel says so. */}
               <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: ink.soft }}>
                 {keyHint({ walk: 'Sections', open: 'Open' })}
               </p>
             </div>
-            <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.navy}06` }} aria-label="Put the panel away">
-              <X className="w-4 h-4" style={{ color: ink.soft }} />
+            <button onClick={onClose} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}06` }} aria-label="Put the panel away">
+              <X className="h-4 w-4" style={{ color: ink.soft }} />
             </button>
           </div>
 
+          {/* The index: every section the record actually holds */}
+          <div className="scrollbar-hide flex shrink-0 gap-1.5 overflow-x-auto border-b px-3 py-2" style={{ borderColor: `${brand.navy}0A`, background: `${brand.navy}03` }}>
+            {sections.map((section, i) => {
+              const active = i === cursor;
+              return (
+                <button
+                  key={section.key}
+                  type="button"
+                  onClick={() => setCursor(i)}
+                  className="shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em]"
+                  style={active
+                    ? { background: brand.navy, color: '#F7F3EA' }
+                    : { background: 'white', border: `1px solid ${brand.navy}14`, color: ink.soft }}
+                >
+                  {section.label}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Body */}
-          <div ref={bodyRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+          <div ref={bodyRef} className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
             {sections.map((section) => {
               const Icon = section.icon;
               return (
@@ -251,24 +170,46 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
                   key={section.key}
                   ref={(node) => { sectionRefs.current[section.key] = node; }}
                 >
-                  <h4 className="text-[10px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1.5" style={{ color: ink.label }}>
-                    {Icon && <Icon className="w-3 h-3" />} {section.label}
+                  <h4 className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: ink.label }}>
+                    {Icon && <Icon className="h-3 w-3" />} {section.label}
                   </h4>
                   {section.body}
                 </section>
               );
             })}
           </div>
+
+          {/* The two ways to give something back */}
+          <div className="flex shrink-0 items-center gap-2 border-t px-4 py-2.5" style={{ borderColor: `${brand.navy}0A`, background: 'white' }}>
+            <button
+              type="button"
+              onClick={() => setSheet('edit')}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-[9.5px] font-bold uppercase tracking-[0.14em]"
+              style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}14`, color: brand.navy }}
+            >
+              <Pencil className="h-3 w-3" /> Request a correction
+            </button>
+            <button
+              type="button"
+              onClick={() => setSheet('note')}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-[9.5px] font-bold uppercase tracking-[0.14em]"
+              style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}80`, color: brand.navy }}
+            >
+              <MessageSquarePlus className="h-3 w-3" /> Add a note
+            </button>
+          </div>
         </motion.div>
       </div>
+
+      {sheet && (
+        <RecordContributionSheet
+          open={Boolean(sheet)}
+          mode={sheet}
+          nominee={nominee}
+          token={token}
+          onClose={() => setSheet(null)}
+        />
+      )}
     </>
   );
-}
-
-function Prose({ children }) {
-  return <p className="text-sm leading-relaxed" style={{ color: ink.body }}>{children}</p>;
-}
-
-function Empty({ note }) {
-  return <p className="text-xs italic" style={{ color: ink.soft }}>{note}</p>;
 }

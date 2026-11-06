@@ -1,12 +1,19 @@
 import { motion } from 'framer-motion';
-import { Info } from 'lucide-react';
+import { Info, MessageSquarePlus } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import { PLACE_LABELS } from '@/components/voting/ballotNaming';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
-
+import HonoreeChip from '@/components/voting/HonoreeChip';
 
 // The pitch is held to a tweet's worth. Everything longer belongs in the card's file.
 const PITCH_MAX = 140;
+
+const STAGE = {
+  early: 'Early career',
+  mid: 'Mid-career',
+  senior: 'Senior',
+  executive: 'Executive',
+};
 
 // Cut at a word, never mid-word, and only mark the cut when there was one.
 function clipPitch(text) {
@@ -36,8 +43,7 @@ function pitchLine(nominee) {
 }
 
 // The card is a printed plate: warm stock under a machined rule, a face in a well, a name
-// set in the display serif, and the story quoted beneath it in the same hand. Structure,
-// data and the two doors are exactly what they were — what changed is the stock.
+// set in the display serif, and the story quoted beneath it in the same hand.
 const CARD_STOCK = 'linear-gradient(180deg, #FFFFFF 0%, #FEFCF8 46%, #F6F0E6 100%)';
 
 function initials(name) {
@@ -48,31 +54,27 @@ function initials(name) {
   return (a + b).toUpperCase();
 }
 
-// One face, one door. The card carries the identity and three lines — one word, the six
-// word story, the pitch — and nothing else: everything the institution holds on the
-// candidate is read in the card's own information panel. On the glass that door is a key at the foot
-// of the card, where a thumb finds it — a corner circle is neither found nor read as
-// "information" — and on the desk it is the circle in the corner it always was. Beside
-// the door on the glass sits the face key that votes for this card.
+// The plate, read top to bottom: a head bar carrying where the record stands and the two
+// keys that vote for and open it, the face and the name, the badges the record has earned,
+// then the three lines the plate exists to say — one word, the six word story, the pitch.
 //
-// The card fills the box it is given. On the glass that box is measured for it (see
-// GlassVoteSurface), so the four candidates stand in a 2x2 with nothing to scroll;
-// on the desk the grid rows already have a height of their own.
+// The card is only as tall as what it holds. A sparse record prints a short plate, so the
+// stock never runs on past the last line into empty paper; the set still stands square
+// because every card starts at the same edge.
 //
-// The ring walks these cards while a set is standing: the card the cursor is on
-// carries a copper ring, so where the wheel is pointing is legible on the glass.
-// `dense` is the radio's card: the same plate with its stock tightened, so four of them
-// stand in the glass at once with nothing to scroll.
-export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, onInfo, onSelect }) {
-
+// The ring walks these cards while a set is standing: the card the cursor is on carries a
+// copper ring, so where the wheel is pointing is legible on the glass.
+export default function JudgeCard({
+  nominee, token, keyLabel, infoKeyLabel = null, position = null,
+  selectable, cursor = false, dense = false, honoreeVolumes = [],
+  onInfo, onNote = null, onSelect,
+}) {
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
-  // The card is a call sheet, not a dossier: one word, the six word story, and the
-  // pitch. The volumes, the biography, the career and the counted signals are all read
-  // in the card's own file — nothing else is printed on the face of the plate.
   const oneWord = DISCIPLINE_LABELS[nominee.discipline] || nominee.industry || '';
   const story = nominee.six_word_story || '';
   const pitch = pitchLine(nominee);
+  const stage = STAGE[nominee.trajectory_metrics?.career_stage] || '';
   const anchored = Boolean(position);
 
   // The rule across the head of the plate says where the record stands in the set: rose
@@ -83,15 +85,19 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
       ? `linear-gradient(90deg, ${brand.navy}, #3C5E83 52%, ${brand.navy})`
       : `linear-gradient(90deg, ${brand.navy}14, ${brand.gold}8A 50%, ${brand.navy}14)`;
 
+  const keyBox = dense
+    ? 'h-[26px] w-[26px] rounded-[8px]'
+    : 'h-[28px] w-[28px] rounded-[9px] md:h-[30px] md:w-[30px]';
+
   return (
-    <div className="relative h-full min-h-0 min-w-0">
+    <div className="relative min-w-0">
       <motion.div
         whileTap={selectable ? { scale: 0.98 } : undefined}
         onClick={() => selectable && onSelect()}
         role="button"
         tabIndex={selectable ? 0 : -1}
-        className={`isolate flex h-full min-h-0 flex-col overflow-hidden md:gap-2 md:rounded-[16px] md:p-3 md:pt-3 ${
-          dense ? "gap-1.5 rounded-[14px] p-2 pt-2.5" : "gap-2 rounded-[18px] p-2.5 pt-3"
+        className={`isolate relative flex flex-col overflow-hidden ${
+          dense ? 'gap-1.5 rounded-[14px] p-2' : 'gap-1.5 rounded-[18px] p-2.5 md:gap-2 md:p-3'
         }`}
         style={{
           background: position === 1
@@ -118,16 +124,74 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           style={{ background: 'repeating-linear-gradient(135deg, rgba(30,58,90,0.030) 0 1px, transparent 1px 7px)' }}
         />
 
+        {/* The head bar: where the record stands on the left, its two keys on the right —
+            the corner a hand turns the card by, not the foot it never reaches. */}
+        <div className={`flex shrink-0 items-center ${dense ? 'gap-1' : 'gap-1.5'}`}>
+          {position ? (
+            <span
+              className="inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-[0.12em] md:text-[9px]"
+              style={position === 1
+                ? { background: `linear-gradient(180deg, #DCBD8F, ${brand.gold})`, color: '#3A2A14', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55)' }
+                : { background: `linear-gradient(180deg, #2A4E77, ${brand.navy})`, color: '#F3EFE6', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20)' }}
+            >
+              {PLACE_LABELS[position - 1]}
+            </span>
+          ) : null}
+
+          <div className="ml-auto flex shrink-0 items-center gap-1">
+            <span
+              aria-hidden="true"
+              title={`${keyLabel} votes for ${name}`}
+              className={`flex shrink-0 items-center justify-center font-heading ${keyBox} ${dense ? 'text-[11px]' : 'text-[12px]'}`}
+              style={{
+                background: 'linear-gradient(180deg, #FDFBF6 0%, #EFE7D8 100%)',
+                color: brand.navy,
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(7,17,31,0.10), 0 0 0 1px ${brand.navy}14, 0 2px 4px -2px rgba(7,17,31,0.45)`,
+              }}
+            >
+              {keyLabel}
+            </span>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onInfo(); }}
+              aria-label={`More information about ${name}${infoKeyLabel ? ` — key ${infoKeyLabel}` : ''}`}
+              title={infoKeyLabel ? `${infoKeyLabel} opens ${name}` : `More information about ${name}`}
+              className={`relative flex shrink-0 items-center justify-center transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 ${keyBox}`}
+              style={{
+                background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
+                color: '#F4F0E7',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 2px 5px -3px rgba(7,17,31,0.7)',
+              }}
+            >
+              <Info className={dense ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+              {infoKeyLabel ? (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1 -top-1 flex h-[15px] min-w-[15px] items-center justify-center rounded-full font-heading text-[9px] font-bold leading-none"
+                  style={{
+                    padding: '0 3px',
+                    background: '#FDFBF6',
+                    color: brand.navy,
+                    boxShadow: `0 0 0 1px ${brand.navy}26, 0 1px 2px rgba(7,17,31,0.35)`,
+                  }}
+                >
+                  {infoKeyLabel}
+                </span>
+              ) : null}
+            </button>
+          </div>
+        </div>
+
         {/* Identity row */}
-        <div className="flex shrink-0 items-start gap-2 md:gap-3">
+        <div className={`flex shrink-0 items-start ${dense ? 'gap-2' : 'gap-2 md:gap-2.5'}`}>
           <div
-            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-[13px] font-bold md:h-12 md:w-12 md:text-[15px] ${
-              dense ? "h-8 w-8 text-[11px]" : "h-10 w-10 text-[13px]"
+            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-[12px] font-bold ${
+              dense ? 'h-8 w-8 text-[11px]' : 'h-9 w-9 text-[12px] md:h-11 md:w-11 md:text-[14px]'
             }`}
             style={{
               background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`,
               color: 'white',
-              boxShadow: `inset 0 0 0 1px rgba(250,248,245,0.30), inset 0 1px 0 rgba(255,255,255,0.22), 0 8px 14px -10px rgba(7,17,31,0.85)`,
+              boxShadow: 'inset 0 0 0 1px rgba(250,248,245,0.30), inset 0 1px 0 rgba(255,255,255,0.22), 0 8px 14px -10px rgba(7,17,31,0.85)',
             }}
           >
             {photo ? (
@@ -137,37 +201,51 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             )}
           </div>
 
-          <div className="flex-1 min-w-0">
-            <p
-              className={`truncate font-heading leading-snug md:text-[16px] lg:text-[18px] ${dense ? "text-[12.5px]" : "text-[14px]"}`}
-              style={{ color: brand.navy }}
-            >
-              {name}
-            </p>
-          </div>
-
-          <div className="flex flex-col items-end gap-1 shrink-0">
-            {position ? (
-              <span
-                className="flex items-center rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.1em] md:px-2 md:text-[9.5px]"
-                style={position === 1
-                  ? { background: `linear-gradient(180deg, #DCBD8F, ${brand.gold})`, color: '#3A2A14', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55)' }
-                  : { background: `linear-gradient(180deg, #2A4E77, ${brand.navy})`, color: '#F3EFE6', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20)' }}
-              >
-                {PLACE_LABELS[position - 1]}
-              </span>
-            ) : null}
-          </div>
+          <p
+            className={`line-clamp-2 min-w-0 flex-1 font-heading leading-snug ${dense ? 'text-[12.5px]' : 'text-[14px] md:text-[16px] lg:text-[18px]'}`}
+            style={{ color: brand.navy }}
+          >
+            {name}
+          </p>
         </div>
 
-        {/* One word, the story, the pitch — that is the whole face of the plate. The
-            block is centred in whatever height the set gives it, so a short record reads
-            as composed rather than as a gap left under the type. */}
-        <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 overflow-hidden md:gap-2.5">
+        {/* The badges the record has earned: the stage it stands at, the volumes it stood
+            in, and the door to say something about it. */}
+        {(stage || honoreeVolumes.length > 0 || onNote) ? (
+          <div className="flex min-w-0 shrink-0 items-center gap-1 overflow-hidden">
+            {stage ? (
+              <span
+                className="whitespace-nowrap rounded-full px-1.5 py-[1px] text-[7.5px] font-bold uppercase tracking-[0.1em] md:text-[8.5px]"
+                style={{ background: `${brand.navy}08`, border: `1px solid ${brand.navy}18`, color: ink.body }}
+              >
+                {stage}
+              </span>
+            ) : null}
+            {honoreeVolumes.slice(0, 2).map((volume) => (
+              <HonoreeChip key={volume.seasonId} volume={volume} size="sm" />
+            ))}
+            {onNote ? (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onNote(); }}
+                aria-label={`Request an edit or add a note about ${name}`}
+                title="Request an edit or add a note"
+                className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2"
+                style={{ background: 'white', border: `1px solid ${brand.navy}14`, color: ink.soft }}
+              >
+                <MessageSquarePlus className="h-3 w-3" />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* One word, the story, the pitch — the whole face of the plate, and the whole of
+            its height: the card ends where the record's words end. */}
+        <div className={`flex flex-col ${dense ? 'gap-1' : 'gap-1 md:gap-1.5'}`}>
           {oneWord ? (
             <p
-              className={`truncate font-heading uppercase leading-none tracking-[0.06em] md:text-[26px] lg:text-[30px] ${
-                dense ? "text-[16px]" : "text-[20px]"
+              className={`truncate font-heading uppercase leading-none tracking-[0.06em] ${
+                dense ? 'text-[15px]' : 'text-[17px] md:text-[23px] lg:text-[27px]'
               }`}
               style={{ color: ink.label }}
             >
@@ -177,8 +255,8 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
 
           {story ? (
             <p
-              className={`line-clamp-2 font-heading italic leading-snug md:text-[15px] lg:text-[17px] ${
-                dense ? "text-[11px]" : "text-[13px]"
+              className={`line-clamp-2 font-heading italic leading-snug ${
+                dense ? 'text-[10.5px]' : 'text-[11.5px] md:text-[14px] lg:text-[16px]'
               }`}
               style={{ color: brand.navy }}
             >
@@ -188,73 +266,13 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
 
           {pitch ? (
             <p
-              className={`line-clamp-3 leading-snug md:text-[12.5px] ${dense ? "text-[9.5px]" : "text-[11px]"}`}
+              className={`leading-snug ${dense ? 'line-clamp-1 text-[9.5px]' : 'line-clamp-2 text-[10.5px] md:text-[12px]'}`}
               style={{ color: ink.soft }}
             >
               {pitch}
             </p>
           ) : null}
         </div>
-
-        {/* The foot of the card on the glass: the key that votes for it, printed the way
-            the device prints its own legends, and the card's one door beside it. */}
-        <div className="mt-auto flex shrink-0 items-center gap-1.5 pt-0.5">
-          <span
-            aria-hidden="true"
-            title={`${keyLabel} votes for ${name}`}
-            className={`flex shrink-0 items-center justify-center font-heading md:h-8 md:w-8 md:text-[11px] ${
-              dense ? "h-[30px] w-[30px] rounded-[9px] text-[11px]" : "h-[38px] w-[38px] rounded-[11px] text-[12px]"
-            }`}
-            style={{
-              background: 'linear-gradient(180deg, #FDFBF6 0%, #EFE7D8 100%)',
-              color: brand.navy,
-              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(7,17,31,0.10), 0 0 0 1px ${brand.navy}14, 0 2px 4px -2px rgba(7,17,31,0.45)`,
-            }}
-          >
-            {keyLabel}
-          </span>
-          <span
-            aria-hidden="true"
-            className="h-px min-w-0 flex-1"
-            style={{ background: `linear-gradient(90deg, ${brand.navy}10, ${brand.gold}66, ${brand.navy}10)` }}
-          />
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onInfo(); }}
-            aria-label={`More information about ${name}${infoKeyLabel ? ` — key ${infoKeyLabel}` : ""}`}
-            title={infoKeyLabel ? `${infoKeyLabel} opens ${name}` : `More information about ${name}`}
-            className={`relative flex shrink-0 items-center justify-center transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:h-8 md:w-8 ${
-              dense ? "h-[30px] w-[30px] rounded-[9px]" : "h-[38px] w-[38px] rounded-[11px]"
-            }`}
-            style={{
-              background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
-              color: '#F4F0E7',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 2px 5px -3px rgba(7,17,31,0.7)',
-            }}
-          >
-            <Info className={dense ? "h-3.5 w-3.5" : "h-4 w-4"} />
-            {/* On the radio each card stands under a pair of numbers: the first votes for
-                it, the second opens it. The second is printed where the thumb finds it. */}
-            {infoKeyLabel ? (
-              <span
-                aria-hidden="true"
-                className="absolute -right-1 -top-1 flex h-[15px] min-w-[15px] items-center justify-center rounded-full font-heading text-[9px] font-bold leading-none"
-                style={{
-                  padding: '0 3px',
-                  background: '#FDFBF6',
-                  color: brand.navy,
-                  boxShadow: `0 0 0 1px ${brand.navy}26, 0 1px 2px rgba(7,17,31,0.35)`,
-                }}
-              >
-                {infoKeyLabel}
-              </span>
-            ) : null}
-          </button>
-        </div>
-
-
-        {/* Skipping and holding belong to the review, not to a record: one key for the
-            whole set is offered beside the cards, never once per plate. */}
       </motion.div>
     </div>
   );

@@ -15,6 +15,7 @@ import {
 import JudgeCard from '@/components/voting/JudgeCard';
 import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
+import RecordContributionSheet from '@/components/voting/RecordContributionSheet';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
@@ -75,6 +76,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [order, setOrder] = useState([]);
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
+  // A record the voter is saying something about — a correction or a note — rather than
+  // reading. It opens from the card's own door, so the mark is made where it is noticed.
+  const [noteNominee, setNoteNominee] = useState(null);
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
   // The briefing opens itself once, from the hub, on the Fellow's first pass through the
@@ -317,7 +321,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // Reading suspends the vote: while the briefing or a candidate's file is open, the ring
   // and the keys belong to the reader, not to the ballot, so no mark can be made by
   // accident.
-  const reading = guideOpen || Boolean(panelNominee);
+  const reading = guideOpen || Boolean(panelNominee) || Boolean(noteNominee);
   const standing = phase === 'ordering' && !reading;
   // Which face the case is wearing. The chamber is voted from the hardware either way,
   // but the radio has no X, Y, A or B to press: its candidates stand on the digits in
@@ -626,7 +630,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             at once, so the grid takes its rows from the height it is given. */}
         <CrosscheckDeal
           dealKey={setKey}
-          className="grid grid-cols-2 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-2 sm:gap-3 lg:gap-3 flex-1 min-h-0"
+          className="grid grid-cols-2 auto-rows-min content-start items-start gap-2 sm:gap-3 lg:gap-3 flex-1 min-h-0 overflow-y-auto scrollbar-hide"
         >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);
@@ -648,6 +652,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 selectable={selectable}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
+                onNote={() => { setNoteNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
                 keyLabel={radio ? String(idx + 1) : glass ? VOTE_KEYS[idx] : DESK_VOTE_KEYS[idx]}
                 infoKeyLabel={
@@ -681,6 +686,17 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           />
         )}
       </AnimatePresence>
+
+      {/* The card's other door: a correction or a note, filed without leaving the set. */}
+      {noteNominee && (
+        <RecordContributionSheet
+          open
+          mode="edit"
+          nominee={noteNominee}
+          token={panelToken}
+          onClose={() => setNoteNominee(null)}
+        />
+      )}
     </div>
   );
 }

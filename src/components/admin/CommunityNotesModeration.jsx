@@ -43,11 +43,14 @@ export default function CommunityNotesModeration() {
     try {
       const currentUser = await base44.auth.me();
 
-      // Update the nominee profile with the approved edit
-      const updateData = {
-        [request.field_name]: request.proposed_value
-      };
-      await base44.asServiceRole.entities.Nominee.update(request.nominee_id, updateData);
+      // Update the nominee profile with the approved edit. A community note is context
+      // about the record, not a field of it: approving one files the note and writes
+      // nothing over the record.
+      if (request.field_name !== 'community_note') {
+        await base44.asServiceRole.entities.Nominee.update(request.nominee_id, {
+          [request.field_name]: request.proposed_value,
+        });
+      }
 
       // Mark request as approved
       await base44.entities.ProfileEditRequest.update(request.id, {
