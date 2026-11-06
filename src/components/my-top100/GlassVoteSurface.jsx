@@ -83,6 +83,14 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
         if (label && openRef.current) setOpenKey(cardsRef.current[i].key);
         return label;
       },
+      // The number printed in a card's corner, typed on the pad. The cards are drawn
+      // 01, 02, 03, so the keypad reaches them the way the drawer numbers everything
+      // else on this device — and the number on the key and the number in the hand agree.
+      goToCode: (code) => {
+        const i = Number(code) - 1;
+        if (!(i >= 0 && i < cardsRef.current.length)) return null;
+        return api.current.goTo(i);
+      },
       enter: () => {
         // A card is open, so A belongs to the card and to nothing this menu would do.
         if (openRef.current) return true;
