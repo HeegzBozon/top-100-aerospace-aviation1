@@ -7,17 +7,15 @@ import PatronBundle from '@/components/patronage/PatronBundle';
 import PatronRateCard from '@/components/patronage/PatronRateCard';
 import PatronInquiryForm from '@/components/patronage/PatronInquiryForm';
 import usePatronMeta from '@/components/patronage/usePatronMeta';
+import { SHARE_TITLE, SHARE_DESCRIPTION } from '@/components/patronage/patronShareCard';
 import { P } from '@/components/patronage/patronConfig';
 
 // The media kit: what patronage is, who it reaches, what a slot buys, what it costs, and
 // one door to raise a hand. Public, and readable without an account — a buyer is not a
 // Fellow, and should not have to become one to ask a question.
 export default function Patronage() {
-  usePatronMeta({
-    title: 'Become a Sponsor of Record | TOP 100 Aerospace & Aviation',
-    description:
-      'Sponsorship in the TOP 100 Aerospace & Aviation publication: one issue slot, a native post, a Volume credit and two written reports. Attribution, never placement.',
-  });
+  // The share card a buyer sees in a feed is the offer itself, held in one place.
+  usePatronMeta({ title: SHARE_TITLE, description: SHARE_DESCRIPTION });
 
   // The desk is not advertised to buyers. It is only a door for the people who work it.
   const [isAdmin, setIsAdmin] = useState(false);
