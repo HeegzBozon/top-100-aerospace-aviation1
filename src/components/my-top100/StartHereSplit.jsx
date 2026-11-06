@@ -9,7 +9,6 @@ import useGlass from '@/hooks/useGlass';
 import { useNavHint } from '@/components/handheld/faceHint';
 import { useConsoleFace, RADIO } from '@/components/handheld/consoleMode';
 import usePreflightWheel from '@/components/my-top100/usePreflightWheel';
-import InvitationPlate from '@/components/vote/InvitationPlate';
 
 export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onSaved, onOpenOS }) {
   const [name, setName] = useState(user?.full_name || '');
@@ -89,10 +88,6 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
           transition={{ duration: 0.5 }}
           className="flex flex-col items-start"
         >
-          {/* The card that was sent, opened with the panel: an Analyst is handed the
-              invitation before they are told what the office asks of them. */}
-          <InvitationPlate variant="panel" className="mb-7 w-full max-w-[19rem]" />
-
           <span
             className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full mb-6"
             style={{ color: brand.gold, border: `1px solid ${brand.gold}55`, background: `${brand.gold}08` }}
