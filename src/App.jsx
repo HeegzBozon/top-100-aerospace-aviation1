@@ -281,6 +281,11 @@ const AuthenticatedApp = () => {
           including the file path the plate was once served from. */}
       <Route path="/media-kit" element={<Navigate to="/mediakit" replace />} />
       <Route path="/media-kit/*" element={<Navigate to="/mediakit" replace />} />
+      {/* The legacy sponsors page is retired with the table behind it: its rates drifted
+          from the published kit and it published no Patron of Record. The address still
+          resolves, onto the one media kit the offer is made from. */}
+      <Route path="/Sponsors" element={<Navigate to="/mediakit" replace />} />
+      <Route path="/sponsors" element={<Navigate to="/mediakit" replace />} />
       <Route path="/patronage/desk" element={<PatronDesk />} />
       {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
           classified page — the old desk's address lands on it. */}

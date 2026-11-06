@@ -104,7 +104,6 @@ export const ADMIN_SECTIONS = [
             { id: 'providers', label: 'Provider Requests', icon: Briefcase, component: 'ProviderReviewManager' },
             { id: 'availability', label: 'Availability Calendar', icon: Clock, component: 'AvailabilityManager' },
             { id: 'events', label: 'Events', icon: CalendarDays, component: 'EventManagement' },
-            { id: 'sponsors', label: 'Partners', icon: Award, component: 'SponsorManagement' },
         ],
     },
     {

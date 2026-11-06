@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
-import { Sponsor } from '@/entities/Sponsor';
 import { Loader2 } from 'lucide-react';
 
 // Dashboard Components
@@ -21,7 +20,6 @@ export default function Passport() {
   const [loading, setLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showSeason3Onboarding, setShowSeason3Onboarding] = useState(false);
-  const [sponsors, setSponsors] = useState([]);
 
   useEffect(() => {
     loadUserAndData();
@@ -38,9 +36,6 @@ export default function Passport() {
         setShowSeason3Onboarding(true);
       }
 
-      // Load sponsors
-      const sponsorList = await Sponsor.list('-created_date', 4);
-      setSponsors(sponsorList);
     } catch (error) {
       console.error('Error loading user data:', error);
       setUser(null);

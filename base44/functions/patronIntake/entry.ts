@@ -61,10 +61,16 @@ export default async function (req: Request): Promise<Response> {
     `Hand raised on the media kit (${source_detail}).`,
     `Interest: ${interest || 'Not stated'}`,
     `Fit: ${fit_category}`,
+    phone ? `Phone: ${phone}` : '',
     message ? `Their words: ${message}` : '',
   ].filter(Boolean);
 
   if (live) {
+    // A number given on the second visit is still a number the desk needs: it is written
+    // onto the record when the record has none, and it always goes into the note.
+    if (phone && !live.phone) {
+      await sr.entities.PatronDeal.update(live.id, { phone });
+    }
     if (live.ghl_contact_id) {
       await addContactNote(live.ghl_contact_id, noteLines.join('\n')).catch(() => null);
     }

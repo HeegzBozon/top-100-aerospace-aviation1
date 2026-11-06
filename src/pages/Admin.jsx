@@ -28,7 +28,6 @@ const PlatformSettings          = lazy(() => import('@/components/admin/Platform
 const UserViewModal             = lazy(() => import('@/components/admin/UserViewModal'));
 const UniversalDataWizard       = lazy(() => import('@/components/admin/UniversalDataWizard'));
 const EventManagement           = lazy(() => import('@/components/admin/EventManagement'));
-const SponsorManagement         = lazy(() => import('@/components/admin/SponsorManagement'));
 const AvailabilityManager       = lazy(() => import('@/components/admin/AvailabilityManager'));
 const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsReviewManager'));
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
@@ -333,8 +332,6 @@ export default function Admin() {
         return <AvailabilityManager />;
       case 'events':
         return <EventManagement />;
-      case 'sponsors':
-        return <SponsorManagement />;
       // ── Platform tools ──
       case 'settings':
         return <PlatformSettings />;

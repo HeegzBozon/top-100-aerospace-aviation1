@@ -77,7 +77,6 @@ export { default as SeasonViewModal } from './SeasonViewModal';
 export { default as SeasonalResetWizard } from './SeasonalResetWizard';
 export { default as ServiceManager } from './ServiceManager';
 export { default as SmartReleaseWizard } from './SmartReleaseWizard';
-export { default as SponsorManagement } from './SponsorManagement';
 export { default as SprintPlanner } from './SprintPlanner';
 export { default as SprintWizard } from './SprintWizard';
 export { default as StandingsColumnManager } from './StandingsColumnManager';

@@ -116,7 +116,6 @@ export const ADMIN_SECTIONS = [
         icon: CalendarDays,
         tabs: [
             { id: 'events', label: 'Events', icon: CalendarDays, component: 'EventManagement' },
-            { id: 'sponsors', label: 'Partners', icon: Award, component: 'SponsorManagement' },
         ],
     },
     {

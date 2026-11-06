@@ -105,7 +105,6 @@ const Shop                       = lazy(() => import('./pages/Shop'));
 const SignalFeed                 = lazy(() => import('./pages/SignalFeed'));
 const SpaceNews                  = lazy(() => import('./pages/SpaceNews'));
 const SponsorPitch               = lazy(() => import('./pages/SponsorPitch'));
-const Sponsors                   = lazy(() => import('./pages/Sponsors'));
 const StartupDirectory           = lazy(() => import('./pages/StartupDirectory'));
 const TermsOfService             = lazy(() => import('./pages/TermsOfService'));
 const TheHangar                  = lazy(() => import('./pages/TheHangar'));
@@ -173,7 +172,6 @@ export const PAGES = {
     "SignalFeed": SignalFeed,
     "SpaceNews": SpaceNews,
     "SponsorPitch": SponsorPitch,
-    "Sponsors": Sponsors,
     "StartupDirectory": StartupDirectory,
     "TermsOfService": TermsOfService,
     "TheHangar": TheHangar,

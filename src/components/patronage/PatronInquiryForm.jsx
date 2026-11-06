@@ -14,6 +14,7 @@ const EMPTY = {
   contact_name: '',
   contact_role: '',
   contact_email: '',
+  phone: '',
   fit_category: 'other',
   interest: INTERESTS[0],
   message: '',
@@ -143,6 +144,26 @@ export default function PatronInquiryForm() {
             </label>
             <label className="block">
               <span className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: P.faint }}>
+                Phone (optional)
+              </span>
+              <input
+                className={`${field} mt-1.5`}
+                style={{ borderColor: P.hair, color: P.navy }}
+                value={form.phone}
+                onChange={set('phone')}
+                placeholder="+1 555 010 0123"
+                type="tel"
+                autoComplete="tel"
+              />
+              <span className="mt-1 block text-[9px] leading-relaxed" style={{ color: P.faint }}>
+                Only if a call is easier than a reply.
+              </span>
+            </label>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="block">
+              <span className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: P.faint }}>
                 Role
               </span>
               <input
@@ -154,9 +175,6 @@ export default function PatronInquiryForm() {
                 autoComplete="organization-title"
               />
             </label>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2">
             <label className="block">
               <span className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: P.faint }}>
                 What you do
@@ -174,24 +192,25 @@ export default function PatronInquiryForm() {
                 ))}
               </select>
             </label>
-            <label className="block">
-              <span className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: P.faint }}>
-                What interests you
-              </span>
-              <select
-                className={`${field} mt-1.5`}
-                style={{ borderColor: P.hair, color: P.navy }}
-                value={form.interest}
-                onChange={set('interest')}
-              >
-                {INTERESTS.map((interest) => (
-                  <option key={interest} value={interest}>
-                    {interest}
-                  </option>
-                ))}
-              </select>
-            </label>
           </div>
+
+          <label className="block">
+            <span className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: P.faint }}>
+              What interests you
+            </span>
+            <select
+              className={`${field} mt-1.5`}
+              style={{ borderColor: P.hair, color: P.navy }}
+              value={form.interest}
+              onChange={set('interest')}
+            >
+              {INTERESTS.map((interest) => (
+                <option key={interest} value={interest}>
+                  {interest}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <label className="block">
             <span className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: P.faint }}>
