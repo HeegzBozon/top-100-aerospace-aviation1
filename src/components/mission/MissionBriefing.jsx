@@ -1,7 +1,16 @@
+import { useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ArrowRight } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
-import { MANIFEST, CROSSCHECK, BALLOT_DISTINCTION } from '@/components/voting/ballotNaming';
+import useModalPicker from '@/components/handheld/useModalPicker';
+import {
+  MANIFEST,
+  CROSSCHECK,
+  BALLOT_DISTINCTION,
+  CROSSCHECK_LINE,
+  CROSSCHECK_IS,
+  CROSSCHECK_HOW,
+} from '@/components/voting/ballotNaming';
 
 // The committee's briefing: two surfaces, one objective each, and the key results that
 // say the objective has been reached. It replaces the old voter guide — which walked the
@@ -47,8 +56,12 @@ const BRIEFINGS = [
     kicker: CROSSCHECK,
     objective: 'Analyse the field.',
     body:
-      'You serve this season as an Analyst. Voting is analysis: a mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Put all four in order: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
-    results: ['1 set analysed', '10 sets analysed', '20 sets analysed', '50 sets analysed', '100 sets analysed'],
+      'You serve this season as an Analyst. Voting is analysis: a mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Put all four in order: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A review you would rather not weigh can be skipped, with nothing scored from it, or saved for later and taken up again exactly as it was dealt.',
+    results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
+    // The measure itself. It stands above the cards on the desk; on the glass those
+    // words live here, where the info key reaches them, rather than in a line of tiny
+    // print laid over the set.
+    note: `${CROSSCHECK_LINE} ${CROSSCHECK_IS} ${CROSSCHECK_HOW}`,
   },
 ];
 
@@ -122,6 +135,12 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
   const briefs = section ? BRIEFINGS.filter((brief) => brief.key === section) : BRIEFINGS;
   const single = briefs.length === 1 ? briefs[0] : null;
 
+  // The briefing stands over the surface it was opened from, so the console's keys are
+  // its while it is up: a turn reads it down, and the confirm key or the way back closes
+  // it — never a mark on the ballot standing behind the glass.
+  const bodyRef = useRef(null);
+  useModalPicker({ open, onClose: () => onOpenChange(false), bodyRef });
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -136,7 +155,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
           style={{ background: `linear-gradient(90deg, ${brand.gold}, #B87333 55%, ${brand.gold})` }}
         />
 
-        <div className="max-h-[76vh] overflow-y-auto p-5">
+        <div ref={bodyRef} className="max-h-[76vh] overflow-y-auto p-5">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: '#8F5C2C' }}>
             {single?.lede || 'Mission briefing · objectives & key results'}
           </p>
@@ -148,6 +167,15 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
               ? single.body
               : `${BALLOT_DISTINCTION} Each surface has a single objective. The key results are the ladder that says you have reached it.`}
           </p>
+
+          {single?.note && (
+            <p
+              className="mt-2 border-t pt-2 text-[10.5px] leading-relaxed"
+              style={{ borderColor: `${brand.navy}12`, color: `${brand.navy}78` }}
+            >
+              {single.note}
+            </p>
+          )}
 
           {briefs.map((brief) => (
             <section key={brief.key} className="mt-4 border-t pt-3" style={{ borderColor: `${brand.navy}14` }}>

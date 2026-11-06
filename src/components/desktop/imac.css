@@ -70,6 +70,14 @@
     height: auto;
   }
 
+  /* A surface that must stand whole in the tube, never scrolled: exactly the picture
+     under the menu bar's seat (28px bar + 13px of seat padding). */
+  body.imac-shell .imac-fit {
+    height: calc(100dvh - var(--imac-top) - var(--imac-bottom) - 41px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
   /* Bars that ride the bottom or the top of the desk clear the bands, so a surface
      never hides a control inside the resin. */
   body.imac-shell .imac-lift {

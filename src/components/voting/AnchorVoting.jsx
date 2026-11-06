@@ -6,24 +6,31 @@ import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
-  Loader2, Info, Check, Undo2, ArrowLeft,
+  Loader2, Info, Check, Undo2, ArrowLeft, Bookmark, BookmarkPlus, SkipForward,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_IS, CROSSCHECK_HOW, CROSSCHECK_PROMPTS, ANALYSIS,
+  CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL,
 } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
+import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import MissionBriefing from '@/components/mission/MissionBriefing';
+import ReviewProgressStrip from '@/components/voting/ReviewProgressStrip';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
 // standing, so the share moves to the ring's play zone for as long as the keys are held.
 const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
+
+// One review is ten XP on the ladder (see base44/shared/votingProgress.ts). Held here so
+// the tally can say how many reviews stand between a Fellow and the next rung.
+const XP_PER_REVIEW = 10;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -41,7 +48,7 @@ function drawSet(pool, exclude = []) {
   return shuffle(src).slice(0, 4);
 }
 
-export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null }) {
+export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null, progress = null }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState([]);
@@ -55,9 +62,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [currentSet, setCurrentSet] = useState([]);
   const [seenIds, setSeenIds] = useState([]);
   // The order as it is tapped: first, then second, then third. The fourth record places
-  // itself, so no screen ever asks a voter to name a last place. A set is measured across
-  // all four records, so a record marked cannot judge closes the set rather than reshaping it.
-  const [phase, setPhase] = useState('ordering'); // ordering | submitting | success | closed | review
+  // itself, so no screen ever asks a voter to name a last place. The question is the place
+  // being filled — First? Second? Third? — never a comparison between two people.
+  const [phase, setPhase] = useState('ordering'); // ordering | submitting | success | skipped | review
   const [order, setOrder] = useState([]);
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
@@ -67,6 +74,26 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // committee — this surface only offers it again from the info key beside the prompt.
   // One key, one panel: the info button IS the briefing, and it carries the vote alone.
   const [guideOpen, setGuideOpen] = useState(false);
+  // Reviews set aside rather than weighed now: the four records as they were dealt, kept
+  // so the same review can be taken up again. `heldId` is the one standing on the glass.
+  const [holds, setHolds] = useState([]);
+  const [heldId, setHeldId] = useState(null);
+
+  // The record, not the session: what the Fellow has already weighed is read back from the
+  // ladder the house keeps, so closing the tab no longer loses the count. The session's own
+  // tally is only a fallback for a context that could not report one.
+  //
+  // An administrator walking the ballot is read from the tester's own lane instead, so a
+  // rehearsal is never mistaken for a Fellow's contribution — and the walkthrough still
+  // shows a tally, which is what makes it testable.
+  // The context arrives with the caller's own lane already chosen (a tester's ladder or
+  // the community's), so the surface reads it as it is.
+  const testing = progress?.lane === 'test';
+  const lane = progress;
+  const reviews = progress?.sets_completed ?? sessionCount;
+  const nextRung = lane?.next_name
+    ? `${Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)} to ${lane.next_name}`
+    : null;
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -122,6 +149,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         setSeason(activeSeason);
         setPool(prepared);
         if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
+        // Anything the Fellow set aside, newest first. A hold is a convenience queue, so a
+        // read that fails never stops the ballot opening.
+        const saved = await base44.entities.CrosscheckHold
+          .filter({ fellow_email: user?.email }, { sort: '-saved_at', limit: 20 })
+          .catch(() => null);
+        if (active) setHolds(saved?.items || (Array.isArray(saved) ? saved : []));
         setLoading(false);
       } catch (e) {
         if (!active) return;
@@ -133,6 +166,13 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   }, []);
 
   const advance = useCallback((completed = null) => {
+    // A held review leaves the queue once it has been taken up: it was either weighed or
+    // skipped, and either way it is finished with.
+    if (heldId) {
+      base44.entities.CrosscheckHold.delete(heldId).catch(() => {});
+      setHolds((prev) => prev.filter((h) => h.id !== heldId));
+      setHeldId(null);
+    }
     setHistory((prev) => [...prev, ...(completed ? [completed] : [])].slice(-5));
     setOrder([]);
     setPhase('ordering');
@@ -143,7 +183,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     });
     setCurrentSet(drawSet(pool, seenIds));
     setSessionCount((c) => c + 1);
-  }, [currentSet, pool, seenIds]);
+  }, [currentSet, pool, seenIds, heldId]);
 
   // Undo the last tap while the set is still standing: the record goes back into the field
   // and the question it answered is asked again.
@@ -151,13 +191,52 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     setOrder((prev) => prev.slice(0, -1));
   }, []);
 
-  // A record the voter cannot judge ends the set. Nothing is recorded from it: the
-  // instrument measures four records or it measures none, so a partial set is never scored.
-  const closeSet = useCallback(() => {
+  // A review the Fellow passes over. Nothing is recorded from it: the instrument measures
+  // four records or it measures none, so a set nobody wanted to weigh is not evidence.
+  const skipSet = useCallback(() => {
     if (phase !== 'ordering') return;
-    setPhase('closed');
-    setTimeout(() => advance(), 2200);
+    setPhase('skipped');
+    setTimeout(() => advance(), 700);
   }, [phase, advance]);
+
+  // Holding a review keeps the four records exactly as the house dealt them, so the Fellow
+  // comes back to the same comparison rather than being dealt a different one.
+  const holdReview = useCallback(async () => {
+    if (phase !== 'ordering' || currentSet.length !== 4) return;
+    try {
+      const saved = await base44.entities.CrosscheckHold.create({
+        fellow_email: user?.email,
+        fellow_name: user?.full_name || null,
+        season_id: season?.id || null,
+        nominee_ids: currentSet.map((n) => n.id),
+        labels: currentSet.map((n) => n.name || ''),
+        saved_at: new Date().toISOString(),
+      });
+      setHolds((prev) => [saved, ...prev]);
+      toast({ title: 'Held for later', description: 'It is waiting under Held.' });
+      advance();
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Could not hold this review', description: e.message });
+    }
+  }, [phase, currentSet, user, season, advance, toast]);
+
+  // Take up the review that has waited longest. A hold whose records have left the field
+  // retires itself and the next one is offered, so a stale queue never blocks the ballot.
+  const openHeld = useCallback(() => {
+    if (!holds.length) return;
+    const hold = holds[0];
+    const four = (hold.nominee_ids || []).map((id) => nomineeIndex.get(id)).filter(Boolean);
+    if (four.length < 4) {
+      base44.entities.CrosscheckHold.delete(hold.id).catch(() => {});
+      setHolds((prev) => prev.slice(1));
+      toast({ title: 'That review has retired', description: 'One of its records has left the field.' });
+      return;
+    }
+    setHeldId(hold.id);
+    setOrder([]);
+    setPhase('ordering');
+    setCurrentSet(four);
+  }, [holds, nomineeIndex, toast]);
 
   // Go back to read the last completed set (read-only — the set is already recorded).
   const goBack = useCallback(() => {
@@ -205,14 +284,16 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       // Non-blocking rewards, mirroring the other ballot.
       Promise.all([awardStardust({ action_type: 'vote' }), progressQuest({ action: 'anchor_vote' })]).catch(() => {});
 
-      onRecorded?.(res.data.progress);
+      // The whole receipt, not just its rung: the surface needs `recorded`, the level-up
+      // and any fresh milestone as well as the progress itself.
+      onRecorded?.(res.data);
 
       setPhase('success');
-      setTimeout(() => advance({ set: currentSet, order: ordered }), 900);
+      setTimeout(() => advance({ set: currentSet, order: ordered }), 700);
     } catch (e) {
       toast({
         variant: 'destructive',
-        title: 'Set not recorded',
+        title: 'Review not recorded',
         description: e?.response?.data?.error || e.message,
       });
       setOrder(next.slice(0, -1));
@@ -234,7 +315,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // of its own numbers.
   const radio = useConsoleFace() === 'radio';
   const setKey = currentSet.map((n) => n.id).join('|');
-  const cursor = useAnchorPicker({
+  const { cursor, land: landOn } = useAnchorPicker({
     count: currentSet.length,
     labelAt: (i) => currentSet[i]?.name || `Candidate ${String.fromCharCode(65 + i)}`,
     active: standing,
@@ -260,6 +341,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       ? (key) => {
           const i = VOTE_KEYS.indexOf(key);
           if (i < 0 || !currentSet[i]) return false;
+          // The ring follows the key that was pressed, so the card marked on the glass
+          // and the card being marked are the same card.
+          landOn(i);
           handleSelect(currentSet[i]);
           return true;
         }
@@ -275,23 +359,43 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // cards' information doors are the next four keys — 5 opens the first card's file, 6
   // the second's, and so on. The console takes the press before the pad can tune or walk,
   // exactly as it does for X, Y, A and B on the wheel.
+  //
+  // The claim is held for as long as a review is standing, the file it opens included:
+  // while a candidate's file is up the pad belongs to the reader, so the press is taken
+  // and does nothing rather than falling through to the console's own numbers and moving
+  // the menu off the card being read.
+  //
+  // The handler is kept in a ref and re-pointed on every render, exactly as the face keys
+  // are: the mark it makes reads the order as it now stands. Registered once per standing
+  // review instead, it held the order from the render it was made in — so every press
+  // re-placed the first choice and no review could ever reach its third tap.
+  const digitKeys = useRef(null);
+  digitKeys.current =
+    radio && phase === 'ordering' && currentSet.length === 4
+      ? (digit) => {
+          if (reading) return true;
+          const n = Number(digit);
+          const count = currentSet.length;
+          const info = n > count;
+          const i = info ? n - count - 1 : n - 1;
+          const nominee = currentSet[i];
+          if (!(i >= 0 && i < count) || !nominee) return false;
+          // The ring lands on the card the digit names, so # and the centre key act on it
+          // rather than on the first card of the review.
+          landOn(i);
+          if (info) {
+            setPanelNominee(nominee);
+            setPanelToken(String.fromCharCode(65 + i));
+          } else {
+            handleSelect(nominee);
+          }
+          return true;
+        }
+      : null;
+
   useEffect(() => {
-    if (!radio || !voteKeys.current) return undefined;
-    return registerDigits((digit) => {
-      const n = Number(digit);
-      const count = currentSet.length;
-      const info = n > count;
-      const i = info ? n - count - 1 : n - 1;
-      const nominee = currentSet[i];
-      if (!(i >= 0 && i < count) || !nominee) return false;
-      if (info) {
-        setPanelNominee(nominee);
-        setPanelToken(String.fromCharCode(65 + i));
-      } else {
-        handleSelect(nominee);
-      }
-      return true;
-    });
+    if (!digitKeys.current) return undefined;
+    return registerDigits((digit) => (digitKeys.current ? digitKeys.current(digit) : false));
   }, [radio, phase, currentSet, reading]);
 
   // The desk's own keyboard answers the same way: X, Y, A and B vote for the four
@@ -349,37 +453,47 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
   const prompt =
     phase === 'ordering' ? CROSSCHECK_PROMPTS[Math.min(order.length, 2)] :
-    phase === 'submitting' ? 'Recording the set…' :
-    phase === 'success' ? 'Set recorded.' :
-    phase === 'closed' ? 'Set closed · not recorded' :
-    phase === 'review' ? 'Reviewing your last set.' :
+    phase === 'submitting' ? 'Recording the review…' :
+    phase === 'success' ? 'Review recorded.' :
+    phase === 'skipped' ? 'Skipped · nothing recorded' :
+    phase === 'review' ? 'Reading back your last review.' :
     CROSSCHECK_PROMPTS[0];
 
-  // Undo, review and resume are offered only when they mean something, and they are the
-  // one row the ballot ever adds: on the glass they are kept off the cards' budget
-  // entirely on the phases that have nothing to offer.
-  const hasControls =
-    phase === 'review' || (phase === 'ordering' && (order.length > 0 || history.length > 0));
+  // Undo, skip, hold, review and resume are offered only when they mean something: the one
+  // row the ballot ever adds, and on the glass it is kept to a single line of small keys.
+  const hasControls = phase === 'ordering' || phase === 'review';
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
-      <div className="flex-1 flex flex-col min-w-0 px-2.5 pt-0.5 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 px-2.5 pt-1 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
+        {/* One instrument across the head of the set: the office, the tally, the
+            experience and the measure. Everything the ladder reports lives here. */}
+        {lane && (
+          <ReviewProgressStrip
+            progress={lane.progress}
+            levelName={testing ? `Test · ${lane.name}` : lane.name}
+            reviews={reviews}
+            xp={lane.xp}
+            nextRung={nextRung}
+            flash={phase === 'success'}
+            flashLabel={`Recorded · +${XP_PER_REVIEW} XP`}
+            label={nextRung}
+          />
+        )}
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
-        <div className="mb-1 shrink-0 md:mb-2">
-          <div>
-            <h2 className="hidden text-lg font-bold md:block" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {CROSSCHECK} &middot; {ANALYSIS}
-            </h2>
-            {/* The line is fixed, and it stands on the glass as well as the desk: a voter
-                reads what the set measures before the first tap is made. */}
-            <p className="text-[9.5px] leading-snug md:max-w-md md:text-[11px]" style={{ color: `${brand.navy}66` }}>
-              <span className="hidden md:inline">{CROSSCHECK_LINE} </span>
-              {CROSSCHECK_IS} {CROSSCHECK_HOW}
-            </p>
-          </div>
+        {/* The desk states the measure above the cards. On the glass the same words are
+            the info key's: the briefing carries them in full, so the set keeps the whole
+            of its height and a reader holding the device is not read to twice. */}
+        <div className="mb-2 hidden shrink-0 md:block">
+          <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+            {CROSSCHECK} &middot; {ANALYSIS}
+          </h2>
+          <p className="text-[11px] leading-snug md:max-w-md" style={{ color: `${brand.navy}66` }}>
+            {CROSSCHECK_LINE} {CROSSCHECK_IS} {CROSSCHECK_HOW}
+          </p>
         </div>
 
         {/* Prompt, with the way into the explainer beside it and the session's tally at
@@ -407,7 +521,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
               </span>
             )}
-            {(phase === 'success' || phase === 'closed') && (
+            {(phase === 'success' || phase === 'skipped') && (
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
                 <Check className="h-3 w-3" style={{ color: phase === 'success' ? brand.gold : `${brand.navy}70` }} />
               </span>
@@ -426,12 +540,6 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             >
               <Info className="h-3 w-3" />
             </button>
-            <span
-              className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
-              style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
-            >
-              {sessionCount} sets
-            </span>
           </motion.div>
         </AnimatePresence>
 
@@ -457,19 +565,38 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         </div>
 
         {/* Controls: undo mid-set / review last set / resume */}
-        <div className={hasControls ? 'mb-1 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2' : 'hidden'}>
+        {/* One line, never wrapped: on the glass every row given to the keys is taken from
+            the cards. A key that overruns the width scrolls sideways rather than dropping. */}
+        <div className={hasControls ? 'scrollbar-hide mb-1.5 flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto whitespace-nowrap md:mb-3 md:gap-2' : 'hidden'}>
+          {/* One key for the whole review: skipping is a judgement on the comparison, not on
+              a single record, so it never sits on a plate. */}
+          {phase === 'ordering' && (
+            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
+            </button>
+          )}
+          {phase === 'ordering' && (
+            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <BookmarkPlus className="w-3.5 h-3.5" /> {CROSSCHECK_HOLD_LABEL}
+            </button>
+          )}
+          {phase === 'ordering' && holds.length > 0 && (
+            <button onClick={openHeld} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.gold}1F`, color: brand.navy, border: `1px solid ${brand.gold}66` }}>
+              <Bookmark className="w-3.5 h-3.5" /> Held · {holds.length}
+            </button>
+          )}
           {phase === 'ordering' && order.length > 0 && (
-            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
-              <Undo2 className="w-3.5 h-3.5" /> Undo last tap
+            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <Undo2 className="w-3.5 h-3.5" /> Undo<span className="hidden md:inline"> last tap</span>
             </button>
           )}
           {history.length > 0 && phase === 'ordering' && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
-              <ArrowLeft className="w-3.5 h-3.5" /> Review last set
+            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> Last review
             </button>
           )}
           {phase === 'review' && (
-            <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
+            <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
               Resume voting
             </button>
           )}
@@ -477,15 +604,23 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
         {/* Four candidates, twice two — on the glass the whole set has to stand in view
             at once, so the grid takes its rows from the height it is given. */}
-        <div className="grid grid-cols-2 grid-rows-2 gap-1.5 sm:gap-3 lg:gap-4 flex-1 min-h-0">
+        <CrosscheckDeal
+          dealKey={setKey}
+          className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 lg:gap-4 flex-1 min-h-0"
+        >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);
             // The plates answer a tap only while the set is being ordered: once the third
             // record is placed, the fourth places itself and the set is read, not pressed.
             const selectable = phase === 'ordering' && !reading;
             return (
-              <JudgeCard
+              <DealtCard
                 key={nominee.id}
+                index={idx}
+                order={Math.max(0, (positionOf(nominee.id) || idx + 1) - 1)}
+                mode={phase === 'skipped' ? 'passed' : 'filed'}
+              >
+              <JudgeCard
                 nominee={nominee}
                 token={token}
                 position={positionOf(nominee.id)}
@@ -494,29 +629,15 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                onExclude={selectable ? () => closeSet() : null}
                 keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
                 infoKeyLabel={radio ? String(idx + 1 + currentSet.length) : null}
                 dense={radio}
               />
+              </DealtCard>
             );
           })}
-        </div>
+        </CrosscheckDeal>
 
-        {/* Success pulse */}
-        <AnimatePresence>
-          {phase === 'success' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
-              style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
-            >
-              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Set recorded · 5 comparisons
-            </motion.div>
-          )}
-        </AnimatePresence>
         </div>
       </div>
 

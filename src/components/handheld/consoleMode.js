@@ -22,7 +22,25 @@ const STORAGE_KEY = "top100-console-mode";
 // Which face a surface is written in. The click wheel is the machine's face by default
 // — the title screen included, whose menu the ring walks key by key. The radio is a
 // face the reader puts on with the MODE key, never one the machine assumes for them.
-export function autoModeFor() {
+//
+// The crosscheck is the exception, and only on the glass: four numbered records, placed
+// by typing the number the card prints rather than by rolling towards it. There the
+// machine puts the radio on by itself, and the MODE key still overrules it for good.
+const RADIO_SURFACES = [/^\/vote(\/|$)/, /^\/selection-committee(\/|$)/, /^\/my-top100(\/|$)/];
+
+const onHandheld = () => {
+  try {
+    return window.matchMedia("(max-width: 767px)").matches;
+  } catch {
+    return false;
+  }
+};
+
+export function autoModeFor(pathname) {
+  const path = pathname || "";
+  if (onHandheld() && RADIO_SURFACES.some((pattern) => pattern.test(path))) {
+    return { mode: RADIO, reason: "four numbered records" };
+  }
   return { mode: WHEEL, reason: "read by the screenful" };
 }
 

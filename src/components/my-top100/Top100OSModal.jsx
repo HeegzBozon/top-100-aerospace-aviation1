@@ -1,9 +1,16 @@
+import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import useModalPicker from '@/components/handheld/useModalPicker';
 import Top100OS from '@/pages/Top100OS';
 
 export default function Top100OSModal({ isOpen, onClose }) {
+  // The orientation is a read, laid over the surface it was opened from: the console's
+  // keys are its while it is up, a turn reads it down and the confirm key closes it.
+  const bodyRef = useRef(null);
+  useModalPicker({ open: isOpen, onClose, bodyRef });
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -46,7 +53,7 @@ export default function Top100OSModal({ isOpen, onClose }) {
               </div>
 
               {/* Body — the full Top 100 OS page, scrollable */}
-              <div className="overflow-y-auto flex-1">
+              <div ref={bodyRef} className="overflow-y-auto flex-1">
                 <Top100OS />
               </div>
             </motion.div>

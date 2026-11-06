@@ -1,0 +1,85 @@
+{
+  "name": "CrosscheckHold",
+  "description": "A review a Fellow set aside instead of weighing it now: the four records as they were dealt, kept so the same review can be taken up again later. Personal to the Fellow who held it; never read by discovery, ordering, measurement or scoring.",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "The Fellow who held the review. The only reader of this row."
+    },
+    "fellow_name": {
+      "type": "string",
+      "description": "Display name, denormalised."
+    },
+    "season_id": {
+      "type": "string",
+      "description": "The season the review was dealt in."
+    },
+    "nominee_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "The four records as dealt, in the order the house set them."
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "The four names as they read when the review was held. Display only."
+    },
+    "saved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow set the review aside."
+    }
+  },
+  "required": [
+    "fellow_email",
+    "nominee_ids"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

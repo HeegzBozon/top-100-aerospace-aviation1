@@ -18,7 +18,7 @@ export const CROSSCHECK_LINE =
 
 // What the Crosscheck is, said plainly: the smallest form of a ranked-choice ballot.
 export const CROSSCHECK_IS =
-  'A mini ranked-choice ballot — four records, one order, every set a complete ballot.';
+  'A mini ranked-choice ballot — four records, one order, every review a complete ballot.';
 
 // How a set is taken: three taps, and the fourth record places itself. The verb is "put in
 // order", never "rank": the instrument orders, the house measures, and nobody ranks a
@@ -58,7 +58,7 @@ export const ANALYST_DUTIES = [
   {
     key: 'measure',
     label: 'Measure',
-    line: 'Take up the Crosscheck. Four records at a time, put in order — the comparison is the finding, and every set is kept.',
+    line: 'Take up the Crosscheck. Four records at a time, put in order — the comparison is the finding, and every review is kept.',
   },
   {
     key: 'carry',
@@ -77,12 +77,16 @@ export const ANALYST_FOUNDATION =
 export const ANALYST_STANDING =
   'The office belongs to every Fellow, reader and subscriber. If you are here, you already hold it.';
 
-// The question standing before each tap, by how many records are already placed.
-export const CROSSCHECK_PROMPTS = ['Which record leads?', 'Which is next?', 'And next?'];
+// The question standing before each tap, by how many records are already placed. The
+// question is the place being filled, never a comparative: "first", "second", "third",
+// and the fourth places itself. Internally the house calls this ABC voting (or 1-2-3),
+// because that is all the cards ever print.
+export const CROSSCHECK_PROMPTS = ['First?', 'Second?', 'Third?'];
 
-// A record the voter declines to judge. A set is measured across all four, so the press
-// closes the set rather than reshaping it.
-export const CROSSCHECK_EXCLUDE_LABEL = 'Cannot judge';
+// A review the voter sets aside. A set is measured across all four, so nothing is scored
+// from one that is skipped, and a held one comes back exactly as it was dealt.
+export const CROSSCHECK_SKIP_LABEL = 'Skip';
+export const CROSSCHECK_HOLD_LABEL = 'Save for later';
 
 // Where a record stands in the set, printed on the card.
 export const PLACE_LABELS = ['First', 'Second', 'Third', 'Fourth'];
