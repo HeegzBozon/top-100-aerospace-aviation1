@@ -61,10 +61,10 @@ export default function HandheldShell() {
 
   return (
     <DeviceContext.Provider value={api}>
-      <div className="hh-stage md:hidden flex flex-col">
+      <div className="hh-stage md:hidden flex flex-col overscroll-y-none">
         <div
           data-handheld-screen="true"
-          className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-y-none scrollbar-hide flex flex-col"
           /* The glass base: the screen's own well tone, so a picture that does not
              reach an edge reads as the device's depth rather than as paper. */
           style={{ background: "var(--hh-well-2, #0A1220)" }}

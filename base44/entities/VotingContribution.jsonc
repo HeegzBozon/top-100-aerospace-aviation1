@@ -59,6 +59,21 @@
       "default": [],
       "description": "Milestone keys earned, e.g. sets_1, sets_5, sets_15, ballot_saved."
     },
+    "test_xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Experience earned walking the ballot as a test. Kept entirely apart from xp, so a walkthrough never reads as a Fellow's own record."
+    },
+    "test_sets_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Reviews recorded in the tester's own lane. Never read by discovery, ranking, or scoring, and never shown as a Fellow's contribution."
+    },
+    "test_comparisons_recorded": {
+      "type": "number",
+      "default": 0,
+      "description": "Comparisons written by test reviews."
+    },
     "last_action": {
       "type": "string",
       "enum": [

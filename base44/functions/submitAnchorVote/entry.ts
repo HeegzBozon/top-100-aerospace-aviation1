@@ -110,17 +110,21 @@ export default async function(req) {
     const ratings = {};
     ids.forEach((id) => { ratings[id] = elo[id]; });
 
-    // The vote is written; only now does the Fellow's ladder move. Bookkeeping failure
-    // never undoes a recorded ballot.
-    const progress = isTest
-      ? null
-      : await recordContribution(service, {
-          fellow_email: user.email,
-          fellow_name: user.full_name || null,
-          season_id,
-          cohort_key: gate.season?.cohort_key || null,
-          action: 'anchor_set',
-        }).catch(() => null);
+    // The vote is written; only now does the ladder move. Bookkeeping failure never undoes
+    // a recorded ballot. A test is recorded in the tester's own lane rather than dropped:
+    // the walkthrough should show a tally, and that tally must never be mistaken for a
+    // Fellow's contribution.
+    const progress = await recordContribution(service, {
+      fellow_email: user.email,
+      fellow_name: user.full_name || null,
+      season_id,
+      cohort_key: gate.season?.cohort_key || null,
+      action: 'anchor_set',
+      is_test: isTest,
+    }).catch((e) => {
+      console.error('recordContribution failed', e?.message || e);
+      return { recorded: false, reason: e?.message || 'Progress could not be recorded.' };
+    });
 
     return Response.json({
       success: true,

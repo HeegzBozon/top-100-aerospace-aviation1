@@ -13,12 +13,14 @@ import {
   Users,
   DollarSign,
   Award,
-  Share2
+  Share2,
+  Trash2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import MyStuffFlipCard from '@/components/MyStuffFlipCard';
 import MobileProfileFlipCard from '@/components/MobileProfileFlipCard';
+import DeleteAccountDialog from '@/components/account/DeleteAccountDialog';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -28,6 +30,7 @@ const brandColors = {
 
 export default function UserProfileModal({ isOpen, onClose, user }) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef(null);
 
@@ -221,6 +224,15 @@ export default function UserProfileModal({ isOpen, onClose, user }) {
                       <LogOut className="w-4 h-4" />
                       Sign Out
                     </Button>
+
+                    <Button
+                      variant="ghost"
+                      className="w-full gap-2 text-xs text-gray-400 hover:text-red-700"
+                      onClick={() => setDeleteOpen(true)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete Account
+                    </Button>
                   </div>
                 </div>
               </>
@@ -228,6 +240,8 @@ export default function UserProfileModal({ isOpen, onClose, user }) {
           </div>
         </div>
       </div>
+
+      <DeleteAccountDialog open={deleteOpen} onClose={() => setDeleteOpen(false)} />
     </>,
     document.body
   );

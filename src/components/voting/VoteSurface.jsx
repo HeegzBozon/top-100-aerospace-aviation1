@@ -79,25 +79,41 @@ export default function VoteSurface({ user }) {
     load();
   }, [load]);
 
-  // A recorded set returns the ladder as it now stands, so the panel moves without a
-  // second call.
+  // A recorded review answers with the whole receipt on `progress`: what was recorded, the
+  // ladder as it now stands, any level-up and any fresh milestone. Reading `result.recorded`
+  // instead looked one level too high at the function's own envelope, so a recorded review
+  // never moved the panel at all.
   const onRecorded = useCallback(
     (result) => {
-      if (!result?.recorded) return;
+      const receipt = result?.progress;
+      if (!receipt?.recorded) return;
+      const moved = receipt.progress || {};
       setFeedToken((t) => t + 1);
       setContext((prev) =>
         prev
           ? {
               ...prev,
-              ballot: prev.ballot,
-              progress: { ...prev.progress, ...result.progress, ladder: prev.progress?.ladder },
+              // The panel already shows the caller's own lane, so the receipt lands on it.
+              progress: { ...prev.progress, ...moved, ladder: prev.progress?.ladder },
             }
           : prev
       );
-      if (result.leveled_up) {
-        toast({ title: `Level ${result.progress?.level}`, description: result.progress?.name });
+      // The receipt counts this cohort; the panel reads every cohort the Fellow has served
+      // in. So the ladder is re-read once, quietly, rather than being patched with a figure
+      // that would step backwards for anyone with earlier seasons behind them.
+      base44.functions
+        .invoke('getVotingContext', {})
+        .then((res) => {
+          if (res?.data?.success) setContext(res.data);
+        })
+        .catch(() => {});
+      if (receipt.leveled_up) {
+        toast({
+          title: `${result.is_test ? 'Test · ' : ''}Level ${moved.level}`,
+          description: moved.name,
+        });
       }
-      const fresh = result.new_milestones || [];
+      const fresh = receipt.new_milestones || [];
       if (fresh.length) {
         toast({ title: 'Milestone', description: fresh.map((m) => m.label).join(' · ') });
       }
@@ -117,7 +133,7 @@ export default function VoteSurface({ user }) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-20 text-center">
         <p className="font-heading text-lg" style={{ color: brand.navy }}>
-          The ballot did not open
+          The Crosscheck did not open
         </p>
         <p className="max-w-sm text-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
           {error}
@@ -158,12 +174,16 @@ export default function VoteSurface({ user }) {
               <Lock className="h-5 w-5" style={{ color: `${brand.navy}70` }} />
             </span>
             <h2 className="mt-3 font-heading text-xl" style={{ color: brand.navy }}>
-              The ballot is closed
+              The Crosscheck is closed
             </h2>
             <p className="mt-1.5 text-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
               {upcoming
                 ? `The next counting cohort opens ${fmtDate(upcoming.voting_start)}. Your contribution record is kept.`
                 : 'No cohort is counting right now. Your contribution record is kept.'}
+            </p>
+            <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: `${brand.navy}55` }}>
+              In the Manifest you choose who to back. In the Crosscheck the house chooses who you
+              compare. Analysis resumes with the next window.
             </p>
           </div>
 
@@ -178,14 +198,21 @@ export default function VoteSurface({ user }) {
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto lg:overflow-hidden">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 pt-2 md:px-5 lg:flex-1 lg:flex-row lg:items-start lg:gap-6 lg:pt-5">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:h-full">
-          <AnchorVoting user={user} activeSeason={target} onRecorded={onRecorded} />
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+      {/* The row takes the whole height it is given on every machine, so the set below
+          is sized to the picture rather than to its own contents. */}
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 px-2 pt-1 md:px-5 lg:flex-row lg:items-stretch lg:gap-6 lg:pb-4 lg:pt-4">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <AnchorVoting
+            user={user}
+            activeSeason={target}
+            onRecorded={onRecorded}
+            progress={context.progress}
+          />
         </div>
 
         {(context.progress || isAdmin) && (
-          <aside className="flex shrink-0 flex-col gap-3 lg:w-[290px] lg:overflow-y-auto lg:pb-6">
+          <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[290px] lg:overflow-y-auto lg:pb-6">
             {/* The operator watches the field while it is being weighed. A set cast by an
                 admin is a test of the flow, so the monitor stands on its own rather than
                 beside a ladder that does not move. */}

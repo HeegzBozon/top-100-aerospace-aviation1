@@ -1,14 +1,15 @@
-import { motion } from 'framer-motion';
-import { Share2, CheckCircle2, Lock, AlertTriangle, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { Share2, CheckCircle2, Lock, AlertTriangle, Loader2, Sparkles } from 'lucide-react';
 
-// The band across the top of My TOP 100.
+// The line under the Manifest's name.
 //
-// It reports one artifact and one only: the list. The list is a publication —
-// public, ordinal, shareable, saved as it is edited. The ballot is a private vote
-// cast on the ballot surface, and nothing here derives it from the list or narrates
-// it, because a published order that mirrors a private ranking hands the ranking to
-// anyone who reads the profile.
+// It is a rule, not a panel: the list is the subject of this surface and everything here
+// supports it. One line reports where the publication stands, one quiet key shares it, and
+// the privacy of the ballot is stated underneath in the smallest type on the page.
+//
+// The list is a publication — public, ordinal, saved as it is edited. The ballot is a
+// private vote cast on the Crosscheck, and nothing here derives it from the list or narrates
+// it, because a published order that mirrors a private ranking hands the ranking to anyone
+// who reads the profile.
 export default function BallotStatusBanner({
   rankings,
   votingOpen,
@@ -19,99 +20,70 @@ export default function BallotStatusBanner({
 }) {
   const count = rankings.length;
   const editableUntil = votingEndDate
-    ? new Date(votingEndDate).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
+    ? new Date(votingEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     : null;
 
-  // Closed window: the season has ended — the list is final, locked, still shareable.
   const closed = votingOpen === false && !!votingEndDate && new Date(votingEndDate) < new Date();
 
   let icon = Sparkles;
-  let headline = 'Build your TOP 100';
-  let subline = 'Add nominees to start. Your list is yours to publish and share.';
+  let label = 'Open';
+  let detail = 'Nothing on the record yet — the first name begins it';
 
   if (count > 0) {
     icon = CheckCircle2;
-    headline = 'Your TOP 100 is on the record';
-    subline = editableUntil && !closed
-      ? `${count} listed · yours to edit and share until ${editableUntil}`
-      : `${count} listed · public and shareable`;
+    label = 'On the record';
+    detail = closed
+      ? `${count} listed · final, and still shareable`
+      : editableUntil
+        ? `${count} listed · yours to edit until ${editableUntil}`
+        : `${count} listed · public and shareable`;
   }
   if (closed && count > 0) {
     icon = Lock;
-    headline = 'Voting closed — list locked';
-    subline = `${count} listed · your list is final and shareable`;
+    label = 'Cycle closed';
   }
 
   const Icon = icon;
-  const canShare = count > 0;
 
   return (
-    <div
-      className="mx-4 mt-2 mb-3 rounded-3xl overflow-hidden"
-      style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-    >
-      <div className="px-4 py-4">
-        <div className="flex items-start gap-3">
-          <div
-            className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center mt-0.5"
-            style={{
-              background: closed ? 'rgba(255,255,255,0.10)' : `${brand.gold}20`,
-            }}
-          >
-            <Icon
-              className="w-4 h-4"
-              style={{ color: closed ? 'rgba(255,255,255,0.7)' : brand.gold }}
-            />
-          </div>
+    <div className="mb-1 border-b border-editorial-navy/12 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+        <p className="flex min-w-0 items-center gap-1.5 font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-label">
+          <Icon className="h-3.5 w-3.5 shrink-0 text-editorial-copper" aria-hidden="true" />
+          <span className="shrink-0 font-bold">{label}</span>
+          <span className="truncate font-medium normal-case tracking-normal text-editorial-navy/50 tabular-nums">
+            {detail}
+          </span>
+        </p>
 
-          <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-bold">{headline}</p>
-            <p className="text-white/60 text-[11px] mt-0.5 leading-relaxed">{subline}</p>
-
-            <div className="flex items-start gap-2 mt-2">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0 mt-[3px]" style={{ color: brand.gold }} />
-              <p className="text-white/55 text-[10.5px] leading-relaxed">
-                Your ballot stays private and is cast on the ballot surface. This list is a
-                publication, never a record of your vote.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
-              {canShare && (
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  onClick={onShare}
-                  className="flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold transition-all"
-                  style={{ background: `linear-gradient(135deg, ${brand.gold}, #b8884a)`, color: 'white' }}
-                >
-                  <Share2 className="w-3.5 h-3.5" />
-                  Share your TOP 100
-                </motion.button>
-              )}
-
-              {saving && (
-                <span className="flex items-center gap-1 text-[10px] text-white/50">
-                  <Loader2 className="w-3 h-3 animate-spin" /> Saving…
-                </span>
-              )}
-            </div>
-          </div>
+        <div className="flex shrink-0 items-center gap-2.5">
+          {saving && (
+            <Loader2 className="h-3 w-3 animate-spin text-editorial-navy/35" aria-label="Saving" />
+          )}
+          {count > 0 && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="inline-flex items-center gap-1 font-body text-[9.5px] font-bold uppercase tracking-[0.16em] text-editorial-navy/60 transition-colors hover:text-editorial-copper"
+            >
+              <Share2 className="h-3 w-3" aria-hidden="true" />
+              Share
+            </button>
+          )}
         </div>
-
-        {errorMessage && (
-          <div
-            className="mt-3 flex items-start gap-2 px-3 py-2 rounded-xl text-[11px]"
-            style={{ background: 'rgba(180,90,40,0.16)', color: '#f3c9a4' }}
-          >
-            <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{errorMessage}</span>
-          </div>
-        )}
       </div>
+
+      <p className="mt-1 font-body text-[9px] leading-relaxed text-editorial-navy/40">
+        Your ballot stays private and is cast on the Crosscheck. This list is a publication,
+        never a record of your vote.
+      </p>
+
+      {errorMessage && (
+        <p className="mt-1.5 flex items-start gap-1.5 border-l-2 border-editorial-copper pl-2 font-body text-[10.5px] leading-relaxed text-editorial-navy/75">
+          <AlertTriangle className="mt-[2px] h-3 w-3 shrink-0 text-editorial-copper" aria-hidden="true" />
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

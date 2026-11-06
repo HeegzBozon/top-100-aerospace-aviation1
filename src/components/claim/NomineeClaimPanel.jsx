@@ -7,6 +7,34 @@ import { ShieldCheck, Linkedin, Clock, ArrowRight, Loader2, CheckCircle2, UserCo
 // connects their own account; we never use a shared/builder token for identity.
 const LINKEDIN_CONNECTOR_ID = '69e951492e767a94643ab30a';
 
+// Which claim an interrupted LinkedIn hand-off belongs to. Kept in sessionStorage:
+// a convenience, never the record — the claim itself is decided by
+// claimNomineeProfile, and this only tells the panel what to resume when the
+// browser comes back.
+const PENDING_KEY = 'claim.linkedin.pending';
+function readPending() {
+  try {
+    return JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null');
+  } catch {
+    return null;
+  }
+}
+function writePending(value) {
+  try {
+    sessionStorage.setItem(PENDING_KEY, JSON.stringify(value));
+  } catch {
+    // Storage refused (private mode, locked webview): the claim still works, the
+    // return simply isn't resumed automatically.
+  }
+}
+function clearPending() {
+  try {
+    sessionStorage.removeItem(PENDING_KEY);
+  } catch {
+    // Nothing to clear.
+  }
+}
+
 const B = {
   navyDeep: '#16293f',
   navy: '#1e3a5a',
@@ -52,11 +80,42 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved, variant
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
   const autoClaimed = useRef(false);
+  const resumeTried = useRef(false);
 
   const owner = isOwnerOf(nominee, viewer);
   const taken = claimedByOther(nominee, viewer);
   const emailEligible = emailMatches(viewer, nominee);
   const hasLinkedIn = !!nominee?.linkedin_profile_url;
+
+  const startClaim = async (payload) => {
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await base44.functions.invoke('claimNomineeProfile', payload);
+      setResult(res.data || res);
+    } catch (e) {
+      const data = e?.response?.data || {};
+      setResult(data);
+      setError(data?.error || e?.message || 'Claim request failed.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Back from LinkedIn: the hand-off happened in this window rather than a popup,
+  // so the claim it was started for is finished here, once. The marker is cleared
+  // whether or not the connection took — a stale intent must never fire later.
+  useEffect(() => {
+    if (resumeTried.current) return;
+    resumeTried.current = true;
+    const pending = readPending();
+    if (pending) clearPending();
+    if (!pending || pending.nominee_id !== nominee?.id) return;
+    if (!viewer || Date.now() - (pending.at || 0) > 15 * 60 * 1000) return;
+    startClaim({ nominee_id: nominee.id, linked_in_match: true });
+    // Runs once, on mount, against the mount-time viewer.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // After a successful instant claim (email or LinkedIn), surface the resolved state.
   useEffect(() => {
@@ -113,21 +172,6 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved, variant
     );
   }
 
-  const startClaim = async (payload) => {
-    setSubmitting(true);
-    setError('');
-    try {
-      const res = await base44.functions.invoke('claimNomineeProfile', payload);
-      setResult(res.data || res);
-    } catch (e) {
-      const data = e?.response?.data || {};
-      setResult(data);
-      setError(data?.error || e?.message || 'Claim request failed.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   // Identity match is tested BEFORE any record-level review state: an exact email
   // match self-verifies instantly, even when an earlier claim on this record is
   // still queued. A stale pending request must never hide the instant path — that
@@ -169,14 +213,11 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved, variant
       setError('');
       try {
         const url = await base44.connectors.connectAppUser(LINKEDIN_CONNECTOR_ID);
-        const popup = window.open(url, '_blank', 'noopener');
-        const timer = setInterval(() => {
-          if (!popup || popup.closed) {
-            clearInterval(timer);
-            setLinkedinPending(false);
-            startClaim({ nominee_id: nominee.id, linked_in_match: true });
-          }
-        }, 500);
+        // The hand-off happens in this window, never a popup: an embedded webview
+        // refuses a new window, and LinkedIn refuses a popup's user agent outright.
+        // The panel records which claim it belongs to and finishes it on return.
+        writePending({ nominee_id: nominee.id, at: Date.now() });
+        window.location.assign(url);
       } catch (e) {
         setLinkedinPending(false);
         setError(e?.message || 'Could not start LinkedIn connection.');
@@ -187,8 +228,8 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved, variant
         icon={Linkedin}
         seated={seated}
         title="Verify with LinkedIn to claim"
-        body="Your account email doesn't match, but this profile lists a LinkedIn profile. Connect LinkedIn so we can confirm it's you — if we can't confirm it automatically, your claim goes to our team for review."
-        actionLabel={linkedinPending ? 'Connecting…' : 'Connect LinkedIn to verify'}
+        body="Your account email doesn't match, but this profile lists a LinkedIn profile. You'll step out to LinkedIn, then come straight back here to finish the claim. If we can't confirm it automatically, your claim goes to our team for review."
+        actionLabel={linkedinPending ? 'Connecting…' : submitting ? 'Confirming…' : 'Connect LinkedIn to verify'}
         busy={linkedinPending || submitting}
         onAction={handleConnect}
         secondaryLabel="Or submit for admin review"

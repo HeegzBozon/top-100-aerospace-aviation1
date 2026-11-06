@@ -7,6 +7,15 @@ import { createPageUrl } from '@/utils';
 import { ArrowLeft, Flag, Bot, Crown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const BOARD_THEMES = [
+  ['classic', 'Classic'], ['top100', 'TOP 100'], ['deepSpace', 'Deep Space'], ['lichess', 'Lichess'],
+];
+const PIECE_SETS = [
+  'cburnett', 'staunty', 'merida', 'spatial', 'governors', 'fresca', 'cardinal', 'mono', 'alpha', 'california',
+];
+const CHESS_SELECT = 'h-8 w-auto gap-2 rounded-lg bg-white/5 border-white/10 px-2.5 text-white/60 hover:text-white text-xs font-medium uppercase tracking-widest';
 import { Chess } from 'chess.js';
 import ChessBoard from '@/components/chess/ChessBoard';
 import MoveHistory from '@/components/chess/MoveHistory';
@@ -168,35 +177,27 @@ export default function ChessGame() {
               </div>
             )}
             <div className="text-white/40 text-xs font-mono uppercase tracking-widest">{game.time_control}</div>
-            <select
-              value={boardTheme}
-              onChange={(e) => setBoardTheme(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:text-white text-xs font-medium uppercase tracking-widest cursor-pointer transition-colors"
-              aria-label="Choose board theme"
-            >
-              <option value="classic">Classic</option>
-              <option value="top100">TOP 100</option>
-              <option value="deepSpace">Deep Space</option>
-              <option value="lichess">Lichess</option>
-            </select>
+            <Select value={boardTheme} onValueChange={setBoardTheme}>
+              <SelectTrigger className={CHESS_SELECT} aria-label="Choose board theme">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {BOARD_THEMES.map(([value, label]) => (
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {boardTheme === 'lichess' && (
-              <select
-                value={pieceSet}
-                onChange={(e) => setPieceSet(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:text-white text-xs font-medium uppercase tracking-widest cursor-pointer transition-colors"
-                aria-label="Choose piece set"
-              >
-                <option value="cburnett">Cburnett</option>
-                <option value="staunty">Staunty</option>
-                <option value="merida">Merida</option>
-                <option value="spatial">Spatial</option>
-                <option value="governors">Governors</option>
-                <option value="fresca">Fresca</option>
-                <option value="cardinal">Cardinal</option>
-                <option value="mono">Mono</option>
-                <option value="alpha">Alpha</option>
-                <option value="california">California</option>
-              </select>
+              <Select value={pieceSet} onValueChange={setPieceSet}>
+                <SelectTrigger className={CHESS_SELECT} aria-label="Choose piece set">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PIECE_SETS.map((value) => (
+                    <SelectItem key={value} value={value} className="capitalize">{value}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
             <Button
               size="icon"

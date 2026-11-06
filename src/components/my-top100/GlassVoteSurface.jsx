@@ -28,8 +28,8 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
   const cards = [
     {
       key: 'ballot',
-      label: 'Your ballot',
-      hint: status.ranked >= status.minimum ? `${status.ranked}/100 ranked · counting` : 'Rank one name',
+      label: 'Your Manifest',
+      hint: status.ranked >= status.minimum ? `${status.ranked}/100 placed · counting` : 'Name one person',
       icon: ListOrdered,
       node: ballotNode,
     },
@@ -42,8 +42,8 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     },
     {
       key: 'chamber',
-      label: 'Anchor voting',
-      hint: 'Weigh nominees head to head',
+      label: 'The Crosscheck',
+      hint: 'Your analysis — four records, one order',
       icon: Award,
       node: chamberNode,
       // The one card that must fit the glass whole: it draws four candidates and wants
@@ -82,6 +82,18 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
         const label = land(i);
         if (label && openRef.current) setOpenKey(cardsRef.current[i].key);
         return label;
+      },
+      // The number printed in a card's corner, typed on the pad. The cards are drawn
+      // 01, 02, 03, so the keypad reaches them the way the drawer numbers everything
+      // else on this device — and the number on the key and the number in the hand agree.
+      goToCode: (code) => {
+        // A card is open, so the numbers belong to the card on the glass — a candidate,
+        // an entry, a page — and never to this menu. Without this the press fell through
+        // to the menu and opened the first card again, over the work being read.
+        if (openRef.current) return null;
+        const i = Number(code) - 1;
+        if (!(i >= 0 && i < cardsRef.current.length)) return null;
+        return api.current.goTo(i);
       },
       enter: () => {
         // A card is open, so A belongs to the card and to nothing this menu would do.
@@ -166,7 +178,7 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
       }`
     : status.closed
       ? `Voting has closed for this cycle · your list of ${status.ranked} stays on your profile`
-      : 'The window is not open yet · rank your list now, and it becomes your ballot when it opens';
+      : 'The window is not open yet · set your Manifest now, and it becomes your ballot when it opens';
 
   if (!openCard) {
     return (

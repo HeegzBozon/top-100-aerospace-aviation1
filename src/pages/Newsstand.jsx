@@ -13,6 +13,7 @@ import NewsstandRack, { RackEmpty, RackShelf } from '@/components/newsstand/News
 import NewsstandCover from '@/components/newsstand/NewsstandCover';
 import StockRow from '@/components/newsstand/StockRow';
 import WireRack from '@/components/newsstand/WireRack';
+import PullToRefresh from '@/components/capabilities/performance/PullToRefresh';
 
 // The Newsstand.
 //
@@ -179,6 +180,7 @@ export default function Newsstand() {
   }, [cursorKey, openKey, stockItems.length]);
 
   return (
+    <PullToRefresh onRefresh={stock.reload}>
     <div className="min-h-screen" style={{ background: C.cream }}>
       <div className="mx-auto w-full max-w-5xl px-4 pb-14 pt-6 md:px-8 md:pb-20 md:pt-12">
         <NewsstandHeader />
@@ -310,5 +312,6 @@ export default function Newsstand() {
         </p>
       </div>
     </div>
+    </PullToRefresh>
   );
 }

@@ -78,7 +78,7 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
       <div className="mt-3">
         <div className="flex items-baseline justify-between">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: `${brand.navy}50` }}>
-            Latest sets
+            Latest reviews
           </p>
           {updatedAt && (
             <p className="text-[8.5px]" style={{ color: `${brand.navy}35` }}>

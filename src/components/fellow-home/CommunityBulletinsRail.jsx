@@ -4,6 +4,8 @@ import { Megaphone, Pencil, X, Loader2, Send, Check } from 'lucide-react';
 import RailBlock from '@/components/fellow-home/RailBlock';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { Textarea } from '@/components/ui/textarea';
+import ReportContent from '@/components/moderation/ReportContent';
+import useAuthorBlocks from '@/hooks/useAuthorBlocks';
 
 // Fellow-authored bulletins, visible community-wide. Full CRUD.
 export default function CommunityBulletinsRail({ user, accent, bare }) {
@@ -14,6 +16,7 @@ export default function CommunityBulletinsRail({ user, accent, bare }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
+  const { blocked, block } = useAuthorBlocks(user?.email);
 
   const load = async () => {
     try {
@@ -81,6 +84,10 @@ export default function CommunityBulletinsRail({ user, accent, bare }) {
 
   const isOwn = (b) => b.author_email === user?.email;
 
+  // Blocked authors are dropped as the rail renders: their bulletins are held off this
+  // Fellow's own reading, and nothing changes for anyone else on the network.
+  const visible = items.filter((b) => !blocked.has(String(b.author_email || '').toLowerCase()));
+
   const inner = (
     <div className="space-y-2.5">
       <button onClick={openCompose} className="w-full text-left text-[11px] italic px-2.5 py-1.5 rounded-md transition-colors hover:bg-black/[0.03]" style={{ color: B.muted, border: `1px dashed ${B.border}` }}>
@@ -88,10 +95,12 @@ export default function CommunityBulletinsRail({ user, accent, bare }) {
       </button>
       {loading ? (
         <p className="text-[11px]" style={{ color: B.muted }}>Loading…</p>
-      ) : items.length === 0 ? (
-        <p className="text-[11px] leading-snug" style={{ color: B.muted }}>No community bulletins yet.</p>
+      ) : visible.length === 0 ? (
+        <p className="text-[11px] leading-snug" style={{ color: B.muted }}>
+          {blocked.size > 0 ? 'Nothing here from the Fellows you have blocked.' : 'No community bulletins yet.'}
+        </p>
       ) : (
-        items.map((b) => (
+        visible.map((b) => (
           <div key={b.id} className="group flex items-start gap-2">
             <Megaphone className="w-3 h-3 mt-0.5 shrink-0" style={{ color: accent }} />
             <div className="min-w-0 flex-1">
@@ -100,10 +109,24 @@ export default function CommunityBulletinsRail({ user, accent, bare }) {
               </p>
               {b.body && <p className="text-[11px] leading-snug line-clamp-2" style={{ color: B.muted }}>{b.body}</p>}
             </div>
-            {isOwn(b) && (
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+            {isOwn(b) ? (
+              <div className="flex gap-1 shrink-0">
                 <button onClick={() => openEdit(b)} style={{ color: B.muted }}><Pencil className="w-3 h-3" /></button>
                 <button onClick={() => remove(b.id)} style={{ color: B.muted }}><X className="w-3 h-3" /></button>
+              </div>
+            ) : (
+              <div className="shrink-0">
+                <ReportContent
+                  viewerEmail={user?.email}
+                  onBlocked={block}
+                  content={{
+                    type: 'bulletin',
+                    id: b.id,
+                    excerpt: [b.title, b.body].filter(Boolean).join(' · '),
+                    authorEmail: b.author_email,
+                    authorName: b.author_name,
+                  }}
+                />
               </div>
             )}
           </div>

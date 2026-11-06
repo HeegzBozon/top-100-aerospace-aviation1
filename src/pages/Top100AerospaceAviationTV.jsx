@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Tv, Filter, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { STREAMS_DB } from '@/lib/channels-db';
 import ComprehensiveNewsStreams from '@/components/capabilities/global-intelligence/ComprehensiveNewsStreams';
 
@@ -36,17 +37,21 @@ export default function Top100AerospaceAviationTV() {
         <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-slate-400" />
-            <select
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm hover:border-slate-600 transition-colors"
-            >
-              {regions.map(region => (
-                <option key={region} value={region}>
-                  {region === 'all' ? 'All Regions' : region}
-                </option>
-              ))}
-            </select>
+            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+              <SelectTrigger
+                aria-label="Filter by region"
+                className="h-9 w-auto min-w-[140px] gap-2 rounded-lg bg-slate-800 border-slate-700 text-white text-sm hover:border-slate-600 transition-colors"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {regions.map(region => (
+                  <SelectItem key={region} value={region}>
+                    {region === 'all' ? 'All Regions' : region}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center gap-2">

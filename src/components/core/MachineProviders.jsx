@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/components/core/ThemeContext";
 import { ConversationProvider } from "@/components/contexts/ConversationContext";
 import { UnreadProvider } from "@/components/contexts/UnreadContext";
 import { SidebarProvider } from "@/components/contexts/SidebarContext";
+import { MobileNavProvider } from "@/components/mobile/navigation/MobileNavState";
 import { CommsThemeProvider } from "@/components/contexts/CommsThemeContext";
 import { useAuth } from "@/lib/AuthContext";
 import usePresenceBeacon from "@/components/core/usePresenceBeacon";
@@ -25,7 +26,9 @@ export default function MachineProviders({ children }) {
       <ConversationProvider>
         <UnreadProvider>
           <CommsThemeProvider>
-            <SidebarProvider>{children}</SidebarProvider>
+            <SidebarProvider>
+              <MobileNavProvider>{children}</MobileNavProvider>
+            </SidebarProvider>
           </CommsThemeProvider>
         </UnreadProvider>
       </ConversationProvider>

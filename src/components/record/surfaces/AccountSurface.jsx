@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import ProfileAccountRow from '@/components/profile/essentials/ProfileAccountRow';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import PresentationSettings from '@/components/profile-deck/PresentationSettings';
+import DeleteAccountPanel from '@/components/record/DeleteAccountPanel';
 
 // Account: the choices the machine keeps — the Studio that writes the record whole,
 // the presentation settings the public deck opens at, and the copy of everything the
@@ -65,6 +66,9 @@ export default function AccountSurface({ account, nominee, settings, accent, onR
           exporting={exporting}
         />
       </div>
+
+      {/* The last line of the Account surface: closing the account itself. */}
+      <DeleteAccountPanel />
 
       {wizard && (
         <ProfileWizard

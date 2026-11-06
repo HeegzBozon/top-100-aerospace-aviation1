@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 import { UploadFile } from '@/integrations/Core';
+import DeleteAccountDialog from '@/components/account/DeleteAccountDialog';
 import {
   Crown,
   LogOut,
@@ -22,7 +23,8 @@ import {
   Clock,
   Rocket,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Trash2
 } from 'lucide-react';
 
 const brandColors = {
@@ -43,6 +45,7 @@ const myStuffItems = [
 export default function MobileProfileFlipCard({ user, onClose }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const fileInputRef = useRef(null);
   const { toast } = useToast();
 
@@ -256,7 +259,7 @@ export default function MobileProfileFlipCard({ user, onClose }) {
           </div>
 
           {/* Logout */}
-          <div className="px-4 pb-4">
+          <div className="px-4 pb-4 space-y-1">
             <Button 
               variant="ghost" 
               className="w-full h-8 text-xs gap-2 text-white/50 hover:text-red-400 hover:bg-red-500/10"
@@ -264,9 +267,18 @@ export default function MobileProfileFlipCard({ user, onClose }) {
             >
               <LogOut className="w-3.5 h-3.5" /> Sign Out
             </Button>
+            <Button
+              variant="ghost"
+              className="w-full h-8 text-[10px] gap-2 text-white/30 hover:text-red-400 hover:bg-red-500/10"
+              onClick={(e) => { e.stopPropagation(); setDeleteOpen(true); }}
+            >
+              <Trash2 className="w-3 h-3" /> Delete Account
+            </Button>
           </div>
         </div>
       </motion.div>
+
+      <DeleteAccountDialog open={deleteOpen} onClose={() => setDeleteOpen(false)} />
     </div>
   );
 }

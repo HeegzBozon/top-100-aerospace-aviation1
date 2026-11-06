@@ -13,13 +13,13 @@ export default function GlassVoteWindow({ status }) {
       : 'The ballot opens with the window';
 
   const line = open
-    ? `Voting${endLabel ? ` closes ${endLabel}` : ' is open'} — your ranked list counts as your ballot, and it counts as you change it.`
+    ? `Voting${endLabel ? ` closes ${endLabel}` : ' is open'} — The Manifest counts as your ballot, and it counts as you change it.`
     : closed
       ? `The window for this cycle has closed. Your list of ${ranked} stays on your profile and on your public page.`
-      : `The window is not open yet. Rank your list now — it becomes your ballot the moment the window opens.`;
+      : `The window is not open yet. Set your Manifest now — it becomes your ballot the moment the window opens.`;
 
   const facts = [
-    { label: 'Ranked', value: String(ranked) },
+    { label: 'Placed', value: String(ranked) },
     { label: 'Minimum', value: String(minimum) },
     { label: 'Window', value: open ? 'Open' : closed ? 'Closed' : 'Not open' },
   ];
@@ -63,7 +63,7 @@ export default function GlassVoteWindow({ status }) {
 
       <p className="mt-4 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}55` }}>
         Three names are the threshold. Below it nothing is counted rather than a partial ballot being
-        stored. You rank; the institution measures.
+        stored. You choose who to back; the institution measures.
       </p>
     </div>
   );

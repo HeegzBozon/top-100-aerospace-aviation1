@@ -48,6 +48,9 @@ export default function Patronage() {
             <Link to="/chamber" style={{ color: P.copper }}>
               The Chamber
             </Link>
+            <a href="/media-kit/TOP100-Patronage-Media-Kit.md" download style={{ color: P.copper }}>
+              Media kit (.md)
+            </a>
             <Link to="/terms" style={{ color: P.copper }}>
               Terms
             </Link>

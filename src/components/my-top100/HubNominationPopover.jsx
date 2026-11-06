@@ -10,6 +10,7 @@ import {
   GUIDED_PROMPTS,
   emptyPersonNomination,
 } from '@/components/nominate/NominateConfig';
+import useModalPicker from '@/components/handheld/useModalPicker';
 
 
 const SHARE_OPTIONS = [
@@ -81,6 +82,13 @@ const STEP_META = {
 };
 
 export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator, initialNominee, initialName }) {
+  // The sheet is laid over the surface it was opened from, so the console's keys are its
+  // while it is up. It carries fields, so the confirm key is left alone — a turn reads the
+  // sheet down and the way back closes it, and # never spends itself on cancelling a
+  // nomination half written.
+  const bodyRef = useRef(null);
+  useModalPicker({ onClose, bodyRef, confirm: false });
+
   const [form, setForm] = useState(emptyPersonNomination);
   const [nominationCategory, setNominationCategory] = useState('women');
   const [alsoAngels, setAlsoAngels] = useState('no');
@@ -327,7 +335,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
               </div>
 
               {/* Step body */}
-              <div className="overflow-y-auto px-6 py-6 flex-1">
+              <div ref={bodyRef} className="overflow-y-auto px-6 py-6 flex-1">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={stepId}

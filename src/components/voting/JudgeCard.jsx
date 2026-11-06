@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import { PLACE_LABELS } from '@/components/voting/ballotNaming';
 import HonoreeStack from '@/components/voting/HonoreeStack';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
 
@@ -43,7 +44,7 @@ function initials(name) {
 // stand in the glass at once with nothing to scroll. Every row that says what the card
 // IS stays — the face, the name, the band, the years, the pair of keys — and the story
 // is the one block given up first when the case is short.
-export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, isTop, isBottom, selectable, cursor = false, dense = false, honoreeVolumes = [], onInfo, onSelect }) {
+export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, honoreeVolumes = [], onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -52,18 +53,18 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
   const discipline = DISCIPLINE_LABELS[nominee.discipline] || nominee.industry || nominee.professional_role || '';
   const stageBand = CAREER_STAGE_BAND[nominee.trajectory_metrics?.career_stage] || '';
   const band = [discipline, stageBand].filter(Boolean).join(' · ');
-  const anchored = isTop || isBottom;
+  const anchored = Boolean(position);
 
-  // The rule across the head of the plate says what the card is: rose gold on the
-  // face marked first, navy on the one marked last, and a soft house rule otherwise.
-  const headRule = isTop
+  // The rule across the head of the plate says where the record stands in the set: rose
+  // gold on the one leading it, navy on every other place the voter has given it.
+  const headRule = position === 1
     ? `linear-gradient(90deg, ${brand.gold}, #E3C79B 52%, ${brand.gold})`
-    : isBottom
+    : position
       ? `linear-gradient(90deg, ${brand.navy}, #3C5E83 52%, ${brand.navy})`
       : `linear-gradient(90deg, ${brand.navy}14, ${brand.gold}8A 50%, ${brand.navy}14)`;
 
   return (
-    <div className="relative h-full min-h-0">
+    <div className="relative h-full min-h-0 min-w-0">
       <motion.div
         whileTap={selectable ? { scale: 0.98 } : undefined}
         onClick={() => selectable && onSelect()}
@@ -73,9 +74,9 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           dense ? "gap-1.5 rounded-[14px] p-2 pt-2.5" : "gap-2 rounded-[18px] p-2.5 pt-3"
         }`}
         style={{
-          background: isTop
+          background: position === 1
             ? `linear-gradient(180deg, #FFFDF7 0%, ${brand.gold}1F 100%)`
-            : isBottom
+            : position
               ? `linear-gradient(180deg, #FBFCFD 0%, ${brand.navy}0F 100%)`
               : CARD_STOCK,
           boxShadow: [
@@ -136,22 +137,16 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           </div>
 
           <div className="flex flex-col items-end gap-1 shrink-0">
-            {isTop && (
+            {position ? (
               <span
-                className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.1em] md:px-2 md:text-[9.5px]"
-                style={{ background: `linear-gradient(180deg, #DCBD8F, ${brand.gold})`, color: '#3A2A14', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55)' }}
+                className="flex items-center rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.1em] md:px-2 md:text-[9.5px]"
+                style={position === 1
+                  ? { background: `linear-gradient(180deg, #DCBD8F, ${brand.gold})`, color: '#3A2A14', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55)' }
+                  : { background: `linear-gradient(180deg, #2A4E77, ${brand.navy})`, color: '#F3EFE6', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20)' }}
               >
-                <ArrowUp className="w-3 h-3" /> First
+                {PLACE_LABELS[position - 1]}
               </span>
-            )}
-            {isBottom && (
-              <span
-                className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.1em] md:px-2 md:text-[9.5px]"
-                style={{ background: `linear-gradient(180deg, #2A4E77, ${brand.navy})`, color: '#F3EFE6', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20)' }}
-              >
-                <ArrowDown className="w-3 h-3" /> Last
-              </span>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -163,7 +158,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
 
         {/* Six word story, set in the display hand under a rose-gold hairline. */}
         {story ? (
-          <div className={dense ? 'min-h-0 min-w-0 flex-1 overflow-hidden' : 'min-w-0'}>
+          <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
             <span aria-hidden className="block h-px w-7" style={{ background: `${brand.gold}99` }} />
             <p
               className={`mt-1 line-clamp-3 font-heading italic leading-snug md:mt-1.5 md:line-clamp-2 md:text-[15px] lg:text-[17px] ${
@@ -238,6 +233,10 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             ) : null}
           </button>
         </div>
+
+
+        {/* Skipping and holding belong to the review, not to a record: one key for the
+            whole set is offered beside the cards, never once per plate. */}
       </motion.div>
     </div>
   );
