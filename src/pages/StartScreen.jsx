@@ -70,8 +70,8 @@ export default function StartScreen() {
   const menuItems = useMemo(
     () =>
       startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }).map((item) => {
-        // The ballot's key carries the ballot's own progress — x of the hundred it asks for.
-        if (item.key !== 'nominate' || ballotCount === null) return item;
+        // The committee's key carries the ballot's own progress — x of the hundred it asks for.
+        if (item.key !== 'selection-committee' || ballotCount === null) return item;
         return { ...item, progressLabel: `${ballotCount}/100` };
       }),
     [user?.role, signedIn, ballotCount],

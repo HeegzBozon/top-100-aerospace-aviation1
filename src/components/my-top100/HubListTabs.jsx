@@ -1,56 +1,61 @@
-import { motion } from 'framer-motion';
-import { Rocket, Sparkles, ListOrdered } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
 
-export default function HubListTabs({ activeTab, onTabChange, nominationCount, listCount }) {
+// The three surfaces of the committee, drawn as keys on a rule rather than as pills: the
+// office at the left, then the Fellow's own publication, then the weighing. The one in
+// hand is struck in copper along its foot; the count sits in the margin of its label.
+const PREFLIGHT = 'Pre-Flight';
+
+export default function HubListTabs({ activeTab, onTabChange, nominationCount = 0, listCount = 0 }) {
   const tabs = [
-    { key: 'start', label: 'Start Here', icon: Rocket },
-    { key: 'nominate', label: 'Finalize Your TOP 100', icon: Sparkles, badge: `${listCount}/100` },
-    { key: 'vote', label: 'Vote', icon: ListOrdered },
+    { key: 'start', label: PREFLIGHT },
+    { key: 'nominate', label: MANIFEST, count: listCount, of: 100 },
+    { key: 'vote', label: CROSSCHECK },
   ];
 
   return (
-    <div className="sticky top-0 z-30 px-4 pt-2 pb-2.5" style={{ background: brand.cream }}>
-      <div
-        className="max-w-md mx-auto flex items-center gap-1 p-1 rounded-2xl"
-        style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}10` }}
-      >
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => onTabChange(tab.key)}
-              className="relative flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-colors"
-              style={{ color: isActive ? brand.navy : `${brand.navy}50` }}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="hubListTab"
-                  className="absolute inset-0 rounded-xl"
-                  style={{ background: 'white', border: `1px solid ${brand.navy}10`, boxShadow: '0 2px 8px rgba(30,58,90,0.08)' }}
-                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                />
-              )}
-              <span className="relative flex items-center gap-2">
-                <Icon className="w-4 h-4" style={{ color: isActive ? brand.gold : `${brand.navy}40` }} />
+    <div className="sticky top-0 z-30 border-b border-editorial-navy/12 bg-editorial-cream/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-7xl items-end justify-between gap-4 px-4 lg:px-6">
+        {/* The strip scrolls sideways only when the three keys cannot sit side by side, so
+            it is clipped — never scrolled — in the other axis: a scroll container here used
+            to print a bar across the labels the moment a key overhung its edge by a pixel. */}
+        <div className="flex min-w-0 items-end gap-6 overflow-x-auto overflow-y-hidden scrollbar-hide">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => onTabChange(tab.key)}
+                aria-current={isActive ? 'page' : undefined}
+                className={`relative shrink-0 pb-2.5 pt-3 font-body text-[10.5px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                  isActive
+                    ? 'text-editorial-navy'
+                    : 'text-editorial-navy/45 hover:text-editorial-navy/80'
+                }`}
+              >
                 {tab.label}
-                {tab.badge && (
-                  <span
-                    className="ml-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-[10px] font-bold"
-                    style={{
-                      background: isActive ? brand.gold : `${brand.navy}10`,
-                      color: isActive ? 'white' : `${brand.navy}50`,
-                    }}
-                  >
-                    {tab.badge}
+                {tab.count > 0 && (
+                  <span className="ml-1.5 text-[10px] tabular-nums opacity-60">
+                    {tab.count}
+                    {tab.of ? ` / ${tab.of}` : ''}
                   </span>
                 )}
-              </span>
-            </button>
-          );
-        })}
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 h-[2px] bg-editorial-copper"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="hidden shrink-0 pb-3 font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-navy/40 sm:block">
+          {nominationCount > 0
+            ? `${nominationCount} filed this session`
+            : 'A publication, never a vote'}
+        </p>
       </div>
     </div>
   );

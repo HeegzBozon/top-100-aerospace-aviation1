@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
+import CommitteeMasthead from '@/components/my-top100/CommitteeMasthead';
 import ListCanvas from '@/components/my-top100/ListCanvas';
+import ManifestMasthead from '@/components/my-top100/ManifestMasthead';
 import BallotStatusBanner from '@/components/my-top100/BallotStatusBanner';
 import { useToast } from '@/components/ui/use-toast';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
@@ -13,7 +14,7 @@ import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
-import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
+import { Loader2, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import GlassNominateSurface from '@/components/my-top100/GlassNominateSurface';
@@ -197,7 +198,7 @@ export default function MyTop100() {
 
   // Count hub sessions per device. After a Fellow has opened the hub a few
   // times, the Nominate tab becomes the default landing — they've graduated
-  // past the Start Here orientation.
+  // past the Pre-Flight orientation.
   useEffect(() => {
     try {
       const c = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
@@ -400,10 +401,10 @@ export default function MyTop100() {
           className="text-2xl font-bold mb-2"
           style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          My Top 100
+          The Selection Committee
         </h1>
         <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
-          Sign in to build your personal ranked list of the most impactful aerospace & aviation leaders.
+          Sign in to serve as an Analyst: build your Manifest — your own TOP 100, in order — and measure the field in the Crosscheck.
         </p>
         <button
           onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
@@ -418,40 +419,6 @@ export default function MyTop100() {
   }
 
   // Shared editable name block (reused in both layouts)
-  const ListNameEditor = (
-    <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-      {isEditingName ? (
-        <div className="flex items-center gap-2 flex-1">
-          <input
-            autoFocus
-            value={listName}
-            onChange={e => setListName(e.target.value)}
-            onBlur={() => { setIsEditingName(false); scheduleSave(rankings, listName); }}
-            onKeyDown={e => e.key === 'Enter' && setIsEditingName(false)}
-            className="flex-1 text-xl font-bold bg-transparent outline-none border-b-2 pb-0.5"
-            style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif", borderColor: brand.gold }}
-            maxLength={60}
-          />
-          <button onClick={() => setIsEditingName(false)}>
-            <Check className="w-4 h-4" style={{ color: brand.gold }} />
-          </button>
-        </div>
-      ) : (
-        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setIsEditingName(true)}>
-          <h1 className="text-xl font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-            {listName}
-          </h1>
-          <Pencil className="w-3.5 h-3.5" style={{ color: `${brand.navy}40` }} />
-        </button>
-      )}
-      {saving && (
-        <span className="text-[10px] flex items-center gap-1" style={{ color: `${brand.navy}40` }}>
-          <Loader2 className="w-3 h-3 animate-spin" /> Saving...
-        </span>
-      )}
-    </div>
-  );
-
   // Opening a surface: the tab the desk reads, and the panel the console holds.
   const openTab = (key) => {
     setActiveTab(key);
@@ -462,7 +429,19 @@ export default function MyTop100() {
   // same artifact, so it is written once.
   const listBlock = (
     <>
-      {ListNameEditor}
+      <ManifestMasthead
+        listName={listName}
+        editing={isEditingName}
+        onChange={setListName}
+        onBeginEdit={() => setIsEditingName(true)}
+        onEndEdit={() => {
+          setIsEditingName(false);
+          scheduleSave(rankings, listName);
+        }}
+        saving={saving}
+        count={rankings.length}
+        note="In your own order, strongest first — yours to edit until you submit."
+      />
       <BallotStatusBanner
         rankings={rankings}
         votingOpen={votingOpen}
@@ -575,9 +554,9 @@ export default function MyTop100() {
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
-    { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Nominate', hint: `${rankings.length}/100 nominated`, icon: Sparkles, node: glassNominateNode },
-    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
+    { key: 'start', label: 'Pre-Flight', hint: "An Analyst's two duties, and where to begin", icon: Rocket, node: startNode },
+    { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
+    { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
   ];
 
   const shownTab = glass ? glassOpen : activeTab;
@@ -597,8 +576,7 @@ export default function MyTop100() {
         />
       ) : (
         <>
-      <ListBuilderHeader
-        listName={listName}
+      <CommitteeMasthead
         count={rankings.length}
         isPublished={isPublished}
         saving={saving}
@@ -612,18 +590,18 @@ export default function MyTop100() {
         listCount={rankings.length}
       />
 
-      {/* ── START HERE TAB ── */}
+      {/* ── PRE-FLIGHT TAB ── */}
       {activeTab === 'start' && startNode}
 
-      {/* ── FINALIZE BALLOT TAB (the organizing column, then the order itself) ── */}
+      {/* ── THE MANIFEST (the guide at the margin, the publication itself on the page) ── */}
       {activeTab === 'nominate' && (
-        <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl px-4 pb-28 lg:px-6 lg:pb-10">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-8">
-              <div className="lg:sticky lg:top-[68px] lg:w-[350px] lg:shrink-0">
+        <div className="flex-1 overflow-y-auto bg-editorial-sand/45">
+          <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-5 lg:px-6 lg:pb-12 lg:pt-7">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+              <aside className="border-t-2 border-editorial-copper pt-4 lg:sticky lg:top-[64px] lg:w-[330px] lg:shrink-0">
                 {builderPanel}
-              </div>
-              <div className="min-w-0 flex-1 lg:max-w-2xl">
+              </aside>
+              <div className="min-w-0 flex-1 border border-editorial-copper/25 bg-editorial-cream px-5 py-6 lg:max-w-2xl lg:px-8 lg:py-7">
                 {listBlock}
               </div>
             </div>

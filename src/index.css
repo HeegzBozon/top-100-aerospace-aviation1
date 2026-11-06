@@ -1306,6 +1306,24 @@ body.hh-landscape .hh-viewer-foot {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+/* ===== SCROLL CHROME, RETIRED WHERE THE MACHINE ASKS FOR IT =====
+   `scrollbar-hide` is the utility the shell's own containers carry — the desk's tube,
+   the committee's tab strip, the sideways rows inside a surface. It was referenced in
+   markup but never defined, so those containers printed a browser trough and bar across
+   the picture instead: a horizontal bar laid over the tab labels the moment a key
+   overhung its edge, and a second thumb down the tube's trim. Defining it here makes the
+   intent real. The container keeps the wheel, the thumb and the keyboard; only the
+   printed chrome goes. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
 .page-scroll::-webkit-scrollbar {
   width: 0;
   height: 0;

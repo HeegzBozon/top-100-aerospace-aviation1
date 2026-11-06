@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { ArrowRight, Check, Lock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
+import { CROSSCHECK, ANALYSIS, ANALYST, ANALYST_STANDING } from '@/components/voting/ballotNaming';
 
 // The invitation the ballot stands behind.
 //
@@ -23,7 +24,7 @@ export default function VoteGate({ source }) {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = 'Vote — TOP 100 Aerospace & Aviation';
+    document.title = `${ANALYSIS} · ${CROSSCHECK} — TOP 100 Aerospace & Aviation`;
     return () => { document.title = previous; };
   }, []);
 
@@ -42,7 +43,7 @@ export default function VoteGate({ source }) {
             className="text-[10px] font-bold uppercase tracking-[0.28em]"
             style={{ color: '#8f5c2c', fontFamily: 'var(--font-body)' }}
           >
-            The ballot
+            {CROSSCHECK} &middot; {ANALYSIS}
           </p>
         </div>
 
@@ -50,22 +51,25 @@ export default function VoteGate({ source }) {
           className="mb-4 text-[2rem] leading-[1.1] sm:text-[2.6rem]"
           style={{ color: brand.navy, fontFamily: 'var(--font-heading)' }}
         >
-          You have been invited to weigh the season.
+          You have been invited to serve as an {ANALYST}.
         </h1>
 
         <p
           className="mb-8 max-w-md text-sm leading-relaxed"
           style={{ color: `${brand.navy}99`, fontFamily: 'var(--font-body)' }}
         >
-          Endorsing puts a name forward. Balloting decides which names stand. Fellows are
-          shown two nominees at a time and pick the stronger record, one pairing at a time.
-          No leaderboard, no tally in front of you, nothing to game — just the measure.
+          Voting here is analysis. The Crosscheck is a mini ranked-choice ballot, four records
+          deep: four records arrive together, chosen by the house rather than by you, and you
+          put all four in order — the one that leads, then the next, then the next, and the
+          fourth places itself. No leaderboard, no tally in front of you, nothing to game —
+          just the measure.
         </p>
 
         <ul className="mb-9 flex flex-col gap-3">
           {[
-            'One pairing at a time, judged on the record in front of you.',
-            'Every set you record is kept to your own contribution record.',
+            'Four records at a time — one small ranked-choice ballot, and every order you leave is kept.',
+            'A record you cannot judge closes the set; nothing is scored from it.',
+            'Every set belongs to your own Analyst record, kept across cycles.',
             'The measure is public. The formulas are not.',
           ].map((line) => (
             <li key={line} className="flex items-start gap-2.5">
@@ -85,13 +89,21 @@ export default function VoteGate({ source }) {
           ))}
         </ul>
 
+        <p
+          className="mb-9 border-t border-editorial-copper/40 pt-4 text-[12px] leading-relaxed"
+          style={{ color: `${brand.navy}A6`, fontFamily: 'var(--font-body)' }}
+        >
+          The ballot is one duty of the office. An Analyst also finds the field and carries the
+          record. {ANALYST_STANDING}
+        </p>
+
         <button
           type="button"
           onClick={toDoor}
           className="group flex w-full items-center justify-center gap-2 rounded-full px-8 py-3.5 font-bold shadow-xl transition-transform active:scale-[0.99]"
           style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: '#FAF8F5' }}
         >
-          Enter the ballot
+          Begin your analysis
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </button>
 
@@ -99,7 +111,8 @@ export default function VoteGate({ source }) {
           className="mt-3 text-center text-[11px] leading-relaxed"
           style={{ color: `${brand.navy}66`, fontFamily: 'var(--font-body)' }}
         >
-          Sign in, or create your account. Either way you come straight back to the ballot.
+          Sign in, or open an account. Either way you come straight back to the ballot, and the
+          analysis is one set away.
         </p>
 
         <div className="mt-auto pt-10 text-center">
@@ -108,7 +121,7 @@ export default function VoteGate({ source }) {
             className="text-[11px] font-semibold uppercase tracking-[0.18em] underline underline-offset-4"
             style={{ color: `${brand.navy}80`, fontFamily: 'var(--font-body)' }}
           >
-            Not ready to vote? Read the season
+            Not ready to analyse the field? Read the season
           </a>
         </div>
 

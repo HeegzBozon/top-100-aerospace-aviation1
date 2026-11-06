@@ -117,7 +117,7 @@ export default function VoteSurface({ user }) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-20 text-center">
         <p className="font-heading text-lg" style={{ color: brand.navy }}>
-          The ballot did not open
+          The Crosscheck did not open
         </p>
         <p className="max-w-sm text-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
           {error}
@@ -158,12 +158,16 @@ export default function VoteSurface({ user }) {
               <Lock className="h-5 w-5" style={{ color: `${brand.navy}70` }} />
             </span>
             <h2 className="mt-3 font-heading text-xl" style={{ color: brand.navy }}>
-              The ballot is closed
+              The Crosscheck is closed
             </h2>
             <p className="mt-1.5 text-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
               {upcoming
                 ? `The next counting cohort opens ${fmtDate(upcoming.voting_start)}. Your contribution record is kept.`
                 : 'No cohort is counting right now. Your contribution record is kept.'}
+            </p>
+            <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: `${brand.navy}55` }}>
+              In the Manifest you choose who to back. In the Crosscheck the house chooses who you
+              compare. Analysis resumes with the next window.
             </p>
           </div>
 

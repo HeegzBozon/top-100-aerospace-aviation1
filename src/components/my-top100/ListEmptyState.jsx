@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Star, Plus, Check, Search } from 'lucide-react';
+import { Plus, Check, Search } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { brand } from '@/components/nominate/NominateConfig';
 
+// The composition the Manifest opens with.
+//
+// Vacancy is the call to action: the first place is drawn as an outlined plate carrying
+// its number, so the list reads as begun-and-waiting rather than as a page with nothing on
+// it. Six records already measured are offered beneath it as seeds, never as a list.
 export default function ListEmptyState({ onAdd, addedIds, onBrowse }) {
   const [featured, setFeatured] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -15,88 +18,90 @@ export default function ListEmptyState({ onAdd, addedIds, onBrowse }) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-      {/* Hero illustration */}
-      <div
-        className="h-24 w-24 rounded-full flex items-center justify-center mb-5 relative"
-        style={{ background: `linear-gradient(135deg, ${brand.navy}12, ${brand.gold}18)` }}
-      >
-        <Star className="w-9 h-9" style={{ color: `${brand.gold}aa` }} fill={brand.gold} />
-        <motion.div
-          className="absolute inset-0 rounded-full"
-          style={{ border: `2px dashed ${brand.gold}50` }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-        />
+    <div className="py-10">
+      <div className="flex items-start gap-4">
+        <span className="flex h-16 w-14 shrink-0 items-center justify-center border border-dashed border-editorial-copper/60 font-heading text-2xl text-editorial-copper/70 tabular-nums">
+          01
+        </span>
+        <div className="min-w-0">
+          <p className="font-body text-[10px] font-bold uppercase tracking-[0.22em] text-editorial-label">
+            The first place
+          </p>
+          <h3 className="mt-1.5 font-heading text-[22px] leading-tight text-editorial-navy">
+            Begin your Manifest
+          </h3>
+          <p className="mt-1.5 max-w-sm font-body text-[12px] leading-relaxed text-editorial-navy/55">
+            Name the people doing the work and the order is yours to set. A Manifest is a
+            publication, not a vote — the field is measured on the Crosscheck.
+          </p>
+        </div>
       </div>
 
-      <h3
-        className="text-2xl font-bold mb-2"
-        style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
-      >
-        Start your Top 100
-      </h3>
-      <p className="text-sm leading-relaxed mb-6 max-w-xs" style={{ color: `${brand.navy}60` }}>
-        Curate the aerospace & aviation leaders who inspire you. Your ranked list becomes your official ballot — and a shareable statement.
-      </p>
-
-      {/* Featured seeds */}
       {featured.length > 0 && (
-        <div className="w-full max-w-md mb-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: `${brand.navy}50` }}>
-            ✦ Featured to get you started
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {featured.map(n => {
+        <div className="mt-7">
+          <div className="flex items-center justify-between gap-3 border-b border-editorial-copper pb-2">
+            <p className="font-body text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-label">
+              Six to begin with
+            </p>
+            <p className="font-body text-[9.5px] uppercase tracking-[0.14em] text-editorial-navy/40">
+              From the record
+            </p>
+          </div>
+
+          <div className="divide-y divide-editorial-navy/10">
+            {featured.map((n, index) => {
               const isAdded = addedIds.has(n.id);
               return (
-                <motion.button
+                <button
                   key={n.id}
-                  whileTap={{ scale: 0.96 }}
+                  type="button"
                   onClick={() => !isAdded && onAdd(n)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-2xl border text-left transition-all"
-                  style={{
-                    background: isAdded ? `${brand.gold}10` : 'white',
-                    borderColor: isAdded ? `${brand.gold}40` : `${brand.navy}10`,
-                  }}
+                  disabled={isAdded}
+                  className="flex w-full items-center gap-3 px-1 py-2.5 text-left transition-colors hover:bg-editorial-sand/40 disabled:hover:bg-transparent"
                 >
-                  <div
-                    className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold overflow-hidden"
-                    style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-                  >
+                  <span className="w-5 shrink-0 text-right font-heading text-[12px] text-editorial-navy/30 tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-editorial-copper/30 bg-editorial-navy font-heading text-xs text-editorial-cream">
                     {n.avatar_url || n.photo_url ? (
-                      <img src={n.avatar_url || n.photo_url} alt={n.name} className="w-full h-full object-cover" />
-                    ) : n.name?.[0]?.toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold truncate" style={{ color: brand.navy }}>{n.name}</p>
-                    <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
-                      {n.title || n.professional_role || ''}
-                    </p>
-                  </div>
+                      <img src={n.avatar_url || n.photo_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      n.name?.[0]?.toUpperCase()
+                    )}
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-heading text-[13.5px] leading-snug text-editorial-navy">
+                      {n.name}
+                    </span>
+                    {(n.title || n.professional_role) && (
+                      <span className="mt-0.5 block truncate font-body text-[9px] uppercase tracking-[0.12em] text-editorial-navy/45">
+                        {n.title || n.professional_role}
+                      </span>
+                    )}
+                  </span>
+
                   {isAdded ? (
-                    <Check className="w-3.5 h-3.5 shrink-0" style={{ color: brand.gold }} />
+                    <Check className="h-3.5 w-3.5 shrink-0 text-editorial-copper" aria-hidden="true" />
                   ) : (
-                    <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.navy}08` }}>
-                      <Plus className="w-3 h-3" style={{ color: brand.navy }} />
-                    </div>
+                    <Plus className="h-3.5 w-3.5 shrink-0 text-editorial-navy/35" aria-hidden="true" />
                   )}
-                </motion.button>
+                </button>
               );
             })}
           </div>
         </div>
       )}
 
-      <motion.button
-        whileTap={{ scale: 0.96 }}
+      <button
+        type="button"
         onClick={onBrowse}
-        className="flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white shadow-lg"
-        style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+        className="mt-6 flex w-full items-center justify-center gap-2 bg-editorial-navy px-6 py-3 font-body text-[10px] font-bold uppercase tracking-[0.2em] text-editorial-cream transition-colors hover:bg-editorial-navy/90"
       >
-        <Search className="w-4 h-4" style={{ color: brand.gold }} />
-        Browse All Nominees
-      </motion.button>
+        <Search className="h-3.5 w-3.5 text-editorial-gold" aria-hidden="true" />
+        Browse the field
+      </button>
     </div>
   );
 }

@@ -28,8 +28,8 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
   const cards = [
     {
       key: 'ballot',
-      label: 'Your ballot',
-      hint: status.ranked >= status.minimum ? `${status.ranked}/100 ranked · counting` : 'Rank one name',
+      label: 'Your Manifest',
+      hint: status.ranked >= status.minimum ? `${status.ranked}/100 placed · counting` : 'Name one person',
       icon: ListOrdered,
       node: ballotNode,
     },
@@ -42,8 +42,8 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     },
     {
       key: 'chamber',
-      label: 'Anchor voting',
-      hint: 'Weigh nominees head to head',
+      label: 'The Crosscheck',
+      hint: 'Your analysis — four records, one order',
       icon: Award,
       node: chamberNode,
       // The one card that must fit the glass whole: it draws four candidates and wants
@@ -166,7 +166,7 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
       }`
     : status.closed
       ? `Voting has closed for this cycle · your list of ${status.ranked} stays on your profile`
-      : 'The window is not open yet · rank your list now, and it becomes your ballot when it opens';
+      : 'The window is not open yet · set your Manifest now, and it becomes your ballot when it opens';
 
   if (!openCard) {
     return (
