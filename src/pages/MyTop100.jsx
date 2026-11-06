@@ -400,10 +400,10 @@ export default function MyTop100() {
           className="text-2xl font-bold mb-2"
           style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          My Top 100
+          The Selection Committee
         </h1>
         <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
-          Sign in to build your Manifest — your own TOP 100, in order, of the most impactful aerospace &amp; aviation leaders.
+          Sign in to serve as an Analyst: build your Manifest — your own TOP 100, in order — and measure the field in the Crosscheck.
         </p>
         <button
           onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
@@ -575,9 +575,9 @@ export default function MyTop100() {
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
-    { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Nominate', hint: `${rankings.length}/100 nominated`, icon: Sparkles, node: glassNominateNode },
-    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
+    { key: 'start', label: 'Start Here', hint: "An Analyst's two duties, and where to begin", icon: Rocket, node: startNode },
+    { key: 'nominate', label: 'Nominate', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
+    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
   ];
 
   const shownTab = glass ? glassOpen : activeTab;

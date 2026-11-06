@@ -83,7 +83,7 @@ export default function BallotBuilderPanel({
 
       {basis.length > 0 && (
         <p className="mt-0.5 text-[10px]" style={{ color: `${brand.navy}55` }}>
-          Read from the sets you have judged · {basis.join(' · ')}
+          Read from the sets you have analysed · {basis.join(' · ')}
         </p>
       )}
 
@@ -118,7 +118,7 @@ export default function BallotBuilderPanel({
               Suggestions follow your judging
             </p>
             <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-              Judge a few sets on the ballot — the profiles you advance draw a short list here.
+              Analyse a few sets on the ballot — the profiles you advance draw a short list here.
               Nothing is added to your ballot on your behalf.
             </p>
             {onOpenVote && (
@@ -138,7 +138,7 @@ export default function BallotBuilderPanel({
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Every suggestion is on your ballot</p>
             <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-              Search the directory, or judge more sets to widen the field.
+              Search the directory, or analyse more sets to widen the field.
             </p>
           </div>
         )}

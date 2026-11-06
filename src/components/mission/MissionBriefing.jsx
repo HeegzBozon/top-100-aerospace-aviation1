@@ -18,7 +18,7 @@ const BRIEFINGS = [
     kicker: MANIFEST,
     objective: 'Build the field.',
     body:
-      'Naming puts someone forward; the order says how strongly you stand behind them. The Manifest is your own TOP 100 in order — you choose who to back, and nothing is counted until you submit it. A short list you would vouch for is worth more than a long one you would not.',
+      "An Analyst builds the field before measuring it. Naming puts someone forward, and the order says how strongly you stand behind them. The Manifest is your own TOP 100 in order — you choose who to back, and nothing is counted until you submit it. A short list you would vouch for is worth more than a long one you would not.",
     results: [
       'Name one person you vouch for',
       'Build your list in order',
@@ -30,10 +30,10 @@ const BRIEFINGS = [
   {
     key: 'vote',
     kicker: CROSSCHECK,
-    objective: 'Weigh the field.',
+    objective: 'Analyse the field.',
     body:
-      'A mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Rank all four: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
-    results: ['1 set', '10 sets', '20 sets', '50 sets', '100 sets'],
+      'You serve this season as an Analyst. Voting is analysis: a mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Put all four in order: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
+    results: ['1 set analysed', '10 sets analysed', '20 sets analysed', '50 sets analysed', '100 sets analysed'],
   },
 ];
 
@@ -92,7 +92,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
             Mission briefing &middot; objectives &amp; key results
           </p>
           <DialogTitle className="mt-1 font-heading text-[21px] leading-tight" style={{ color: brand.navy }}>
-            {single ? single.objective : 'Two surfaces, one committee.'}
+            {single ? single.objective : 'Two duties, one Analyst.'}
           </DialogTitle>
           <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
             {single

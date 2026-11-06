@@ -26,7 +26,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
     >
       <div className="flex items-baseline justify-between gap-2">
         <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: brand.gold }}>
-          Contribution
+          Analyst record
         </p>
         <p
           className="text-[9px] font-bold uppercase tracking-[0.16em]"

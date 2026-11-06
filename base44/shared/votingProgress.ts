@@ -12,11 +12,15 @@ export const XP_PER_SET = 10;
 export const XP_PER_BALLOT = 25;
 
 // The ladder. Thresholds are cumulative xp.
+//
+// Taking the first set up confers the office: an Analyst is what the ballot makes of
+// whoever serves it, not something climbed into. The rungs above it name the experience
+// that accumulates behind the office.
 export const LEVELS = [
-  { level: 1, name: 'Observer', at: 0 },
-  { level: 2, name: 'Analyst', at: 60 },
-  { level: 3, name: 'Reviewer', at: 160 },
-  { level: 4, name: 'Senior Reviewer', at: 340 },
+  { level: 1, name: 'Analyst', at: 0 },
+  { level: 2, name: 'Senior Analyst', at: 60 },
+  { level: 3, name: 'Lead Analyst', at: 160 },
+  { level: 4, name: 'Principal Analyst', at: 340 },
   { level: 5, name: 'Committee Member', at: 640 },
   { level: 6, name: 'Committee Chair', at: 1100 },
   { level: 7, name: 'Fellow of the Committee', at: 1800 },

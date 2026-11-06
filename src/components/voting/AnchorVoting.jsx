@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
-  CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_IS, CROSSCHECK_HOW, CROSSCHECK_PROMPTS,
+  CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_IS, CROSSCHECK_HOW, CROSSCHECK_PROMPTS, ANALYSIS,
 } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
@@ -371,7 +371,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         <div className="mb-1 shrink-0 md:mb-2">
           <div>
             <h2 className="hidden text-lg font-bold md:block" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {CROSSCHECK}
+              {CROSSCHECK} &middot; {ANALYSIS}
             </h2>
             {/* The line is fixed, and it stands on the glass as well as the desk: a voter
                 reads what the set measures before the first tap is made. */}

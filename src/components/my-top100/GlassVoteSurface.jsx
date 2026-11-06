@@ -43,7 +43,7 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     {
       key: 'chamber',
       label: 'The Crosscheck',
-      hint: 'A small ranked-choice ballot',
+      hint: 'Your analysis — four records, one order',
       icon: Award,
       node: chamberNode,
       // The one card that must fit the glass whole: it draws four candidates and wants

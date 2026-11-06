@@ -35,22 +35,22 @@ export default function NominateBallotGate() {
         className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em]"
         style={{ color: brand.gold }}
       >
-        Fellows measure
+        Analysts measure
       </p>
 
       <h1
         className="mb-3 max-w-md text-2xl leading-tight sm:text-3xl"
         style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
       >
-        The ballot opens for Fellows
+        The analysis opens to Analysts
       </h1>
 
       <p
         className="mb-8 max-w-md text-sm leading-relaxed"
         style={{ color: `${brand.navy}70`, fontFamily: "'Montserrat', sans-serif" }}
       >
-        Anyone may nominate and anyone may read the edition. Weighing the nominees against one
-        another is the work of a Fellow, so it asks who you are first.
+        Anyone may nominate and anyone may read the edition. Measuring the nominees against one
+        another is the work of an Analyst, so the ballot asks who you are first.
       </p>
 
       <button
