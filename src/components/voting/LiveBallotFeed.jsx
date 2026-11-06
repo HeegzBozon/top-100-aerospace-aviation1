@@ -1,31 +1,22 @@
-import { Activity, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import useLiveBallotFeed from '@/hooks/useLiveBallotFeed';
+import SignalProgress from '@/components/voting/monitor/SignalProgress';
+import LatestReviews from '@/components/voting/monitor/LatestReviews';
 
-function elapsed(iso) {
-  const at = new Date(iso).getTime();
-  if (Number.isNaN(at)) return '';
-  const secs = Math.max(0, Math.round((Date.now() - at) / 1000));
-  if (secs < 45) return 'just now';
-  const mins = Math.round(secs / 60);
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.round(hours / 24)}d ago`;
-}
+// The operator's window onto the counting cohort while it is being weighed. Two readings,
+// on one plate: how far the analysis has got (the primary reading — a monitor is for the
+// shape of the field, not for the last row written), and the sets themselves as they land.
+// Admin only, and read only — nothing here is read by discovery, ranking, or scoring.
+const TABS = [
+  { key: 'progress', label: 'Signal progress' },
+  { key: 'reviews', label: 'Latest reviews' },
+];
 
-// The operator's window onto the counting cohort while it is being weighed: how many
-// ballots have landed, how many Fellows have stood, the pace of the last quarter hour,
-// and the sets themselves, newest first. Admin only, and read only — nothing here is
-// read by discovery, ranking, or scoring.
 export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
   const { data, loading, error, updatedAt, refresh } = useLiveBallotFeed(seasonId, refreshToken);
-
-  const figures = [
-    { label: 'Comparisons', value: data?.comparisons ?? 0 },
-    { label: 'Voters', value: data?.voters ?? 0 },
-    { label: 'Last 15m', value: data?.recentComparisons ?? 0 },
-  ];
+  const [tab, setTab] = useState('progress');
 
   return (
     <div
@@ -59,91 +50,48 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
         </button>
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        {figures.map((f) => (
-          <div key={f.label} className="rounded-lg px-2 py-1.5" style={{ background: `${brand.navy}08` }}>
-            <p className="font-heading text-[15px] leading-none" style={{ color: brand.navy }}>
-              {loading && !data ? '—' : f.value}
-            </p>
-            <p
-              className="mt-1 text-[8px] font-bold uppercase tracking-[0.14em]"
-              style={{ color: ink.soft }}
-            >
-              {f.label}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-3">
-        <div className="flex items-baseline justify-between">
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: ink.soft }}>
-            Latest reviews
-          </p>
-          {updatedAt && (
-            <p className="text-[8.5px]" style={{ color: ink.soft }}>
-              {elapsed(updatedAt.toISOString())}
-            </p>
-          )}
-        </div>
-
-        {error ? (
-          <div className="mt-2 rounded-lg px-2.5 py-2" style={{ background: '#B8733310', border: '1px solid #B8733330' }}>
-            <p className="text-[10px] leading-snug" style={{ color: '#8F5C2C' }}>
-              {error}
-            </p>
+      <div className="mt-2.5 flex items-center gap-1" role="tablist" aria-label="Monitor reading">
+        {TABS.map((entry) => {
+          const active = tab === entry.key;
+          return (
             <button
+              key={entry.key}
               type="button"
-              onClick={refresh}
-              className="mt-1 text-[9px] font-bold uppercase tracking-[0.16em]"
-              style={{ color: '#8F5C2C' }}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setTab(entry.key)}
+              className="flex-1 rounded-md px-1.5 py-1 text-[8px] font-bold uppercase tracking-[0.16em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+              style={
+                active
+                  ? { background: `${brand.navy}12`, border: `1px solid ${brand.navy}24`, color: brand.navy }
+                  : { background: 'transparent', border: `1px solid ${brand.navy}0F`, color: ink.soft }
+              }
             >
-              Try again
+              {entry.label}
             </button>
-          </div>
-        ) : loading && !data ? (
-          <div className="mt-2 space-y-1.5">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-8 animate-pulse rounded-lg" style={{ background: `${brand.navy}06` }} />
-            ))}
-          </div>
-        ) : data?.feed?.length ? (
-          <ul className="mt-2 divide-y" style={{ borderColor: `${brand.navy}08` }}>
-            {data.feed.map((set) => (
-              <li key={set.key} className="py-1.5" style={{ borderColor: `${brand.navy}0A` }}>
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="truncate text-[10px] font-semibold" style={{ color: brand.navy }}>
-                    {set.voter_email}
-                  </p>
-                  <span className="shrink-0 text-[8.5px]" style={{ color: ink.soft }}>
-                    {elapsed(set.created_date)}
-                  </span>
-                </div>
-                <p className="mt-0.5 truncate text-[9.5px]" style={{ color: ink.soft }}>
-                  <span style={{ color: brand.gold }}>▲</span> {set.top_name || 'Nominee'}
-                  <span className="mx-1" style={{ color: ink.soft }}>·</span>
-                  <span style={{ color: '#8F5C2C' }}>▼</span> {set.bottom_name || 'Nominee'}
-                </p>
-                {set.is_test && (
-                  <p className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: ink.soft }}>
-                    Test set · not measured
-                  </p>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="mt-2 rounded-lg px-3 py-4 text-center" style={{ background: `${brand.navy}05` }}>
-            <Activity className="mx-auto h-3.5 w-3.5" style={{ color: ink.soft }} />
-            <p className="mt-1.5 font-heading text-[11px]" style={{ color: brand.navy }}>
-              No ballots yet
-            </p>
-            <p className="mt-0.5 text-[9px] leading-snug" style={{ color: ink.soft }}>
-              Sets appear here the moment a Fellow records one.
-            </p>
-          </div>
-        )}
+          );
+        })}
       </div>
+
+      {error ? (
+        <div className="mt-3 rounded-lg px-2.5 py-2" style={{ background: '#B8733310', border: '1px solid #B8733330' }}>
+          <p className="text-[10px] leading-snug" style={{ color: '#8F5C2C' }}>
+            {error}
+          </p>
+          <button
+            type="button"
+            onClick={refresh}
+            className="mt-1 text-[9px] font-bold uppercase tracking-[0.16em]"
+            style={{ color: '#8F5C2C' }}
+          >
+            Try again
+          </button>
+        </div>
+      ) : tab === 'progress' ? (
+        <SignalProgress data={data} loading={loading} />
+      ) : (
+        <LatestReviews data={data} loading={loading} updatedAt={updatedAt} />
+      )}
     </div>
   );
 }

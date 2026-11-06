@@ -10,6 +10,12 @@ const POLL_MS = 9000;
 const PACE_WINDOW_MIN = 15;
 const FEED_SETS = 6;
 
+// A review is seven comparisons against four records, so a Fellow's reviews are read back
+// off their own rows. The rungs below are the ballot's own milestone list: signal progress
+// is how deep the cohort's analysis runs, counted in Fellows who have passed each rung.
+const COMPARISONS_PER_REVIEW = 7;
+const SIGNAL_RUNGS = [10, 25, 50, 100, 250];
+
 // A set is seven rows written in one call, so they share a voter and arrive together.
 function groupSets(rows) {
   const ordered = [...rows].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
@@ -90,6 +96,12 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
 
       const voterRows = tallies?.rows || [];
       const comparisons = voterRows.reduce((sum, r) => sum + (r.count || 0), 0);
+      const voterReviews = voterRows.map((r) => Math.floor((r.count || 0) / COMPARISONS_PER_REVIEW));
+      const reviews = Math.floor(comparisons / COMPARISONS_PER_REVIEW);
+      const rungs = SIGNAL_RUNGS.map((sets) => ({
+        sets,
+        reached: voterReviews.filter((n) => n >= sets).length,
+      }));
       const feed = groupSets(recent?.items || [])
         .reverse()
         .slice(0, FEED_SETS)
@@ -106,6 +118,8 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
       setData({
         voters: voterRows.length,
         comparisons,
+        reviews,
+        rungs,
         recentComparisons: typeof pace === 'number' ? pace : pace?.count || 0,
         feed: feed.map((set) => ({
           ...set,

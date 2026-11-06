@@ -10,8 +10,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
-  CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_IS, CROSSCHECK_HOW, CROSSCHECK_PROMPTS, ANALYSIS,
-  CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL,
+  CROSSCHECK_PROMPTS, CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL,
 } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
 import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
@@ -482,36 +481,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             label={nextRung}
           />
         )}
-        {/* The console names this panel on its own strip, so on the glass the title
-            stands down and the prompt and the cards take the room. */}
-        {/* The desk states the measure above the cards. On the glass the same words are
-            the info key's: the briefing carries them in full, so the set keeps the whole
-            of its height and a reader holding the device is not read to twice. */}
-        <div className="mb-2.5 hidden shrink-0 md:mb-4 md:block">
-          <p
-            className="text-[9px] font-bold uppercase tracking-[0.26em]"
-            style={{ color: ink.label, fontFamily: 'var(--font-body)' }}
-          >
-            Selection Committee
-          </p>
-          <h2
-            className="mt-1 text-[20px] font-bold leading-tight"
-            style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
-            {CROSSCHECK} &middot; {ANALYSIS}
-          </h2>
-          <p className="mt-1.5 max-w-xl text-[12px] leading-relaxed" style={{ color: ink.body }}>
-            {CROSSCHECK_LINE} {CROSSCHECK_IS} {CROSSCHECK_HOW}
-          </p>
-          <span
-            aria-hidden
-            className="mt-2.5 block h-[2px] w-14"
-            style={{ background: 'rgb(var(--editorial-copper-rgb))' }}
-          />
-        </div>
-
-        {/* Prompt, with the way into the explainer beside it and the session's tally at
-            the far end of the row. */}
+        {/* The bar names this surface, so nothing is printed over the set to name it
+            again — the desk reads exactly as the glass does. What the surface is and what
+            it is measured by live in the info key, and everything a hand can press stands
+            on the one line under it, so the four cards keep the whole of the height. */}
         <AnimatePresence mode="wait">
           <motion.div
             key={prompt}
@@ -519,7 +492,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="mb-1 mt-0 flex items-center gap-1.5 md:mb-4 md:mt-3 md:gap-2"
+            className="mb-1.5 mt-0 flex min-w-0 flex-wrap items-center gap-1.5 md:mb-3 md:mt-1 md:flex-nowrap md:gap-2"
           >
             {phase === 'ordering' && (
               // The place the next tap fills, so the sequence is legible without reading.
@@ -553,68 +526,48 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}1A`, color: ink.soft }}
             >
               <Info className="h-3 w-3" />
-            </button>
-          </motion.div>
+              </button>
+
+              {/* Everything that acts on the set stands on this same line, to the right of
+                the prompt: one row for the words and the keys, so the four cards keep
+                every other row of the height. */}
+              {hasControls && (
+              <>
+                <span aria-hidden className="mx-0.5 h-3.5 w-px shrink-0" style={{ background: `${brand.navy}16` }} />
+                {phase === 'ordering' && (
+                  <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
+                    <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
+                  </button>
+                )}
+                {phase === 'ordering' && (
+                  <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
+                    <BookmarkPlus className="w-3.5 h-3.5" /> {CROSSCHECK_HOLD_LABEL}
+                  </button>
+                )}
+                {phase === 'ordering' && holds.length > 0 && (
+                  <button onClick={openHeld} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.gold}1F`, color: brand.navy, border: `1px solid ${brand.gold}66` }}>
+                    <Bookmark className="w-3.5 h-3.5" /> Held · {holds.length}
+                  </button>
+                )}
+                {phase === 'ordering' && order.length > 0 && (
+                  <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
+                    <Undo2 className="w-3.5 h-3.5" /> Undo<span className="hidden md:inline"> last tap</span>
+                  </button>
+                )}
+                {history.length > 0 && phase === 'ordering' && (
+                  <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
+                    <ArrowLeft className="w-3.5 h-3.5" /> Last review
+                  </button>
+                )}
+                {phase === 'review' && (
+                  <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
+                    Resume voting
+                  </button>
+                )}
+              </>
+              )}
+              </motion.div>
         </AnimatePresence>
-
-        {/* What the keys do, printed on the desk where the console prints its own
-            legends. The glass carries the same marks on the cards themselves. */}
-        <div className="mb-2 hidden flex-wrap items-center gap-x-2.5 gap-y-1 md:flex">
-          {[
-            ['\u2190 \u2192', 'walk the set'],
-            ['Enter', 'mark'],
-            ['X Y A B', 'vote'],
-            ['I', 'info'],
-          ].map(([key, text]) => (
-            <span key={key} className="inline-flex items-center gap-1.5 text-[10px]" style={{ color: ink.soft }}>
-              <span
-                className="rounded-md px-1.5 py-[1px] text-[9px] font-semibold"
-                style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}16`, color: ink.soft }}
-              >
-                {key}
-              </span>
-              {text}
-            </span>
-          ))}
-        </div>
-
-        {/* Controls: undo mid-set / review last set / resume */}
-        {/* One line, never wrapped: on the glass every row given to the keys is taken from
-            the cards. A key that overruns the width scrolls sideways rather than dropping. */}
-        <div className={hasControls ? 'scrollbar-hide mb-1.5 flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto whitespace-nowrap md:mb-3 md:gap-2' : 'hidden'}>
-          {/* One key for the whole review: skipping is a judgement on the comparison, not on
-              a single record, so it never sits on a plate. */}
-          {phase === 'ordering' && (
-            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
-              <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
-            </button>
-          )}
-          {phase === 'ordering' && (
-            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
-              <BookmarkPlus className="w-3.5 h-3.5" /> {CROSSCHECK_HOLD_LABEL}
-            </button>
-          )}
-          {phase === 'ordering' && holds.length > 0 && (
-            <button onClick={openHeld} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.gold}1F`, color: brand.navy, border: `1px solid ${brand.gold}66` }}>
-              <Bookmark className="w-3.5 h-3.5" /> Held · {holds.length}
-            </button>
-          )}
-          {phase === 'ordering' && order.length > 0 && (
-            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
-              <Undo2 className="w-3.5 h-3.5" /> Undo<span className="hidden md:inline"> last tap</span>
-            </button>
-          )}
-          {history.length > 0 && phase === 'ordering' && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
-              <ArrowLeft className="w-3.5 h-3.5" /> Last review
-            </button>
-          )}
-          {phase === 'review' && (
-            <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
-              Resume voting
-            </button>
-          )}
-        </div>
 
         {/* Four candidates, twice two — on the glass the whole set has to stand in view
             at once, so the grid takes its rows from the height it is given. */}
