@@ -59,6 +59,10 @@ export default function VoteSurface({ user }) {
   // The field the ballot is drawing from, as the ballot itself counted it: the monitor
   // sets its marks against this pool, so the scale and the cards can never disagree.
   const [poolSize, setPoolSize] = useState(0);
+  // What the column beside the set is showing: the operator's monitor, or the record they
+  // also have to keep. An operator is a Fellow first, so the quick edit is never out of
+  // reach — the monitor is simply what the column opens on.
+  const [asideView, setAsideView] = useState('monitor');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -242,7 +246,38 @@ export default function VoteSurface({ user }) {
             repeated in this column: it stands once, at the head of the set. */}
         <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
           {isAdmin ? (
-            <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
+            <>
+              <div className="flex gap-1.5" role="tablist" aria-label="Column">
+                {[
+                  ['monitor', 'Live monitor'],
+                  ['record', 'Your record'],
+                ].map(([key, label]) => {
+                  const active = asideView === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setAsideView(key)}
+                      className="flex-1 rounded-full px-2.5 py-1.5 text-[9.5px] font-bold uppercase tracking-[0.14em] transition-colors"
+                      style={{
+                        background: active ? brand.navy : 'rgba(255,255,255,0.68)',
+                        color: active ? '#F4F0E7' : ink.soft,
+                        border: `1px solid ${active ? brand.navy : `${brand.navy}18`}`,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              {asideView === 'monitor' ? (
+                <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
+              ) : (
+                <FellowQuickEdit />
+              )}
+            </>
           ) : (
             <FellowQuickEdit />
           )}
