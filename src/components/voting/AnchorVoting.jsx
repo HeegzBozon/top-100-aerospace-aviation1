@@ -463,10 +463,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const hasControls = phase === 'ordering' || phase === 'review';
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
+    <div className="flex-1 flex flex-col lg:flex-row lg:min-h-0 relative">
       {/* Voting surface */}
       <div className="flex-1 flex flex-col min-w-0 px-2.5 pt-0.5 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
-        <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
+        <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 lg:min-h-0">
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
         {/* The desk states the measure above the cards. On the glass the same words are
@@ -578,36 +578,38 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         </div>
 
         {/* Controls: undo mid-set / review last set / resume */}
-        <div className={hasControls ? 'mb-1 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2' : 'hidden'}>
+        {/* One line, never wrapped: on the glass every row given to the keys is taken from
+            the cards. A key that overruns the width scrolls sideways rather than dropping. */}
+        <div className={hasControls ? 'scrollbar-hide mb-1.5 flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto whitespace-nowrap md:mb-3 md:gap-2' : 'hidden'}>
           {/* One key for the whole review: skipping is a judgement on the comparison, not on
               a single record, so it never sits on a plate. */}
           {phase === 'ordering' && (
-            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
             </button>
           )}
           {phase === 'ordering' && (
-            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <BookmarkPlus className="w-3.5 h-3.5" /> {CROSSCHECK_HOLD_LABEL}
             </button>
           )}
           {phase === 'ordering' && holds.length > 0 && (
-            <button onClick={openHeld} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.gold}1F`, color: brand.navy, border: `1px solid ${brand.gold}66` }}>
+            <button onClick={openHeld} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.gold}1F`, color: brand.navy, border: `1px solid ${brand.gold}66` }}>
               <Bookmark className="w-3.5 h-3.5" /> Held · {holds.length}
             </button>
           )}
           {phase === 'ordering' && order.length > 0 && (
-            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
-              <Undo2 className="w-3.5 h-3.5" /> Undo last tap
+            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <Undo2 className="w-3.5 h-3.5" /> Undo<span className="hidden md:inline"> last tap</span>
             </button>
           )}
           {history.length > 0 && phase === 'ordering' && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <ArrowLeft className="w-3.5 h-3.5" /> Last review
             </button>
           )}
           {phase === 'review' && (
-            <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
+            <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
               Resume voting
             </button>
           )}
@@ -617,7 +619,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             at once, so the grid takes its rows from the height it is given. */}
         <CrosscheckDeal
           dealKey={setKey}
-          className="grid grid-cols-2 grid-rows-2 gap-1.5 sm:gap-3 lg:gap-4 flex-1 min-h-0"
+          className="grid grid-cols-2 grid-rows-[repeat(2,minmax(156px,1fr))] gap-2 sm:gap-3 lg:grid-rows-2 lg:gap-4 flex-1 lg:min-h-0"
         >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);

@@ -158,7 +158,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
 
         {/* Six word story, set in the display hand under a rose-gold hairline. */}
         {story ? (
-          <div className={dense ? 'min-h-0 min-w-0 flex-1 overflow-hidden' : 'min-w-0'}>
+          <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
             <span aria-hidden className="block h-px w-7" style={{ background: `${brand.gold}99` }} />
             <p
               className={`mt-1 line-clamp-3 font-heading italic leading-snug md:mt-1.5 md:line-clamp-2 md:text-[15px] lg:text-[17px] ${
