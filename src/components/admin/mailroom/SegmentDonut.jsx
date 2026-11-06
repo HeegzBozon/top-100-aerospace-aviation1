@@ -9,7 +9,7 @@ export default function SegmentDonut({ slices = [], total = 0, caption = '' }) {
   let offset = 0;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
       <svg viewBox="0 0 110 110" className="h-[104px] w-[104px] shrink-0" role="img" aria-label={caption}>
         <circle
           cx="55"

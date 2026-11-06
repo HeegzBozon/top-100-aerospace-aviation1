@@ -5,6 +5,7 @@ import { SidebarProvider } from "@/components/contexts/SidebarContext";
 import { MobileNavProvider } from "@/components/mobile/navigation/MobileNavState";
 import { CommsThemeProvider } from "@/components/contexts/CommsThemeContext";
 import { useAuth } from "@/lib/AuthContext";
+import usePresenceBeacon from "@/components/core/usePresenceBeacon";
 
 // The machine's own services — the operating system's layer, mounted once above every
 // surface. A surface is handed these; it never mounts them for itself, and no page layout
@@ -15,6 +16,10 @@ import { useAuth } from "@/lib/AuthContext";
 // machine.
 export default function MachineProviders({ children }) {
   const { realUser } = useAuth();
+
+  // The heartbeat the desks read: one beat a minute from whoever is signed in, written on
+  // their own row, so "on the wire" is a reading of now rather than of the last visit.
+  usePresenceBeacon(realUser);
 
   return (
     <ThemeProvider initialMode={realUser?.theme_mode || "auto"}>

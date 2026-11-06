@@ -216,6 +216,32 @@ export default async function (req) {
       return ids.some((id) => scopedIds.includes(id));
     });
 
+    // ── Signal coverage ──────────────────────────────────────────────────────────
+    // How much of the pool the community's own marks have actually reached. Coverage is
+    // read from the live ledger alone, whichever reading is on the glass: a test set is
+    // the operator's own walk-through, so it can never stand as evidence that a nominee
+    // has been weighed by the field.
+    const coverageMarks = mode === 'live' ? marks : await listMarks(service, liveMarkQuery);
+    const poolIds = new Set(scoped.map((n) => n.id));
+    const seen = new Set<string>();
+    const seenByCohort = new Map<string, Set<string>>();
+    coverageMarks.forEach((m) => {
+      const key = m.season_id || '';
+      if (!seenByCohort.has(key)) seenByCohort.set(key, new Set<string>());
+      const cohortSeen = seenByCohort.get(key)!;
+      [m.winner_nominee_id, m.loser_nominee_id].forEach((id) => {
+        if (!id || !poolIds.has(id)) return;
+        seen.add(id);
+        cohortSeen.add(id);
+      });
+    });
+    const evaluated = seen.size;
+    cohortStats.forEach((row) => {
+      const reached = seenByCohort.get(row.season_id)?.size || 0;
+      row.evaluated = reached;
+      row.coverage_pct = row.pool > 0 ? Math.round((reached / row.pool) * 1000) / 10 : 0;
+    });
+
     // Borda, read two ways. The recorded score is whatever the last scoring run wrote; the
     // projection is tallied here from the ballots in hand — the ones cast and the ones
     // seeded from nominations, read as if cast. A draft is never a vote: nothing below is
@@ -293,16 +319,25 @@ export default async function (req) {
           .catch(() => [])
       : [];
     const names: Record<string, string> = {};
+    // The role is held beside the name for one reason: a test ballot is a ballot an
+    // administrator cast walking the flow, exactly as a test mark is, and the ledger has to
+    // be able to say so on the row rather than leave the operator guessing from an address.
+    const roles: Record<string, string> = {};
     voters.forEach((u) => {
-      if (u.email) names[String(u.email).toLowerCase()] = u.full_name || u.email;
+      if (!u.email) return;
+      const key = String(u.email).toLowerCase();
+      names[key] = u.full_name || u.email;
+      roles[key] = u.role || 'user';
     });
     const nameOf = (email) => names[String(email || '').toLowerCase()] || email || 'Unknown voter';
+    const roleOf = (email) => roles[String(email || '').toLowerCase()] || null;
 
     const ballotTracking = [
       ...ballots.map((x) => ({
         id: x.id,
         voter_email: x.voter_email,
         voter_name: nameOf(x.voter_email),
+        voter_role: roleOf(x.voter_email),
         season_id: x.season_id,
         cohort: labelById[x.season_id] || null,
         length: Array.isArray(x.ballot) ? x.ballot.length : 0,
@@ -404,6 +439,10 @@ export default async function (req) {
         // pool, and summing the cohort counts would count them twice.
         pool: scoped.length,
         pool_seats: cohortStats.reduce((n, c) => n + c.pool, 0),
+        // How many people the community's marks have actually reached, and the share of
+        // the pool that is — the one figure the signal dashboard is built on.
+        evaluated,
+        coverage_pct: scoped.length > 0 ? Math.round((evaluated / scoped.length) * 1000) / 10 : 0,
         votes_per_contributor:
           contributorCount > 0 ? Math.round((comparisons / contributorCount) * 10) / 10 : 0,
       },

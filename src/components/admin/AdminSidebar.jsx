@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { ADMIN_SECTIONS, findTabById } from './adminNavConfig';
-import { ChevronDown, PanelLeftClose, PanelLeft, Search, Command } from 'lucide-react';
+import { ChevronDown, PanelLeftClose, PanelLeft, Search, Command, X } from 'lucide-react';
 
 const COLLAPSED_KEY = 'adminSidebarCollapsed';
 const SECTIONS_KEY = 'adminSidebarSections';
 
-export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteOpen, collapsed, onCollapsedChange }) {
+// On a desk this is the standing index down the left of the console. On a phone it is a
+// sheet drawn over the picture: always at its full width — a thumb has no room for an icon
+// rail — and closed from its own head rather than from a collapse key.
+export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteOpen, collapsed, onCollapsedChange, onClose }) {
     // Track which sections are expanded
     const [expandedSections, setExpandedSections] = useState(() => {
         try {
@@ -41,14 +44,14 @@ export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteO
     return (
         <aside
             className={`
-        ${collapsed ? 'w-16' : 'w-64'}
+        w-[min(86vw,320px)] ${collapsed ? 'md:w-16' : 'md:w-64'}
         flex-shrink-0 bg-[#0c1929] border-r border-white/5
         flex flex-col h-full transition-all duration-300 ease-in-out
         overflow-hidden
       `}
         >
-            {/* Header */}
-            <div className="flex items-center justify-between px-3 py-4 border-b border-white/5">
+            {/* Header. On a phone the sheet is shut from here; there is nothing to collapse. */}
+            <div className="flex items-center justify-between gap-2 px-3 py-4 border-b border-white/5">
                 {!collapsed && (
                     <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c9a87c] to-[#4a90b8] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#c9a87c]/20">
@@ -67,10 +70,18 @@ export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteO
                 )}
                 <button
                     onClick={() => onCollapsedChange(!collapsed)}
-                    className="text-slate-500 hover:text-white transition-colors p-1 rounded-md hover:bg-white/5 flex-shrink-0"
+                    className="hidden md:block text-slate-500 hover:text-white transition-colors p-1 rounded-md hover:bg-white/5 flex-shrink-0"
                     title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                 >
                     {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+                </button>
+                <button
+                    onClick={onClose}
+                    className="md:hidden flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-white/5 hover:text-white"
+                    title="Close the index"
+                    aria-label="Close the index"
+                >
+                    <X className="w-4 h-4" />
                 </button>
             </div>
 
@@ -89,7 +100,10 @@ export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteO
             )}
 
             {/* Navigation Sections */}
-            <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 space-y-1 scrollbar-thin">
+            <nav
+                className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 space-y-1 scrollbar-thin"
+                style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+            >
                 {ADMIN_SECTIONS.map((section) => {
                     const SectionIcon = section.icon;
                     const isExpanded = expandedSections[section.id];
@@ -109,7 +123,7 @@ export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteO
                                     }
                                 }}
                                 className={`
-                  w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left transition-all duration-150
+                  w-full flex items-center gap-2 px-2 py-3 md:py-2 rounded-lg text-left transition-all duration-150
                   ${hasActiveTab
                                         ? 'text-[#c9a87c] bg-[#c9a87c]/5'
                                         : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -143,7 +157,7 @@ export default function AdminSidebar({ activeTab, onTabChange, onCommandPaletteO
                                                 key={tab.id}
                                                 onClick={() => onTabChange(tab.id)}
                                                 className={`
-                          w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-left transition-all duration-150 group
+                          w-full flex items-center gap-2.5 px-2.5 py-3 md:py-1.5 rounded-md text-left transition-all duration-150 group
                           ${isActive
                                                         ? 'bg-gradient-to-r from-[#c9a87c]/15 to-[#4a90b8]/10 text-white border border-[#c9a87c]/20'
                                                         : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'

@@ -28,7 +28,7 @@ export default function FinalizePoolPanel({ season, onClose, onFinalized }) {
 
   return (
     <section className="rounded-2xl border border-editorial-navy/15 bg-white overflow-hidden">
-      <div className="bg-editorial-navy text-white px-6 py-5 border-b-2 border-editorial-copper flex items-start justify-between gap-4">
+      <div className="bg-editorial-navy text-white px-4 py-4 md:px-6 md:py-5 border-b-2 border-editorial-copper flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-label font-bold">Lifecycle phase · Finalize the pool</p>
           <h3 className="font-heading text-2xl mt-1">{season.cohort_label || season.name}</h3>
@@ -36,9 +36,9 @@ export default function FinalizePoolPanel({ season, onClose, onFinalized }) {
         </div>
         <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/10"><X className="w-5 h-5" /></Button>
       </div>
-      <div className="p-6">
+      <div className="p-4 pb-20 md:p-6 md:pb-6">
         <StepIndicator steps={STEPS} current={step} />
-        <div className="mt-6">
+        <div className="mt-4 md:mt-6">
           {step === 0 && <PreflightStep season={season} log={log} setLog={setLog} />}
           {step === 1 && <DedupScanStep season={season} log={log} setLog={setLog} />}
           {step === 2 && <OrphansStep season={season} log={log} setLog={setLog} />}
@@ -46,7 +46,7 @@ export default function FinalizePoolPanel({ season, onClose, onFinalized }) {
           {step === 4 && receipt && <ReceiptStep season={season} receipt={receipt} />}
         </div>
         {step < 4 && (
-          <div className="flex justify-between mt-6">
+          <div className="wizard-foot flex justify-between mt-6">
             <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)} className="gap-2"><ArrowLeft className="w-4 h-4" /> Back</Button>
             {step < 3 && (
               <Button disabled={!canNext} onClick={() => setStep(step + 1)} className="gap-2 bg-editorial-copper hover:bg-editorial-copper/90 text-white">

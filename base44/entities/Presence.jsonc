@@ -1,0 +1,61 @@
+{
+  "name": "Presence",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "The signed-in account this beat belongs to. One row per person: the beacon updates its own row rather than filing a new one."
+    },
+    "user_name": {
+      "type": "string",
+      "description": "The name the person is known by, held with the beat so the monitor can print who is on the wire without reading the account."
+    },
+    "route": {
+      "type": "string",
+      "description": "The surface the person was standing on at the last beat, as a path (e.g. /colony, /profiles/abc123). Display only."
+    },
+    "last_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the last beat was written. A person counts as on the wire while this is inside the reading's window."
+    }
+  },
+  "required": [
+    "user_email",
+    "last_seen_at"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

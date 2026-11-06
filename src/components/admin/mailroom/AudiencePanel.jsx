@@ -11,7 +11,11 @@ function formatDate(value) {
   return stamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// On a desk the ledger is read down five columns under a printed head. On a phone there
+// is no room for a head, so each row carries its own labels — the reading is the same,
+// and nothing is a value without a name.
 function LedgerRow({ row }) {
+  const tag = 'sm:hidden text-[8.5px] uppercase tracking-[0.16em] text-[#5f7387]';
   return (
     <div
       className="grid grid-cols-1 gap-1 border-b px-3 py-2.5 last:border-b-0 sm:grid-cols-[1.6fr_0.9fr_0.8fr_1.3fr_0.7fr] sm:items-center sm:gap-3"
@@ -26,17 +30,21 @@ function LedgerRow({ row }) {
         </p>
       </div>
       <p className="text-[10px] uppercase tracking-[0.12em]" style={{ color: '#a3b8c9' }}>
+        <span className={tag}>Ledger · </span>
         {LEDGER_LABEL[row.source] || row.source}
       </p>
       <p className="text-[10px] uppercase tracking-[0.12em]" style={{ color: '#a3b8c9' }}>
+        <span className={tag}>Role · </span>
         {row.role === 'admin' ? 'admin' : row.has_account ? 'member' : '—'}
       </p>
       <p className="truncate text-[10px]" style={{ color: '#a3b8c9' }}>
+        <span className={tag}>Arrived via · </span>
         {row.entry_points?.length
           ? row.entry_points.map((entry) => DISPATCH_ENTRY_POINTS[entry]?.label || entry).join(' · ')
           : '—'}
       </p>
       <p className="text-[10px] tabular-nums" style={{ color: row.status === 'unsubscribed' ? '#f2a1a1' : '#7d94aa' }}>
+        <span className={tag}>Joined · </span>
         {row.status === 'unsubscribed' ? 'left the list' : formatDate(row.joined_at)}
       </p>
     </div>
@@ -140,7 +148,9 @@ export default function AudiencePanel({ room }) {
                   </p>
                 ))}
               </div>
-              <div className="max-h-[430px] overflow-y-auto">
+              {/* The ledger rolls inside itself on a desk; on a phone the picture rolls,
+                  so the reading is never trapped in a box inside a box. */}
+              <div className="sm:max-h-[430px] sm:overflow-y-auto">
                 {rows.map((row) => (
                   <LedgerRow key={row.email} row={row} />
                 ))}

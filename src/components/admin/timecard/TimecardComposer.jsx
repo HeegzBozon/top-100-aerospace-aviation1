@@ -57,12 +57,19 @@ export default function TimecardComposer({
       <div
         role="dialog"
         aria-label={label}
-        className="absolute left-0 right-0 z-40 top-[calc(100%+10px)] sm:left-auto sm:w-[min(660px,100%)]"
+        className="desk-sheet absolute left-0 right-0 z-40 top-[calc(100%+10px)] sm:left-auto sm:w-[min(660px,100%)]"
       >
         <div
-          className="desk-plate max-h-[calc(100dvh-11rem)] overflow-y-auto p-3.5"
+          className="desk-plate max-h-none overflow-y-auto p-3.5 sm:max-h-[calc(100dvh-11rem)]"
           style={{ boxShadow: '0 26px 60px -22px rgba(3,8,15,0.92), inset 0 0 0 1px rgba(184,115,51,0.45)' }}
         >
+          {/* The grip: on a phone this sheet has risen from the foot of the glass, and the
+              small rule at its head is what says so. */}
+          <div
+            className="mx-auto mb-2.5 h-1 w-9 rounded-full sm:hidden"
+            style={{ background: 'rgba(250,248,245,0.16)' }}
+            aria-hidden="true"
+          />
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: TC.gold }}>
               {label}

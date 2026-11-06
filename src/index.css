@@ -2217,6 +2217,165 @@ body.hh-landscape .hh-viewer-foot {
   .desk-key { transition: none; }
 }
 
+/* ===== THE DESK, HELD IN ONE HAND =====
+   On a phone the house desks are read through a 330px picture, so the furniture is
+   re-cut for a thumb: every key stands at the height a thumb can find without looking,
+   and a sheet that holds a form rises from the foot of the glass instead of hanging
+   under its bar, where the chin would take half of it. Nothing about the desk changes
+   — it is the same instrument, cut for a smaller hand. */
+@media (max-width: 767px) {
+  .desk-key {
+    min-height: 40px;
+    padding: 10px 13px;
+    font-size: 10.5px;
+  }
+
+  /* A key that carries an icon and a word may fill the row it stands on. */
+  .desk-key-row {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* The sheet: pinned to the foot of the glass, above the controls centre, with its own
+     roll so a long form never runs past the picture. The scrim behind it belongs to the
+     surface that opened it. */
+  .desk-sheet {
+    position: fixed;
+    top: auto;
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 6px);
+    z-index: 45;
+    width: auto;
+    max-height: 72dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 14px;
+    animation: desk-sheet-rise 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* With the keys up, the sheet sits on them: the field being written into stays in
+     view above the keyboard. */
+  body.hh-keyboard .desk-sheet {
+    bottom: calc(var(--hh-keyboard, 0px) + env(safe-area-inset-bottom) + 6px);
+    max-height: 58dvh;
+  }
+
+  /* The admin portal gives its own frame to the glass, so the section head can stand
+     still across the top of the picture while the desk under it rolls. */
+  .admin-shell {
+    height: auto;
+    overflow: visible;
+  }
+  .admin-shell .admin-body {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+@keyframes desk-sheet-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== A PANEL OPENS INSIDE THE PICTURE =====
+   A dialog opened from a surface belongs to the device, not to the handset: it is cut
+   to the glass and seated between the strip and the chin, so the hardware stays in
+   view and under the thumb while the panel is being worked. The centre of the ring
+   presses what the cursor is standing on and B closes the panel (see useOverlayPicker),
+   which only works if the controls centre is still there to be pressed — so while a
+   panel of Radix's own is open, the chin is lifted above the layer it mounts and given
+   its pointer events back, which the modal otherwise takes away from the whole body. */
+@media (max-width: 767px) {
+  body.hh-shell:has([role="dialog"][data-state="open"]) .hh-chin,
+  body.hh-shell:has([role="alertdialog"][data-state="open"]) .hh-chin,
+  body.hh-shell:has([role="menu"][data-state="open"]) .hh-chin {
+    z-index: 70;
+    pointer-events: auto;
+  }
+
+  body.hh-shell [role="dialog"][class*="fixed"],
+  body.hh-shell [role="alertdialog"][class*="fixed"] {
+    top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top) + 6px) !important;
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 6px) !important;
+    left: var(--hh-glass-inset) !important;
+    right: var(--hh-glass-inset) !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: none !important;
+    border-radius: 12px !important;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* ===== THE CONSOLE'S FURNITURE, HELD IN ONE HAND =====
+   The admin portal is a desk built for a wide picture, and most of its panels are laid
+   out as full-bleed seats: a scrim across the whole window, a card centred in it. On a
+   phone the window is not the screen — the screen is the glass between the strip and the
+   chin — so a 90vh card runs off both ends of the picture and the whole portal has to be
+   scrolled to find it. Every one of those seats is re-cut here, once, from the same
+   geometry the rest of the device uses: the panel rises inside the glass, fills it, and
+   the hardware stays under the thumb. Nothing in the portal's own code has to know. */
+@media (max-width: 767px) {
+  body.hh-shell .admin-shell .fixed.inset-0 {
+    top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    left: var(--hh-glass-inset);
+    right: var(--hh-glass-inset);
+    padding: 0 !important;
+    border-radius: 12px;
+  }
+
+  /* The card inside the seat takes the seat's own height, so a list inside it scrolls
+     rather than the picture behind it. */
+  body.hh-shell .admin-shell .fixed.inset-0 > * {
+    max-height: 100% !important;
+    border-radius: 12px;
+  }
+
+  /* The index of sections is a sheet inside the picture too — drawn from the glass's
+     own left edge, shut at the chin's line. */
+  body.hh-shell .admin-shell .fixed.inset-y-0 {
+    top: calc(var(--hh-top) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+/* A wizard's keys ride the foot of the picture. A step is read from the top and answered
+   at the bottom, and on a phone the bottom of the step is a scroll away — so the way
+   back and the way on are pinned above the chin, within a thumb's reach of wherever the
+   reading has got to. On a desk the keys stay where they were, at the end of the step. */
+@media (max-width: 767px) {
+  .wizard-foot {
+    position: fixed;
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    z-index: 35;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 9px 10px;
+    border-top: 1px solid rgb(var(--editorial-copper-rgb) / 0.35);
+    background: rgba(250, 248, 245, 0.97);
+    box-shadow: 0 -14px 24px -18px rgba(3, 8, 15, 0.55);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .wizard-foot > * {
+    flex: 1 1 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-sheet { animation: none; }
+}
+
 /* ===== THE PHONE'S TOUCH HYGIENE =====
    A tap on a control is a press, not a selection. iOS otherwise paints a highlight
    over the label under the thumb and offers a copy callout across an icon, which on a

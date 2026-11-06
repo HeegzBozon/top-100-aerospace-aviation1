@@ -8,6 +8,7 @@ import { Settings, X } from 'lucide-react';
 // Admin shell components
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
+import AdminMobileHead from '@/components/admin/AdminMobileHead';
 import AdminCommandPalette, { addRecentTab } from '@/components/admin/AdminCommandPalette';
 import { findTabById, resolveTabId } from '@/components/admin/adminNavConfig';
 import useAdminSectionsMenu from '@/components/admin/useAdminSectionsMenu';
@@ -377,7 +378,7 @@ export default function Admin() {
   const tabInfo = findTabById(activeTab);
 
   return (
-    <div className="h-screen flex overflow-hidden bg-[var(--bg)]">
+    <div className="admin-shell h-screen flex overflow-hidden bg-[var(--bg)]">
       {/* ── Mobile sidebar backdrop ── */}
       {mobileSidebarOpen && (
         <div
@@ -396,8 +397,9 @@ export default function Admin() {
           activeTab={activeTab}
           onTabChange={handleTabChange}
           onCommandPaletteOpen={() => setCommandPaletteOpen(true)}
-          collapsed={sidebarCollapsed}
+          collapsed={mobileSidebarOpen ? false : sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
+          onClose={() => setMobileSidebarOpen(false)}
         />
       </div>
 
@@ -427,8 +429,16 @@ export default function Admin() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
-          <div className={`${activeTab === 'selection-monitor' ? 'p-2.5 md:p-6 lg:p-8' : 'p-3 md:p-6 lg:p-8'}`}>
+        <main className="admin-body flex-1 overflow-y-auto">
+          {/* On a phone the portal prints its own head: the section, the surface, and the
+              two keys a thumb reaches for. On a desk the bar above already says all of it. */}
+          <AdminMobileHead
+            section={tabInfo?.section}
+            tab={tabInfo?.tab}
+            onOpenSections={() => setMobileSidebarOpen(true)}
+            onOpenSearch={() => setCommandPaletteOpen(true)}
+          />
+          <div className={`${activeTab === 'selection-monitor' ? 'p-2 md:p-6 lg:p-8' : 'p-2.5 md:p-6 lg:p-8'}`}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--accent)] border-t-transparent" />

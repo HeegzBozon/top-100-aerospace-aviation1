@@ -183,7 +183,7 @@ export default function LetterForm({ issue, segments, seasons = [], onChange }) 
           </p>
         )}
         {links.map((link, index) => (
-          <div key={index} className="grid grid-cols-[1fr_1fr_auto] items-end gap-1.5">
+          <div key={index} className="grid grid-cols-1 items-end gap-1.5 sm:grid-cols-[1fr_1fr_auto]">
             <Field label={`Line ${index + 1}`}>
               <input
                 value={link.title || ''}
