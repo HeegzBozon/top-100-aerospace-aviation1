@@ -1,17 +1,27 @@
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 import useSiteTraffic from './useSiteTraffic';
+import { COMPARISONS_PER_SET } from './signalConfig';
 
 // The monitor's head strip: the counts the ledger is producing, then the audience it is
 // producing them for. Everything else on the surface is the dive under these figures.
+//
+// Three levels of the same record, in the order they are cast: a ballot is a Fellow's
+// whole ordering, a mini ballot is one sitting of it — four cards, five marks — and a mark
+// is one nominee weighed against another. Marks are counted in the reading on the glass.
 
 const num = (value) => (Number(value) || 0).toLocaleString();
 
 const FIGURES = [
-  { key: 'ballots', label: 'Ballots' },
-  { key: 'comparisons', label: 'Marks' },
+  { key: 'ballots', label: 'Ballots', note: 'whole orderings' },
+  { key: 'mini', label: 'Mini ballots', note: 'four cards, five marks' },
+  { key: 'comparisons', label: 'Marks', note: 'nominee against nominee' },
   { key: 'pool', label: 'In pool' },
   { key: 'contributors', label: 'Fellows' },
 ];
+
+// A mini ballot is the set as the record writes it: five marks to the sitting.
+const valueFor = (total, totals) =>
+  total.key === 'mini' ? Math.round((Number(totals?.comparisons) || 0) / COMPARISONS_PER_SET) : totals?.[total.key];
 
 const TRAFFIC = [
   { key: 'users', label: 'Users' },
@@ -24,17 +34,18 @@ export default function MonitorStats({ totals }) {
 
   return (
     <div className="space-y-1.5">
-      <dl className="grid grid-cols-4 gap-1.5">
+      <dl className="grid grid-cols-3 gap-1.5 md:grid-cols-5">
         {FIGURES.map((figure) => (
           <div
             key={figure.key}
+            title={figure.note}
             className="rounded-lg border border-editorial-navy/10 bg-white px-1.5 py-1.5"
           >
             <dt className="text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.12em] text-editorial-navy/45">
               {figure.label}
             </dt>
             <dd className="mt-0.5 font-heading text-[17px] leading-none tabular-nums text-editorial-navy">
-              {num(totals?.[figure.key])}
+              {num(valueFor(figure, totals))}
             </dd>
           </div>
         ))}
