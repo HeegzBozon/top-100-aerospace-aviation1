@@ -79,20 +79,23 @@ export default function VoteSurface({ user }) {
     load();
   }, [load]);
 
-  // A recorded set returns the ladder as it now stands, so the panel moves without a
-  // second call.
+  // A recorded review answers with the whole receipt on `progress`: what was recorded, the
+  // ladder as it now stands, any level-up and any fresh milestone. Reading `result.recorded`
+  // instead looked one level too high at the function's own envelope, so a recorded review
+  // never moved the panel at all.
   const onRecorded = useCallback(
     (result) => {
-      if (!result?.recorded) return;
+      const receipt = result?.progress;
+      if (!receipt?.recorded) return;
+      const moved = receipt.progress || {};
       setFeedToken((t) => t + 1);
       setContext((prev) =>
         prev
           ? {
               ...prev,
-              ballot: prev.ballot,
               progress: result.is_test
-                ? { ...prev.progress, test: { ...prev.progress?.test, ...result.progress } }
-                : { ...prev.progress, ...result.progress, ladder: prev.progress?.ladder },
+                ? { ...prev.progress, test: { ...prev.progress?.test, ...moved } }
+                : { ...prev.progress, ...moved, ladder: prev.progress?.ladder },
             }
           : prev
       );
@@ -105,10 +108,13 @@ export default function VoteSurface({ user }) {
           if (res?.data?.success) setContext(res.data);
         })
         .catch(() => {});
-      if (result.leveled_up) {
-        toast({ title: `Level ${result.progress?.level}`, description: result.progress?.name });
+      if (receipt.leveled_up) {
+        toast({
+          title: `${result.is_test ? 'Test · ' : ''}Level ${moved.level}`,
+          description: moved.name,
+        });
       }
-      const fresh = result.new_milestones || [];
+      const fresh = receipt.new_milestones || [];
       if (fresh.length) {
         toast({ title: 'Milestone', description: fresh.map((m) => m.label).join(' · ') });
       }

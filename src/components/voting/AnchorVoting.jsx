@@ -60,9 +60,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [currentSet, setCurrentSet] = useState([]);
   const [seenIds, setSeenIds] = useState([]);
   // The order as it is tapped: first, then second, then third. The fourth record places
-  // itself, so no screen ever asks a voter to name a last place. A set is measured across
-  // all four records, so a record marked cannot judge closes the set rather than reshaping it.
-  const [phase, setPhase] = useState('ordering'); // ordering | submitting | success | closed | review
+  // itself, so no screen ever asks a voter to name a last place. The question is the place
+  // being filled — First? Second? Third? — never a comparison between two people.
+  const [phase, setPhase] = useState('ordering'); // ordering | submitting | success | skipped | review
   const [order, setOrder] = useState([]);
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
@@ -84,7 +84,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // An administrator walking the ballot is read from the tester's own lane instead, so a
   // rehearsal is never mistaken for a Fellow's contribution — and the walkthrough still
   // shows a tally, which is what makes it testable.
-  const testing = user?.role === 'admin';
+  // The tester's lane is read only once a test has actually been recorded, so an
+  // administrator who has weighed real reviews keeps seeing that record.
+  const testing = user?.role === 'admin' && (progress?.test?.sets_completed || 0) > 0;
   const lane = testing ? progress?.test || null : progress;
   const reviews = testing ? lane?.sets_completed ?? 0 : progress?.sets_completed ?? sessionCount;
   const nextRung = lane?.next_name
