@@ -11,6 +11,8 @@ import { Loader2, Crown, List, Grid, Star, GripVertical, X, Shuffle, Users } fro
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobilePicker from '@/components/mobile/MobilePicker';
 import StandingsCore from '@/components/arena/StandingsCore';
 import NomineeQuickView from '@/components/standings/NomineeQuickView';
 import EngagementCTA from '@/components/arena/EngagementCTA';
@@ -28,6 +30,7 @@ export default function Top100Nominees2025() {
   const [loading, setLoading] = useState(true);
   const [refreshToken, setRefreshToken] = useState(0);
   const [standings, setStandings] = useState({ rows: [], total: 0 });
+  const isMobile = useIsMobile();
   const [viewMode, setViewMode] = useState('grid');
   const [sortValue, setSortValue] = useState('nomineeName_asc');
   const [regionFilter, setRegionFilter] = useState('all');
@@ -359,6 +362,26 @@ export default function Top100Nominees2025() {
     return Array.from(uniqueRegions).sort();
   }, [standings.rows]);
 
+  // The same two choices, printed once for whichever control is standing: a dropdown on
+  // the desk, a sheet rising from the foot of the glass on a phone.
+  const regionOptions = useMemo(
+    () => [{ value: 'all', label: 'All Regions' }, ...regions.map((region) => ({ value: region, label: region }))],
+    [regions]
+  );
+
+  const sortOptions = useMemo(() => {
+    const base = [
+      { value: 'nomineeName_asc', label: 'Name: A-Z' },
+      { value: 'nomineeName_desc', label: 'Name: Z-A' },
+    ];
+    if (!currentUser) return base;
+    return [
+      ...base,
+      { value: 'rank_asc', label: 'Ranking: Top First' },
+      { value: 'rank_desc', label: 'Ranking: Bottom First' },
+    ];
+  }, [currentUser]);
+
   const handleRowClick = (nominee) => {
     setQuickViewNominee(nominee);
   };
@@ -523,33 +546,51 @@ export default function Top100Nominees2025() {
           )}
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select value={regionFilter} onValueChange={setRegionFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Regions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                {regions.map(region => (
-                  <SelectItem key={region} value={region}>{region}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {isMobile ? (
+              <MobilePicker
+                label="Region"
+                value={regionFilter}
+                options={regionOptions}
+                onChange={setRegionFilter}
+              />
+            ) : (
+              <Select value={regionFilter} onValueChange={setRegionFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Regions" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Regions</SelectItem>
+                  {regions.map(region => (
+                    <SelectItem key={region} value={region}>{region}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
-            <Select value={sortValue} onValueChange={setSortValue}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by..." />
-              </SelectTrigger>
-              <SelectContent>
-                  <SelectItem value="nomineeName_asc">Name: A-Z</SelectItem>
-                  <SelectItem value="nomineeName_desc">Name: Z-A</SelectItem>
-                  {currentUser && (
-                    <>
-                      <SelectItem value="rank_asc">Ranking: Top First</SelectItem>
-                      <SelectItem value="rank_desc">Ranking: Bottom First</SelectItem>
-                    </>
-                  )}
-              </SelectContent>
-            </Select>
+            {isMobile ? (
+              <MobilePicker
+                label="Sort by"
+                value={sortValue}
+                options={sortOptions}
+                onChange={setSortValue}
+              />
+            ) : (
+              <Select value={sortValue} onValueChange={setSortValue}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sort by..." />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="nomineeName_asc">Name: A-Z</SelectItem>
+                    <SelectItem value="nomineeName_desc">Name: Z-A</SelectItem>
+                    {currentUser && (
+                      <>
+                        <SelectItem value="rank_asc">Ranking: Top First</SelectItem>
+                        <SelectItem value="rank_desc">Ranking: Bottom First</SelectItem>
+                      </>
+                    )}
+                </SelectContent>
+              </Select>
+            )}
 
             <div className="bg-[var(--card)] rounded-full p-1 border border-[var(--border)] flex-shrink-0 justify-self-start md:justify-self-end">
               <Button
