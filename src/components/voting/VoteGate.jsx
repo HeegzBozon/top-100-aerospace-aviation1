@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { ArrowRight, Check, Lock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import { CROSSCHECK, ANALYSIS, ANALYST } from '@/components/voting/ballotNaming';
+import { CROSSCHECK, ANALYSIS, ANALYST, ANALYST_STANDING } from '@/components/voting/ballotNaming';
 
 // The invitation the ballot stands behind.
 //
@@ -88,6 +88,14 @@ export default function VoteGate({ source }) {
             </li>
           ))}
         </ul>
+
+        <p
+          className="mb-9 border-t border-editorial-copper/40 pt-4 text-[12px] leading-relaxed"
+          style={{ color: `${brand.navy}A6`, fontFamily: 'var(--font-body)' }}
+        >
+          The ballot is one duty of the office. An Analyst also finds the field and carries the
+          record. {ANALYST_STANDING}
+        </p>
 
         <button
           type="button"

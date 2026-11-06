@@ -40,6 +40,43 @@ export const ANALYSIS = 'Analysis';
 export const ANALYSIS_IS =
   'Voting here is analysis. An Analyst measures four records against each other, one small ranked-choice ballot at a time, and the order they leave is the finding.';
 
+// The office in full.
+//
+// The ballot is one duty of an Analyst, not the whole of the post. The office is also what
+// this platform's whole audience holds in common: a Fellow, a reader and a subscriber are
+// all Analysts, and the work is the same three things wherever it is taken up — find,
+// measure, and put the record in the way of the people it should reach.
+export const ANALYST_OFFICE_IS =
+  'An Analyst is not a voter, and not a judge. An Analyst finds the people doing the work, measures them against each other, and makes sure the record reaches the people it should reach.';
+
+export const ANALYST_DUTIES = [
+  {
+    key: 'find',
+    label: 'Find',
+    line: 'Put a name forward, and meet the field doing the work — the directory, the volumes, the profiles, and the people nobody has introduced you to yet.',
+  },
+  {
+    key: 'measure',
+    label: 'Measure',
+    line: 'Take up the Crosscheck. Four records at a time, put in order — the comparison is the finding, and every set is kept.',
+  },
+  {
+    key: 'carry',
+    label: 'Carry the record',
+    line: 'Analysis turns a name into a record the house can stand behind, and a record into an introduction.',
+  },
+];
+
+// Where the office sits in the institution: the first test any name passes, and the floor
+// the rest of the platform is built on. Verification begins here rather than with a form.
+export const ANALYST_FOUNDATION =
+  'This is the front of the house. A name that Analysts have found, measured and carried is a name the platform can go on to verify and validate. Every name in a volume passed an Analyst first.';
+
+// The one line that makes the office universal rather than a committee one has to be
+// admitted to. It is never paraphrased per surface.
+export const ANALYST_STANDING =
+  'The office belongs to every Fellow, reader and subscriber. If you are here, you already hold it.';
+
 // The question standing before each tap, by how many records are already placed.
 export const CROSSCHECK_PROMPTS = ['Which record leads?', 'Which is next?', 'And next?'];
 

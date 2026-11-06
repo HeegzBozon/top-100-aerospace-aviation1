@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowRight, CheckCircle2, Cpu, LogOut, Sparkles, Vote } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand, CONNECTION_OPTIONS } from '@/components/nominate/NominateConfig';
+import AnalystOffice from '@/components/voting/AnalystOffice';
 
 export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onSaved, onOpenOS }) {
   const [name, setName] = useState(user?.full_name || '');
@@ -55,7 +56,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
 
           <div className="space-y-4 max-w-xl">
             <p className="text-[15px] leading-relaxed" style={{ color: '#7c838d' }}>
-              A TOP 100 Analyst does two things: they put names forward, and then they measure the field. The aerospace and aviation community is full of people doing remarkable work, and most of them will never be asked to step forward.
+              A TOP 100 Analyst finds the field, measures it, and carries the record. The aerospace and aviation community is full of people doing remarkable work, and most of them will never be asked to step forward.
             </p>
             <p className="text-[15px] leading-relaxed" style={{ color: '#0f2139' }}>
               <span className="font-bold">You're about to change that for someone.</span>
@@ -67,6 +68,8 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
               This form takes about 3 minutes per nomination. There's no limit on how many people you nominate. Every single one gets reviewed personally.
             </p>
           </div>
+
+          <AnalystOffice className="mt-7 max-w-xl" />
 
           <div className="mt-7 flex flex-col sm:flex-row items-start gap-3">
             <button
