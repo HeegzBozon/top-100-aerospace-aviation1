@@ -276,8 +276,13 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // the second's, and so on. The console takes the press before the pad can tune or walk,
   // exactly as it does for X, Y, A and B on the wheel.
   useEffect(() => {
-    if (!radio || !voteKeys.current) return undefined;
+    // The claim is held for as long as a set is standing, the file it opens included:
+    // while a candidate's file is up the pad belongs to the reader, so the press is
+    // taken and does nothing rather than falling through to the console's own numbers
+    // and moving the menu off the card being read.
+    if (!radio || phase !== 'ordering' || currentSet.length !== 4) return undefined;
     return registerDigits((digit) => {
+      if (reading) return true;
       const n = Number(digit);
       const count = currentSet.length;
       const info = n > count;
@@ -368,18 +373,16 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
-        <div className="mb-1 shrink-0 md:mb-2">
-          <div>
-            <h2 className="hidden text-lg font-bold md:block" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {CROSSCHECK} &middot; {ANALYSIS}
-            </h2>
-            {/* The line is fixed, and it stands on the glass as well as the desk: a voter
-                reads what the set measures before the first tap is made. */}
-            <p className="text-[9.5px] leading-snug md:max-w-md md:text-[11px]" style={{ color: `${brand.navy}66` }}>
-              <span className="hidden md:inline">{CROSSCHECK_LINE} </span>
-              {CROSSCHECK_IS} {CROSSCHECK_HOW}
-            </p>
-          </div>
+        {/* The desk states the measure above the cards. On the glass the same words are
+            the info key's: the briefing carries them in full, so the set keeps the whole
+            of its height and a reader holding the device is not read to twice. */}
+        <div className="mb-2 hidden shrink-0 md:block">
+          <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+            {CROSSCHECK} &middot; {ANALYSIS}
+          </h2>
+          <p className="text-[11px] leading-snug md:max-w-md" style={{ color: `${brand.navy}66` }}>
+            {CROSSCHECK_LINE} {CROSSCHECK_IS} {CROSSCHECK_HOW}
+          </p>
         </div>
 
         {/* Prompt, with the way into the explainer beside it and the session's tally at
