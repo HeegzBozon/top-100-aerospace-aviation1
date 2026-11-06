@@ -112,9 +112,13 @@ export async function recordContribution(service, opts) {
   // The lane this call moved: its level, its count, its milestones.
   const before = levelFor(test ? priorTestXp : priorXp);
   const after = levelFor(test ? testXp : xp);
-  const earned = test ? (record?.milestones || []) : milestonesFor(sets, ballots);
-  const priorMilestones = record?.milestones || [];
-  const fresh = test ? [] : earned.filter((m) => !priorMilestones.includes(m));
+  // A tester's milestones are read off their own count, never written over the Fellow's.
+  const fellowEarned = milestonesFor(sets, ballots);
+  const earned = test ? milestonesFor(testSets, 0) : fellowEarned;
+  const priorMilestones = test
+    ? milestonesFor(record?.test_sets_completed || 0, 0)
+    : record?.milestones || [];
+  const fresh = earned.filter((m) => !priorMilestones.includes(m));
 
   const payload = {
     fellow_email,
@@ -130,7 +134,7 @@ export async function recordContribution(service, opts) {
     test_xp: testXp,
     test_sets_completed: testSets,
     test_comparisons_recorded: testComparisons,
-    milestones: earned,
+    milestones: fellowEarned,
     last_action: isSet ? 'anchor_set' : 'ranked_ballot',
     last_action_at: new Date().toISOString(),
   };
@@ -145,7 +149,7 @@ export async function recordContribution(service, opts) {
     progress: {
       ...after,
       sets_completed: test ? testSets : sets,
-      ballots_saved: ballots,
+      ballots_saved: test ? 0 : ballots,
       comparisons_recorded: test ? testComparisons : comparisons,
       milestones: earned,
     },

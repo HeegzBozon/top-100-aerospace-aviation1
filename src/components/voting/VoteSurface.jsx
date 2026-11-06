@@ -93,9 +93,8 @@ export default function VoteSurface({ user }) {
         prev
           ? {
               ...prev,
-              progress: result.is_test
-                ? { ...prev.progress, test: { ...prev.progress?.test, ...moved } }
-                : { ...prev.progress, ...moved, ladder: prev.progress?.ladder },
+              // The panel already shows the caller's own lane, so the receipt lands on it.
+              progress: { ...prev.progress, ...moved, ladder: prev.progress?.ladder },
             }
           : prev
       );

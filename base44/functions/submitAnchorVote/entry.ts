@@ -121,7 +121,10 @@ export default async function(req) {
       cohort_key: gate.season?.cohort_key || null,
       action: 'anchor_set',
       is_test: isTest,
-    }).catch(() => null);
+    }).catch((e) => {
+      console.error('recordContribution failed', e?.message || e);
+      return { recorded: false, reason: e?.message || 'Progress could not be recorded.' };
+    });
 
     return Response.json({
       success: true,

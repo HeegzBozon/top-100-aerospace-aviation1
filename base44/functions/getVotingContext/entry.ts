@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts, windowState } from '../../shared/votingWindow.ts';
-import { levelFor, ALL_MILESTONES } from '../../shared/votingProgress.ts';
+import { levelFor, milestonesFor, ALL_MILESTONES, XP_PER_SET, XP_PER_BALLOT } from '../../shared/votingProgress.ts';
 
 // Everything the ballot needs to open, in one call: which cohorts are counting, and where
 // the window stands, the Fellow's saved ballot, and the contribution ladder they have
@@ -64,7 +64,48 @@ export default async function (req) {
       { xp: 0, sets: 0, comparisons: 0 }
     );
 
+    // The ledger is the ground truth. Every recorded review writes seven comparisons
+    // against the voter, stamped test or not, so the count is read back from the votes
+    // themselves: a ladder row that was never written (or written by an older recorder)
+    // can no longer hold the tally at zero.
+    const ledgerQuery = (isTest) => ({
+      voter_email: user.email,
+      is_test: isTest ? true : { $ne: true },
+      ...(uniqueSeasons.length ? { season_id: { $in: uniqueSeasons } } : {}),
+    });
+    const [fellowVotes, testVotes] = uniqueSeasons.length
+      ? await Promise.all([
+          service.entities.PairwiseVote.count(ledgerQuery(false)).catch(() => 0),
+          service.entities.PairwiseVote.count(ledgerQuery(true)).catch(() => 0),
+        ])
+      : [0, 0];
+    const COMPARISONS_PER_REVIEW = 7;
+    totals.sets = Math.max(totals.sets, Math.floor(fellowVotes / COMPARISONS_PER_REVIEW));
+    totals.comparisons = Math.max(totals.comparisons, fellowVotes);
+    totals.xp = Math.max(totals.xp, totals.sets * XP_PER_SET + totals.ballots * XP_PER_BALLOT);
+    testTotals.sets = Math.max(testTotals.sets, Math.floor(testVotes / COMPARISONS_PER_REVIEW));
+    testTotals.comparisons = Math.max(testTotals.comparisons, testVotes);
+    testTotals.xp = Math.max(testTotals.xp, testTotals.sets * XP_PER_SET);
+
     const level = levelFor(totals.xp);
+    const fellowLane = {
+      ...level,
+      sets_completed: totals.sets,
+      ballots_saved: totals.ballots,
+      comparisons_recorded: totals.comparisons,
+      milestones: totals.milestones,
+    };
+    // The house's own testers climb a ladder of their own. Their reviews are stamped as
+    // tests and never move the field, so their experience is kept apart from the
+    // community's: the lane an internal tester sees is theirs alone.
+    const tester = user.role === 'admin';
+    const testLane = {
+      ...levelFor(testTotals.xp),
+      sets_completed: testTotals.sets,
+      ballots_saved: 0,
+      comparisons_recorded: testTotals.comparisons,
+      milestones: milestonesFor(testTotals.sets, 0),
+    };
 
     return Response.json({
       success: true,
@@ -84,19 +125,13 @@ export default async function (req) {
       target,
       ballot: rankedVotes?.[0]?.ballot || [],
       progress: {
-        ...level,
-        sets_completed: totals.sets,
-        ballots_saved: totals.ballots,
-        comparisons_recorded: totals.comparisons,
-        milestones: totals.milestones,
+        // The caller's own lane, already chosen: a tester reads the tester ladder, a
+        // Fellow reads the community's. The surface never has to pick.
+        ...(tester ? testLane : fellowLane),
+        lane: tester ? 'test' : 'fellow',
         ladder: ALL_MILESTONES,
-        // Read only by the tester's own surface, so a rehearsal is never counted as a
-        // Fellow's contribution.
-        test: {
-          ...levelFor(testTotals.xp),
-          sets_completed: testTotals.sets,
-          comparisons_recorded: testTotals.comparisons,
-        },
+        fellow: fellowLane,
+        test: testLane,
         by_season: (contributions || []).map((c) => ({
           season_id: c.season_id,
           xp: c.xp || 0,

@@ -84,11 +84,11 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // An administrator walking the ballot is read from the tester's own lane instead, so a
   // rehearsal is never mistaken for a Fellow's contribution — and the walkthrough still
   // shows a tally, which is what makes it testable.
-  // The tester's lane is read only once a test has actually been recorded, so an
-  // administrator who has weighed real reviews keeps seeing that record.
-  const testing = user?.role === 'admin' && (progress?.test?.sets_completed || 0) > 0;
-  const lane = testing ? progress?.test || null : progress;
-  const reviews = testing ? lane?.sets_completed ?? 0 : progress?.sets_completed ?? sessionCount;
+  // The context arrives with the caller's own lane already chosen (a tester's ladder or
+  // the community's), so the surface reads it as it is.
+  const testing = progress?.lane === 'test';
+  const lane = progress;
+  const reviews = progress?.sets_completed ?? sessionCount;
   const nextRung = lane?.next_name
     ? `${Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)} to ${lane.next_name}`
     : null;
