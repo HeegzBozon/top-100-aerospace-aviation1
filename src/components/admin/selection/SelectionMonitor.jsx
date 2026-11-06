@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import useMonitorEditMenu from './useMonitorEditMenu';
 import MonitorStats from './MonitorStats';
+import ReadingSwitch from './ReadingSwitch';
 import PulseBand from './PulseBand';
 import CohortDive from './CohortDive';
 import StandingsBoard from './StandingsBoard';
@@ -108,6 +109,15 @@ export default function SelectionMonitor({ onOpenMenu }) {
     <div className="space-y-3">
       {/* The figures stand at the head of the surface; the reading follows immediately. */}
       <MonitorStats totals={totals} />
+
+      {/* Which ledger is on the glass — the community's, or the internal test sets. Both
+          counts are always carried, so a test ballot is never invisible from the surface. */}
+      <ReadingSwitch
+        mode={mode}
+        onMode={setMode}
+        live={totals?.comparisons_live}
+        test={totals?.comparisons_test}
+      />
 
       {/* Two readings of the same room: where the field stands, and what has just landed
           in it. */}

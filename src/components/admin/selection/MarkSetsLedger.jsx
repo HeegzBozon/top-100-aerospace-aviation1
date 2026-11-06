@@ -15,7 +15,6 @@ function when(value) {
 
 export default function MarkSetsLedger({ marks = [], recent = 0 }) {
   const [query, setQuery] = useState('');
-  const [showTest, setShowTest] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const [open, setOpen] = useState(() => new Set());
 
@@ -45,13 +44,13 @@ export default function MarkSetsLedger({ marks = [], recent = 0 }) {
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    const scoped = showTest ? sets : sets.filter((s) => !s.is_test);
+    const scoped = sets;
     if (!needle) return scoped;
     return scoped.filter((set) =>
       [set.voter_name, set.voter_email, set.cohort, ...set.pairs.flatMap((p) => [p.winner, p.loser])].some((value) =>
         String(value || '').toLowerCase().includes(needle)
       ));
-  }, [sets, query, showTest]);
+  }, [sets, query]);
 
   const toggle = (key) =>
     setOpen((prev) => {
@@ -60,8 +59,6 @@ export default function MarkSetsLedger({ marks = [], recent = 0 }) {
       else next.add(key);
       return next;
     });
-
-  const testCount = sets.filter((s) => s.is_test).length;
 
   return (
     <div className="space-y-2">
@@ -83,15 +80,6 @@ export default function MarkSetsLedger({ marks = [], recent = 0 }) {
               className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-editorial-navy/45 hover:text-editorial-navy"
             >
               {showAll ? `Latest ${recent}` : 'Show all'}
-            </button>
-          )}
-          {testCount > 0 && (
-            <button
-              type="button"
-              onClick={() => setShowTest((value) => !value)}
-              className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-editorial-navy/45 hover:text-editorial-navy"
-            >
-              Test sets {showTest ? 'shown' : 'hidden'}
             </button>
           )}
           <p className="text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">

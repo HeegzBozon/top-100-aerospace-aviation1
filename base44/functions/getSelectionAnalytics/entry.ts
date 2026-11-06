@@ -293,16 +293,25 @@ export default async function (req) {
           .catch(() => [])
       : [];
     const names: Record<string, string> = {};
+    // The role is held beside the name for one reason: a test ballot is a ballot an
+    // administrator cast walking the flow, exactly as a test mark is, and the ledger has to
+    // be able to say so on the row rather than leave the operator guessing from an address.
+    const roles: Record<string, string> = {};
     voters.forEach((u) => {
-      if (u.email) names[String(u.email).toLowerCase()] = u.full_name || u.email;
+      if (!u.email) return;
+      const key = String(u.email).toLowerCase();
+      names[key] = u.full_name || u.email;
+      roles[key] = u.role || 'user';
     });
     const nameOf = (email) => names[String(email || '').toLowerCase()] || email || 'Unknown voter';
+    const roleOf = (email) => roles[String(email || '').toLowerCase()] || null;
 
     const ballotTracking = [
       ...ballots.map((x) => ({
         id: x.id,
         voter_email: x.voter_email,
         voter_name: nameOf(x.voter_email),
+        voter_role: roleOf(x.voter_email),
         season_id: x.season_id,
         cohort: labelById[x.season_id] || null,
         length: Array.isArray(x.ballot) ? x.ballot.length : 0,

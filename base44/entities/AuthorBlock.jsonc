@@ -1,0 +1,69 @@
+{
+  "name": "AuthorBlock",
+  "description": "One Fellow's block against another: the content of the blocked author is kept off that Fellow's own feeds. Personal to the blocker, never a sanction on the blocked account, and never read by discovery, ordering, measurement or scoring.",
+  "type": "object",
+  "properties": {
+    "blocker_email": {
+      "type": "string",
+      "description": "The Fellow who did the blocking. The only reader of this row."
+    },
+    "blocked_email": {
+      "type": "string",
+      "description": "The Fellow whose content is held off the blocker's feeds."
+    },
+    "blocked_name": {
+      "type": "string",
+      "description": "The blocked Fellow's name as it was shown when the block was made. Display only."
+    },
+    "blocked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the block was made."
+    }
+  },
+  "required": [
+    "blocker_email",
+    "blocked_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.blocker_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.blocker_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.blocker_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.blocker_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

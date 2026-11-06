@@ -109,6 +109,11 @@ export default function BallotLedger({ ballots = [], recent = 0 }) {
               <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[9px] uppercase tracking-[0.1em] text-editorial-navy/45">
                 <span className="truncate">{row.cohort || '—'}</span>
                 <span className="tabular-nums">{row.length} choices</span>
+                {row.voter_role === 'admin' && (
+                  <span className="rounded-sm bg-editorial-copper/15 px-1 py-[1px] text-[8px] font-bold tracking-[0.12em] text-editorial-label">
+                    Test
+                  </span>
+                )}
                 <span className="ml-auto tabular-nums normal-case tracking-normal">
                   {row.submitted_at
                     ? when(row.submitted_at)
@@ -171,6 +176,11 @@ export default function BallotLedger({ ballots = [], recent = 0 }) {
                   >
                     {(STATE_TONE[row.state] || STATE_TONE.Cast).label}
                   </span>
+                  {row.voter_role === 'admin' && (
+                    <span className="ml-1.5 rounded-sm bg-editorial-copper/15 px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.14em] text-editorial-label">
+                      Test
+                    </span>
+                  )}
                 </td>
                 <td className="px-2.5 py-1.5 text-right text-[11.5px] tabular-nums text-editorial-navy">{row.length}</td>
                 <td className="whitespace-nowrap px-2.5 py-1.5 text-right text-[11px] tabular-nums text-editorial-navy/60">

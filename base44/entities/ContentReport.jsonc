@@ -1,0 +1,127 @@
+{
+  "name": "ContentReport",
+  "description": "A Fellow's report against a piece of content another Fellow wrote. Filed from the content itself; read by its reporter and by the masthead. Never read by discovery, ordering, measurement or scoring.",
+  "type": "object",
+  "properties": {
+    "content_type": {
+      "type": "string",
+      "description": "What was reported: a bulletin, a comment, a page note, a conference note, a message, a profile or another surface.",
+      "enum": [
+        "bulletin",
+        "article_comment",
+        "page_comment",
+        "conference_note",
+        "message",
+        "profile",
+        "other"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "purple",
+        "pink",
+        "gray",
+        "gray",
+        "gray"
+      ]
+    },
+    "content_id": {
+      "type": "string",
+      "description": "Id of the reported record."
+    },
+    "content_excerpt": {
+      "type": "string",
+      "description": "The words as the reporter saw them, kept so a report can be read even after the record is edited or removed."
+    },
+    "content_author_email": {
+      "type": "string",
+      "description": "Email of the Fellow who wrote the reported content."
+    },
+    "content_author_name": {
+      "type": "string",
+      "description": "Name of the Fellow who wrote the reported content, as it was shown."
+    },
+    "surface_path": {
+      "type": "string",
+      "description": "Where the reporter was standing when they filed it, e.g. /profiles/abc."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why the content was reported, from the curated set.",
+      "enum": [
+        "harassment",
+        "hate",
+        "spam",
+        "false_information",
+        "impersonation",
+        "off_topic"
+      ],
+      "enumColors": [
+        "red",
+        "red",
+        "yellow",
+        "yellow",
+        "purple",
+        "gray"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional line the reporter adds for the masthead."
+    },
+    "reporter_email": {
+      "type": "string",
+      "description": "Email of the Fellow who filed the report."
+    },
+    "status": {
+      "type": "string",
+      "description": "Where the report stands in review.",
+      "enum": [
+        "new",
+        "reviewing",
+        "actioned",
+        "dismissed"
+      ],
+      "enumColors": [
+        "yellow",
+        "blue",
+        "green",
+        "gray"
+      ],
+      "default": "new"
+    }
+  },
+  "required": [
+    "content_type",
+    "content_id",
+    "reason",
+    "reporter_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.reporter_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.reporter_email": "{{user.email}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
