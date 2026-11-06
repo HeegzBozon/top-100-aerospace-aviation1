@@ -1,3 +1,5 @@
+import { musicKey } from "./musicKey";
+
 // Tactile feedback for the handheld shell: a short square-wave blip per control
 // plus a 10ms haptic tick. Audio is created lazily on the first press so the
 // browser's autoplay policy never blocks it, and the SOUND control remembers
@@ -81,24 +83,33 @@ export function shellAudio() {
   return audioContext;
 }
 
+// The blips are tuned to the record that is playing. Each control is a degree of the
+// same minor pentatonic the record sits in, so a press is a note under the music rather
+// than a beep beside it — the machine sounds like one instrument with the record.
+const SCALE = [0, 3, 5, 7, 10]; // minor pentatonic
 const TONES = {
-  move: [430, 0.035],
-  select: [660, 0.06],
-  open: [760, 0.07],
-  back: [300, 0.05],
-  start: [900, 0.09],
-  toggle: [540, 0.045],
+  move: [2, 0.035, 12],
+  select: [3, 0.06, 12],
+  open: [4, 0.07, 12],
+  back: [0, 0.05, 0],
+  start: [5, 0.09, 12],
+  toggle: [1, 0.045, 12],
+};
+
+const noteHz = (degree, octave) => {
+  const midi = 48 + musicKey() + octave + SCALE[degree % 5] + 12 * Math.floor(degree / 5);
+  return 440 * Math.pow(2, (midi - 69) / 12);
 };
 
 export function blip(kind = "select") {
   if (!isSoundOn()) return;
   const ac = shellAudio();
   if (!ac) return;
-  const [freq, duration] = TONES[kind] || TONES.select;
+  const [degree, duration, octave] = TONES[kind] || TONES.select;
   const osc = ac.createOscillator();
   const gain = ac.createGain();
   osc.type = "square";
-  osc.frequency.value = freq;
+  osc.frequency.value = noteHz(degree, octave);
   gain.gain.setValueAtTime(0.0001, ac.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.045, ac.currentTime + 0.008);
   gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + duration);

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { PLAYLIST, loadPlaylist } from '@/components/handheld/consoleMusic';
+import { PLAYLIST, HOUSE_SIDE as H, loadPlaylist } from '@/components/handheld/consoleMusic';
 import { STATION_1993 } from '@/components/handheld/stations1993';
 
 // The campus soundtrack: every room has its own playlist, and each character carries a
@@ -35,14 +35,19 @@ const T = {
 const [coastline, vhs, atrium, lullaby, chrome] = STATION_1993;
 
 export const ROOM_PLAYLISTS = {
-  lobby: [T.concourse, coastline, T.arrivals, PLAYLIST[0]],
-  hall: [T.arrivals, chrome, T.concourse, PLAYLIST[2]],
-  'innovation-expo': [T.cleanroom, PLAYLIST[3], T.spark, vhs],
-  'space-pavilion': [T.lowOrbit, T.wonder, lullaby, PLAYLIST[2]],
-  'leadership-summit': [T.podium, T.resolve, PLAYLIST[4]],
-  'media-hub': [T.onAir, PLAYLIST[1], T.cleanroom, atrium],
-  'career-center': [T.openDesk, PLAYLIST[0], T.podium, vhs],
-  'networking-lounge': [T.nightLounge, T.openDesk, atrium, PLAYLIST[2]],
+  // Every room is dealt its own shuffled deck from the shared record, so two rooms built
+  // from the same tracks still never sound alike, and no room repeats its own set in the
+  // order it was written. The rooms with a mood keep their own themes in the mix.
+  lobby: [T.concourse, H.discoArrivals, coastline, H.funkyTower, T.arrivals, H.standby],
+  hall: [T.arrivals, chrome, H.discoArrivals, T.concourse, H.turbine, H.gantryGroove],
+  'innovation-expo': [T.cleanroom, H.turbine, H.gantryGroove, T.spark, vhs, H.slipstream],
+  'space-pavilion': [T.lowOrbit, T.wonder, lullaby, H.nightBus, coastline],
+  'leadership-summit': [T.podium, T.resolve, H.gantryGroove, H.longHaul, H.nightBus],
+  'media-hub': [T.onAir, H.redEye, H.turbine, H.afroTerminal, T.cleanroom, atrium],
+  'career-center': [T.openDesk, H.funkyTower, H.standby, T.podium, vhs],
+  'networking-lounge': [T.nightLounge, H.afroTerminal, H.nightBus, T.openDesk, atrium],
+  // The east wing's cabinets: the hard house of the funky side, and the 1993 dial behind it.
+  arcade: [H.turbine, chrome, H.gantryGroove, T.spark, vhs],
 };
 
 const NPC_THEMES = {

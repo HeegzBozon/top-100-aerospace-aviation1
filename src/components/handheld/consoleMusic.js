@@ -1,9 +1,16 @@
 import { shellAudio } from "./handheldSound";
 import { STATION_1993 } from "./stations1993";
+import { setMusicKey } from "./musicKey";
 
-// The console's onboard music: five instrumental loops — three house, two lo-fi —
-// written as note data rather than loaded as files, so the device carries its own
-// soundtrack. Nothing to fetch, nothing to licence, and no loop ever ends on a gap.
+// The console's onboard music: one record of instrumentals — the house side (lo-fi, deep
+// and funky house) and the 1993 side — written as note data rather than loaded as files,
+// so the device carries its own soundtrack. Nothing to fetch, nothing to licence, and no
+// loop ever ends on a gap.
+//
+// The record is played shuffled, and every change of record is a hand-off: the melody
+// drops out of the last bar, a roll and a riser carry it, and the new track is played in
+// the nearest key to the one that just left. That is why a shuffled set still sounds
+// like a set.
 //
 // The palette is a small record rather than a sound chip: a soft sine kick, brushed
 // claps, dusty hats, a Rhodes-ish key (a sine with a fast second harmonic over it),
@@ -63,6 +70,8 @@ export const PLAYLIST = [
     perc: "...x......x.....",
     bass: [ROOT, null, ROOT, OCTAVE, null, null, FIFTH, null, ROOT, null, ROOT, OCTAVE, null, FIFTH, null, FIFTH],
     keys: "..x...x...x...x.",
+    stab: "..x...x...x...x.",
+    hook: [null, 19, null, 12, null, null, 24, null, null, 19, null, 12, null, 19, null, null],
   },
   {
     title: "Apron Nine",
@@ -93,6 +102,8 @@ export const PLAYLIST = [
     perc: "...x......x.....",
     bass: [ROOT, ROOT, null, OCTAVE, null, ROOT, null, FIFTH, ROOT, ROOT, null, OCTAVE, null, FIFTH, OCTAVE, FIFTH],
     keys: "..x...x...x...x.",
+    shaker: "x.xxx.xxx.xxx.xx",
+    hook: [12, null, null, 19, null, 12, 19, null, null, null, 24, null, null, 19, null, 12],
   },
   {
     title: "Long Haul",
@@ -108,11 +119,145 @@ export const PLAYLIST = [
     perc: "..x.......x.....",
     bass: [ROOT, null, null, null, null, null, FIFTH, null, ROOT, null, null, null, BELOW, null, null, FIFTH],
     keys: "...x..x....x..x.",
+    stab: ".x..x..x..x..x..",
+    shaker: "..x.x.x.x.x.x.x.",
+    hook: [null, null, 12, null, null, 19, null, null, 14, null, null, 12, null, null, 19, null],
   },
+
+  // ── The funky side ────────────────────────────────────────────────────────────
+  // The floor-facing half of the record: a clipped chord stab off the beat, a bass that
+  // walks under it, a shaker riding the sixteenths, and one short hook that returns
+  // every few bars — the part that is still in the head after the page is closed. Every
+  // hook note is a root, a fifth or an octave of the chord under it, so the line can
+  // repeat over the whole progression without ever landing wrong.
+  {
+    title: "Funky Tower",
+    kind: "funky",
+    bpm: 122,
+    swing: 0.12,
+    // Fm9 · A♭maj7 · B♭m9 · C7
+    chords: [[53, 56, 60, 63, 67], [56, 60, 63, 67], [58, 61, 65, 68, 72], [48, 52, 55, 58]],
+    kick: FOUR,
+    clap: BACKBEAT,
+    hatsA: OFFBEAT,
+    hatsB: "x.oox.oox.oox.oo",
+    perc: "...x......x.....",
+    shaker: "..x.x.x.x.x.x.x.",
+    bass: [ROOT, null, ROOT, FIFTH, null, ROOT, null, OCTAVE, ROOT, null, ROOT, FIFTH, null, OCTAVE, FIFTH, BELOW],
+    keys: "...x...x...x..x.",
+    stab: "..x...x...x...x.",
+    hook: [null, null, 19, null, null, 24, null, 19, null, 19, null, 14, 19, null, null, 12],
+  },
+  {
+    title: "Disco Arrivals",
+    kind: "funky",
+    bpm: 118,
+    swing: 0.08,
+    // Cmaj7 · Am7 · Fmaj7 · G7
+    chords: [[60, 64, 67, 71], [57, 60, 64, 67], [53, 57, 60, 64], [55, 59, 62, 65]],
+    kick: FOUR,
+    clap: BACKBEAT,
+    hatsA: OFFBEAT,
+    hatsB: "x.o.x.o.x.oox.oo",
+    perc: "...x...x..x.....",
+    shaker: "x.x.x.x.x.x.x.x.",
+    bass: [ROOT, ROOT, null, OCTAVE, null, ROOT, FIFTH, null, ROOT, ROOT, null, OCTAVE, null, FIFTH, OCTAVE, FIFTH],
+    keys: "x...x...x...x...",
+    stab: "..x..x..x..x..x.",
+    hook: [12, null, null, 19, null, 12, null, null, 24, null, 19, null, 12, null, null, 19],
+  },
+  {
+    title: "Afro Terminal",
+    kind: "funky",
+    bpm: 124,
+    swing: 0.14,
+    // Dm9 · Fmaj7 · G7 · Cmaj7
+    chords: [[50, 53, 57, 60, 64], [53, 57, 60, 64], [55, 59, 62, 65], [48, 52, 55, 58]],
+    kick: "x...x...x..x....",
+    clap: BACKBEAT,
+    hatsA: "..x...x...x...x.",
+    hatsB: "x.o.x.o.x.o.x.o.",
+    perc: "x..x..x...x..x..",
+    shaker: "x.xxx.xxx.xxx.xx",
+    bass: [ROOT, null, ROOT, null, FIFTH, null, ROOT, null, OCTAVE, null, ROOT, null, FIFTH, null, BELOW, null],
+    keys: "..x.....x.......",
+    hook: [null, 19, null, null, 12, null, 14, null, null, 19, null, null, 24, null, 19, null],
+  },
+  {
+    title: "Night Bus",
+    kind: "deep",
+    bpm: 120,
+    swing: 0.1,
+    // Am9 · Fmaj7 · Gm7 · Dm7
+    chords: [[57, 60, 64, 67, 71], [53, 57, 60, 64], [55, 58, 62, 65], [50, 53, 57, 60]],
+    kick: FOUR,
+    clap: BACKBEAT,
+    hatsA: OFFBEAT,
+    hatsB: "x..x..x..x..x..x",
+    perc: ".......x........",
+    shaker: "..x...x...x...x.",
+    bass: [ROOT, null, null, FIFTH, null, null, ROOT, null, OCTAVE, null, null, FIFTH, null, null, ROOT, null],
+    keys: "....x.......x...",
+    stab: "..x...x...x...x.",
+    hook: [null, null, 12, null, null, null, 19, null, null, null, 12, null, 14, null, null, null],
+  },
+  {
+    title: "Gantry Groove",
+    kind: "funky",
+    bpm: 121,
+    swing: 0.16,
+    // B♭maj7 · Gm7 · Fmaj7 · Cmaj7
+    chords: [[58, 62, 65, 69], [55, 58, 62, 65], [53, 57, 60, 64], [60, 64, 67, 71]],
+    kick: FOUR,
+    clap: BACKBEAT,
+    hatsA: "x...x...x...x...",
+    hatsB: "x.o.x.o.x.o.x.o.",
+    perc: "...x......x..x..",
+    shaker: "x.x.x.x.x.x.x.x.",
+    bass: [ROOT, ROOT, null, OCTAVE, ROOT, null, FIFTH, null, ROOT, ROOT, null, OCTAVE, ROOT, null, FIFTH, BELOW],
+    keys: "x..x..x...x..x..",
+    stab: ".x...x...x...x..",
+    hook: [19, null, null, 24, null, 19, null, 12, null, 19, null, null, 24, null, 19, null],
+  },
+  {
+    title: "Turbine",
+    kind: "funky",
+    bpm: 128,
+    swing: 0.06,
+    // Em7 · Cmaj7 · G7 · Dm7
+    chords: [[52, 55, 59, 62], [48, 52, 55, 58], [55, 59, 62, 65], [50, 54, 57, 60]],
+    kick: FOUR,
+    clap: BACKBEAT,
+    hatsA: OFFBEAT,
+    hatsB: "x.oox.oox.oox.oo",
+    perc: "...x..x...x..x..",
+    shaker: "x.xxx.xxx.xxx.xx",
+    bass: [ROOT, null, ROOT, ROOT, OCTAVE, null, ROOT, FIFTH, ROOT, null, ROOT, ROOT, OCTAVE, null, FIFTH, OCTAVE],
+    keys: "x.x.x.x.x.x.x.x.",
+    stab: "..x...x...x...x.",
+    hook: [24, null, 19, 24, null, 19, 24, null, 19, null, 24, 19, null, 19, null, 24],
+  },
+
   // The record turns over: the second side is 1993 — synthwave, dreamwave, vaporwave and
   // chillsynth, so the device's own station carries the whole late-night dial.
   ...STATION_1993,
 ];
+
+// Named handles, so a room can lean on a particular record without knowing its index —
+// and keep leaning on it after the running order of the record changes.
+export const HOUSE_SIDE = {
+  standby: PLAYLIST[0],
+  redEye: PLAYLIST[1],
+  apronNine: PLAYLIST[2],
+  slipstream: PLAYLIST[3],
+  longHaul: PLAYLIST[4],
+  funkyTower: PLAYLIST[5],
+  discoArrivals: PLAYLIST[6],
+  afroTerminal: PLAYLIST[7],
+  nightBus: PLAYLIST[8],
+  gantryGroove: PLAYLIST[9],
+  turbine: PLAYLIST[10],
+};
 
 // How each genre on the record is mixed: how hard the kick sits, how bright the hats run,
 // how far the bass leans forward, and how much vinyl is under it. The 1993 side is mixed
@@ -125,12 +270,18 @@ const MIX = {
   dreamwave: { kick: 0.46, hat: 0.038, bass: 0.23, vinyl: 0.05 },
   vaporwave: { kick: 0.4, hat: 0.03, bass: 0.2, vinyl: 0.16 },
   chillsynth: { kick: 0.44, hat: 0.036, bass: 0.22, vinyl: 0.1 },
+  // The funky side is a club record: the kick sits hardest, the hats are right up, and
+  // the bass leans further forward because it is carrying the groove.
+  funky: { kick: 0.54, hat: 0.048, bass: 0.26, vinyl: 0.05 },
+  deep: { kick: 0.5, hat: 0.032, bass: 0.27, vinyl: 0.08 },
 };
 const mix = (kind) => MIX[kind] || MIX.house;
 
 let ctx = null;
 let master = null;
 let dry = null;
+let melody = null; // every voice with a pitch; the kick ducks this bus
+let duck = null;
 let echo = null;
 let room = null;
 let delayNode = null;
@@ -144,11 +295,47 @@ let index = 0;
 let queue = PLAYLIST;
 let queueKey = "house";
 // Each track plays this many bars, then the record moves on through the playlist.
-const TRACK_BARS = 48;
+const TRACK_BARS = 32;
 const listeners = new Set();
 const announce = () => listeners.forEach((fn) => fn(queue[index]));
 let playing = false;
 let ctxBound = false;
+
+// ── The deck ────────────────────────────────────────────────────────────────────
+// The record is played shuffled. A deck is dealt for every playlist and walked to the
+// end, then dealt again — so a room's own set never runs in the order it was written,
+// and no track ever comes up twice in a row.
+let order = [];
+let orderPos = 0;
+let shift = 0; // semitones the current record is playing in
+let sounding = null; // the pitch class the last record was sounding in
+
+const rootPc = (track) => ((track.chords[0][0] % 12) + 12) % 12;
+
+function deal(avoid) {
+  order = queue.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  if (order.length > 1 && order[0] === avoid) {
+    const j = 1 + Math.floor(Math.random() * (order.length - 1));
+    [order[0], order[j]] = [order[j], order[0]];
+  }
+  orderPos = 0;
+}
+
+// A record is never dropped in on a remote key: it is played the fewest semitones from
+// the one that just left, so a change of record sounds like a change of record and never
+// like a mistake.
+function nearest(from, to) {
+  if (from == null) return 0;
+  let d = (((to - from) % 12) + 12) % 12;
+  if (d > 6) d -= 12;
+  return d;
+}
+
+deal(-1);
 
 const hz = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 const drift = () => (Math.random() - 0.5) * DRIFT;
@@ -191,6 +378,15 @@ function ensure() {
     dry = ac.createGain();
     dry.connect(master);
 
+    // The groove bus: everything with a pitch rides it, and the kick ducks it. That dip
+    // under every beat is the pump the whole record breathes with. The drums stay off it
+    // so the floor never loses its footing.
+    duck = ac.createGain();
+    duck.gain.value = 1;
+    duck.connect(master);
+    melody = ac.createGain();
+    melody.connect(duck);
+
     // Dotted-eighth echo. The delay time is re-set for each record, because an
     // echo that is out of time with its own track is just mud.
     delayNode = ac.createDelay(1.5);
@@ -202,7 +398,7 @@ function ensure() {
     const echoOut = ac.createGain();
     echoOut.gain.value = 0.32;
     delayNode.connect(damp).connect(feed).connect(delayNode);
-    delayNode.connect(echoOut).connect(master);
+    delayNode.connect(echoOut).connect(melody);
     echo = ac.createGain();
     echo.connect(delayNode);
 
@@ -220,7 +416,7 @@ function ensure() {
     soften.frequency.value = 2600;
     const roomOut = ac.createGain();
     roomOut.gain.value = 0.4;
-    convolver.connect(soften).connect(roomOut).connect(master);
+    convolver.connect(soften).connect(roomOut).connect(melody);
     room = ac.createGain();
     room.connect(convolver);
 
@@ -329,7 +525,7 @@ function key(at, midi, decay, level) {
   tine.connect(tineGain).connect(tone);
   body.connect(tone);
   tone.connect(gain);
-  gain.connect(dry);
+  gain.connect(melody);
   gain.connect(echo);
   gain.connect(room);
   body.start(at);
@@ -351,7 +547,7 @@ function bassNote(at, midi, decay, level) {
   tone.frequency.value = lofi() ? 280 : 360;
   const gain = ctx.createGain();
   env(gain, at, level, 0.02, decay);
-  osc.connect(tone).connect(gain).connect(dry);
+  osc.connect(tone).connect(gain).connect(melody);
   osc.start(at);
   osc.stop(at + decay + 0.12);
 }
@@ -367,7 +563,7 @@ function pad(at, chord, decay) {
   swell.gain.setValueAtTime(0.0001, at);
   swell.gain.linearRampToValueAtTime(0.5, at + 0.7);
   swell.gain.setTargetAtTime(0.0001, at + decay, 0.4);
-  tone.connect(swell).connect(room).connect(dry);
+  tone.connect(swell).connect(room).connect(melody);
   chord.slice(0, 4).forEach((midi) => {
     [-7, 7].forEach((cents) => {
       const osc = ctx.createOscillator();
@@ -383,6 +579,97 @@ function pad(at, chord, decay) {
   });
 }
 
+// The pump: the kick takes the groove bus down with it and the bus breathes back over a
+// beat. Booked on the audio clock, so it never depends on a frame arriving.
+function sidechain(at) {
+  if (!duck) return;
+  duck.gain.setValueAtTime(1, at);
+  duck.gain.linearRampToValueAtTime(0.58, at + 0.014);
+  duck.gain.setTargetAtTime(1, at + 0.05, 0.11);
+}
+
+// The chord stab: the sound the funky side is built on. Two saws a few cents apart on
+// three notes, through a filter that clamps shut behind the hit — a clipped organ chord,
+// off the beat, gone in a tenth of a second.
+function stab(at, chord, level) {
+  const tone = ctx.createBiquadFilter();
+  tone.type = "lowpass";
+  tone.frequency.setValueAtTime(4200, at);
+  tone.frequency.exponentialRampToValueAtTime(900, at + 0.13);
+  tone.Q.value = 1.2;
+  const gain = ctx.createGain();
+  env(gain, at, level, 0.004, 0.14);
+  tone.connect(gain);
+  gain.connect(melody);
+  gain.connect(echo);
+  chord.slice(0, 3).forEach((midi) => {
+    [-6, 6].forEach((cents) => {
+      const osc = ctx.createOscillator();
+      osc.type = "sawtooth";
+      osc.frequency.value = hz(midi);
+      osc.detune.value = cents;
+      osc.connect(tone);
+      osc.start(at);
+      osc.stop(at + 0.22);
+    });
+  });
+}
+
+// The hook: a thin bell-pluck high over the chord, and its own echo answering it. This is
+// the line that makes a loop stick, so it is deliberately the simplest voice in the kit.
+function pluck(at, midi, level) {
+  const f = hz(midi);
+  const body = ctx.createOscillator();
+  body.type = "triangle";
+  body.frequency.value = f;
+  const tine = ctx.createOscillator();
+  tine.type = "sine";
+  tine.frequency.value = f * 3.01;
+  const tineGain = ctx.createGain();
+  env(tineGain, at, level * 0.3, 0.002, 0.07);
+  const tone = ctx.createBiquadFilter();
+  tone.type = "lowpass";
+  tone.frequency.value = 5200;
+  const gain = ctx.createGain();
+  env(gain, at, level, 0.004, 0.28);
+  tine.connect(tineGain).connect(tone);
+  body.connect(tone);
+  tone.connect(gain);
+  gain.connect(melody);
+  gain.connect(echo);
+  body.start(at);
+  tine.start(at);
+  body.stop(at + 0.42);
+  tine.stop(at + 0.42);
+}
+
+// A shaker: the same struck noise as a hat, but higher, tighter and a touch irregular —
+// it is what makes a sixteenth pattern sound played rather than typed.
+function shaker(at, level) {
+  struck(at, level, 0.035, 6200 + Math.random() * 1800, 1.6);
+}
+
+// The hand-off between two records: a band of noise sweeping up under the last bar of the
+// old track and cutting dead as the new one lands. It is what makes a shuffled change of
+// key sound like a DJ move instead of a skip.
+function riser(at, duration) {
+  const src = ctx.createBufferSource();
+  src.buffer = noise;
+  src.loop = true;
+  const band = ctx.createBiquadFilter();
+  band.type = "bandpass";
+  band.Q.value = 1.1;
+  band.frequency.setValueAtTime(420, at);
+  band.frequency.exponentialRampToValueAtTime(6800, at + duration);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, at);
+  gain.gain.exponentialRampToValueAtTime(0.09, at + duration * 0.92);
+  gain.gain.exponentialRampToValueAtTime(0.0001, at + duration + 0.06);
+  src.connect(band).connect(gain).connect(master);
+  src.start(at);
+  src.stop(at + duration + 0.1);
+}
+
 // ── The record ───────────────────────────────────────────────────────────────────
 
 // Bars 0–3 are the A section, 4–7 the B: the hats open up, a percussion line comes
@@ -392,23 +679,47 @@ const isBSection = (at) => at % 8 >= 4;
 
 function playStep(at) {
   const track = queue[index];
-  const chord = track.chords[bar % track.chords.length];
+  const base = track.chords[bar % track.chords.length];
+  // Every record is played in the key the deck tuned it to, so a shuffled change of
+  // record never lands a semitone from the last one.
+  const chord = shift ? base.map((n) => n + shift) : base;
   const beat = 60 / track.bpm / 4;
   const busy = isBSection(bar);
+  const ending = queue.length > 1 && bar === TRACK_BARS - 1;
 
   const levels = mix(track.kind);
 
-  if (track.kick[step] === "x") kick(at, levels.kick);
+  if (track.kick[step] === "x") {
+    kick(at, levels.kick);
+    sidechain(at);
+  }
   if (track.clap[step] === "x") clap(at);
 
   const hats = busy ? track.hatsB : track.hatsA;
   if (hats[step] === "o") hat(at, true, 0.055);
   else if (hats[step] === "x") hat(at, false, levels.hat);
 
+  if (busy && track.shaker && track.shaker[step] === "x") shaker(at, 0.026);
   if (busy && track.perc[step] === "x") struck(at, 0.05, 0.06, 2500, 1.5);
 
   const offset = track.bass[step];
   if (offset != null) bassNote(at, chord[0] + offset, beat * 1.7, levels.bass);
+
+  // The last bar of a record hands the floor over: the melody drops out, a roll builds
+  // across the second half, and a riser carries the next track in on the change.
+  if (ending) {
+    if (step === 8) riser(at, beat * 8);
+    if (step >= 8 && step % 2 === 0) struck(at, 0.026 + (step - 8) * 0.007, 0.07, 1900, 1.1);
+    return;
+  }
+
+  if (track.stab && track.stab[step] === "x") stab(at, chord, 0.034);
+
+  // The hook comes in with the B section: the groove has four bars on its own first, so
+  // the line lands as a lift rather than as wallpaper.
+  if (busy && track.hook && track.hook[step] != null) {
+    pluck(at, chord[0] + track.hook[step], 0.055);
+  }
 
   if (track.keys[step] === "x") {
     const voicing = busy ? chord : chord.slice(0, 4);
@@ -456,7 +767,14 @@ export function loadPlaylist(key, tracks, startAt = 0) {
   if (!tracks?.length || key === queueKey) return;
   queue = tracks;
   queueKey = key;
-  index = Math.min(startAt, tracks.length - 1);
+  // Every surface gets a freshly dealt deck: two rooms built from the same records never
+  // run them in the same order.
+  deal(-1);
+  // A surface opens on a random record from its own deck, unless it asks for one by index.
+  index = startAt ? Math.min(startAt, tracks.length - 1) : order[0];
+  shift = Math.round(nearest(sounding, rootPc(queue[index])));
+  sounding = (rootPc(queue[index]) + shift + 12) % 12;
+  setMusicKey(sounding);
   step = 0;
   bar = 0;
   if (ctx) nextTime = Math.max(nextTime, ctx.currentTime + 0.06);
@@ -526,7 +844,19 @@ export function stopPlaylist() {
 }
 
 export function nextTrack() {
-  index = (index + 1) % queue.length;
+  orderPos += 1;
+  // The deck is walked to its end and then dealt again, so the set is always shuffled
+  // but never stutters on the same track twice.
+  if (orderPos >= order.length) deal(index);
+  index = order[orderPos] ?? order[0] ?? 0;
+  // The transposition stays inside an octave by folding, never by clamping: a shift of
+  // twelve is the same key, so folding costs nothing while a clamp would cost the tune.
+  let folded = shift + nearest(sounding, rootPc(queue[index]));
+  while (folded > 6) folded -= 12;
+  while (folded < -6) folded += 12;
+  shift = folded;
+  sounding = (rootPc(queue[index]) + shift + 12) % 12;
+  setMusicKey(sounding);
   step = 0;
   bar = 0;
   setTiming();

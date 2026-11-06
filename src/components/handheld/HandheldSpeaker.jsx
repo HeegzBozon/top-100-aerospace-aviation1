@@ -86,7 +86,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
       aria-label={
         playing
           ? `Speaker on, playing ${track.title}. Mute the music`
-          : "Speaker off. Play the console's music, three house loops and two lo-fi"
+          : "Speaker off. Play the console's music"
       }
       title="Tap to play or mute · hold for the next loop"
       className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.97]"
