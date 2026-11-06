@@ -103,12 +103,12 @@ export default function ColonyBoot({ onDone }) {
                   className="group relative px-1 pb-3 pt-2 focus:outline-none"
                 >
                   <span
-                    className={`font-heading text-[17px] uppercase leading-none tracking-[0.22em] transition-colors duration-300 md:text-[22px] md:tracking-[0.3em] ${
+                    className={`font-heading text-[19px] uppercase leading-none tracking-[0.2em] transition-colors duration-300 md:text-[30px] ${
                       on
                         ? 'text-editorial-cream'
-                        : 'text-editorial-cream/70 group-hover:text-editorial-cream/90'
+                        : 'text-editorial-cream/75 group-hover:text-editorial-cream'
                     }`}
-                    style={{ textShadow: '0 1px 18px rgb(var(--editorial-navy-rgb) / 0.85)' }}
+                    style={{ textShadow: '0 1px 22px rgb(var(--editorial-navy-rgb) / 0.95)' }}
                   >
                     {o.label}
                   </span>
@@ -116,11 +116,11 @@ export default function ColonyBoot({ onDone }) {
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-x-0 bottom-0 origin-center transition-all duration-500 ease-out"
                     style={{
-                      height: on ? 2 : 1,
+                      height: on ? 3 : 1,
                       background: on
-                        ? 'linear-gradient(90deg, transparent, rgb(var(--editorial-gold-rgb)) 18%, rgb(var(--editorial-copper-rgb)) 82%, transparent)'
-                        : 'linear-gradient(90deg, transparent, rgb(var(--editorial-cream-rgb) / 0.5), transparent)',
-                      transform: `scaleX(${on ? 1 : 0.55})`,
+                        ? 'linear-gradient(90deg, transparent, rgb(var(--editorial-gold-rgb)) 14%, rgb(var(--editorial-copper-rgb)) 86%, transparent)'
+                        : 'linear-gradient(90deg, transparent, rgb(var(--editorial-cream-rgb) / 0.55), transparent)',
+                      transform: `scaleX(${on ? 1 : 0.7})`,
                     }}
                   />
                 </button>
