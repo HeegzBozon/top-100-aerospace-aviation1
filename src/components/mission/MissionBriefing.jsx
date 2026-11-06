@@ -55,20 +55,20 @@ const BRIEFINGS = [
     lede: 'Mini ranked choice',
     objective: 'Assemble a crew from four records.',
     body:
-      'The Crosscheck is the same method as the Manifest, four records deep — a mini ranked-choice ballot. The four are shuffled together and set in front of you, so you are never choosing your own comparison. Read it as crewing a flight: the record you would put in command takes the Commander’s seat at one, the next takes the Pilot’s seat at two, the next the Flight Engineer’s at three, and the fourth record takes the seat left standing. Three taps finish a set, because the fourth seat fills itself. Every set you finish is one complete ballot. A set you would rather not weigh can be skipped, and nothing is recorded from it — or held, and it comes back exactly as it was shuffled.',
+      'The Manifest, four records deep. The four are shuffled for you, so the comparison is never your own. Crew them — Commander, Pilot, Flight Engineer — and the fourth takes the seat left standing. Three taps finish a set. Finish it and it is one complete ballot. Skip it and nothing is recorded. Hold it and it returns as shuffled.',
     results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
     steps: [
       {
         label: 'Four records, four seats',
-        line: 'Not one pick out of four. A whole crew in order — Commander, Pilot, Flight Engineer, and the seat left standing — so every seat you fill counts and nothing is thrown away.',
+        line: 'Not one pick out of four. A whole crew in order — Commander, Pilot, Flight Engineer, and the seat left standing.',
       },
       {
-        label: 'Three taps and the crew is complete',
-        line: 'Tap the record you would put in command, then the next, then the next. The fourth takes the seat that is left, so a crew is never half-assembled.',
+        label: 'Three taps',
+        line: 'The one you would put in command, then the next, then the next. The fourth takes what is left.',
       },
       {
         label: 'One set, one ballot',
-        line: 'Four records, one order, one complete ballot. Skip a set and nothing is recorded from it; hold it and it comes back exactly as it was shuffled.',
+        line: 'Finish a set and it is a complete ballot. Skip it and nothing is recorded. Hold it and it returns as shuffled.',
       },
     ],
     // The measure itself, and the keys that hold it. Both stand here rather than in print
