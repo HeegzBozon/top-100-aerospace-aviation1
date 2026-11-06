@@ -132,7 +132,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
             <div key={step.key} className="flex-1">
               <div
                 className={`h-1 rounded-full transition-colors duration-300 ${
-                  reached ? 'bg-editorial-copper' : 'bg-editorial-navy/12'
+                  reached ? 'bg-editorial-copper' : 'bg-editorial-navy/10'
                 }`}
               />
               <p
