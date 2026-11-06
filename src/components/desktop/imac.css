@@ -13,7 +13,10 @@
      opening card, the page turn, the bars) reads the same two numbers. */
   --room-top: 46px;
   --room-x: clamp(28px, 5vw, 128px);
-  --room-foot: clamp(44px, 7.5vh, 146px);
+  /* The lip of desk in front of the machine. It is a lip, not a band: the machine stands
+     on the desk rather than floating over it, and the picture takes everything above that
+     line — the window's foot is never a strip of empty room under the chin. */
+  --room-foot: clamp(8px, 1.1vh, 18px);
   --imac-crown: 58px;
   --imac-side: 30px;
   /* The chin is a faceplate now, not a printed band: it carries the readout, the key
