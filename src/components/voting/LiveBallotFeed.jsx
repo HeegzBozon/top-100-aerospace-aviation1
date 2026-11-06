@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import useLiveBallotFeed from '@/hooks/useLiveBallotFeed';
@@ -141,6 +142,9 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 })
 
       <div className="px-3 pb-3 pt-2.5" style={{ borderTop: RULE }}>
         <OnTheWire />
+        <Link to="/Admin?tab=selection-monitor" className="mt-3 inline-flex min-h-10 items-center text-[10px] font-bold uppercase tracking-widest text-editorial-label underline underline-offset-4">
+          Open full live monitor
+        </Link>
       </div>
     </div>
   );

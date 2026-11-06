@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import VoteGate from '@/components/voting/VoteGate';
 import VoteSurface from '@/components/voting/VoteSurface';
+import VoteWalkthrough from '@/components/voting/VoteWalkthrough';
 import { isViewingAsVisitor } from '@/lib/viewerPreview';
 
 // One address for the ballot, and the two people who open it.
@@ -33,6 +34,7 @@ function readSource() {
 export default function Vote() {
   const [state, setState] = useState({ status: 'checking', user: null });
   const [source] = useState(readSource);
+  const [walkthrough, setWalkthrough] = useState(false);
 
   // Recorded once, and only for a tagged arrival: an untagged ballot is already
   // counted by the page view, and a channel is only worth reporting when it was named.
@@ -64,11 +66,19 @@ export default function Vote() {
   if (state.status === 'checking') return <ConsoleLoading label="Opening the ballot" />;
 
   if (state.status === 'visitor') return <VoteGate source={source} />;
+  if (walkthrough && state.user?.role === 'admin') {
+    return <div className="imac-fit flex min-h-0 flex-1 flex-col overflow-hidden" data-tube-fill=""><VoteWalkthrough user={state.user} onClose={() => setWalkthrough(false)} /></div>;
+  }
 
   return (
     // The wrapper takes the tube's own fill contract: the glass measures the ballot
     // against itself, so the cream plate ends on the picture's bottom edge.
     <div className="imac-fit flex flex-1 flex-col overflow-hidden" data-tube-fill="">
+      {state.user?.role === 'admin' && (
+        <div className="shrink-0 bg-editorial-cream px-4 py-2">
+          <button type="button" className="desk-key desk-key-primary" onClick={() => setWalkthrough(true)}>Preview new Fellow journey</button>
+        </div>
+      )}
       <VoteSurface user={state.user} />
     </div>
   );

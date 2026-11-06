@@ -54,7 +54,7 @@ function drawSet(pool, exclude = []) {
   return shuffle(src).slice(0, 4);
 }
 
-export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null, progress = null, onPoolSize = null }) {
+export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null, progress = null, onPoolSize = null, readOnly = false }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState([]);
@@ -163,7 +163,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
         // Anything the Fellow set aside, newest first. A hold is a convenience queue, so a
         // read that fails never stops the ballot opening.
-        const saved = await base44.entities.CrosscheckHold
+        const saved = readOnly ? null : await base44.entities.CrosscheckHold
           .filter({ fellow_email: user?.email }, { sort: '-saved_at', limit: 20 })
           .catch(() => null);
         if (active) setHolds(saved?.items || (Array.isArray(saved) ? saved : []));
@@ -267,7 +267,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   }, [pool, seenIds]);
 
   const handleSelect = async (nominee) => {
-    if (phase !== 'ordering' || !nominee) return;
+    if (readOnly || phase !== 'ordering' || !nominee) return;
     if (order.includes(nominee.id)) return;
 
     const next = [...order, nominee.id];
@@ -319,7 +319,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // Reading suspends the vote: while the briefing or a candidate's file is open, the ring
   // and the keys belong to the reader, not to the ballot, so no mark can be made by
   // accident.
-  const reading = guideOpen || Boolean(panelNominee) || Boolean(noteNominee);
+  const reading = readOnly || guideOpen || Boolean(panelNominee) || Boolean(noteNominee);
   const standing = phase === 'ordering' && !reading;
   // Which face the case is wearing. The chamber is voted from the hardware either way,
   // but the radio has no X, Y, A or B to press: its candidates stand on the digits in
@@ -517,7 +517,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
   // Undo, skip, hold, review and resume are offered only when they mean something: the one
   // row the ballot ever adds, and on the glass it is kept to a single line of small keys.
-  const hasControls = phase === 'ordering' || phase === 'review';
+  const hasControls = !readOnly && (phase === 'ordering' || phase === 'review');
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
@@ -649,8 +649,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 honoreeVolumes={honoreeVolumes(nominee, honoreeIndex, nomineeIndex)}
                 selectable={selectable}
                 cursor={standing && cursor === idx}
-                onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
-                onNote={() => { setNoteNominee(nominee); setPanelToken(token); }}
+                onInfo={readOnly ? undefined : () => { setPanelNominee(nominee); setPanelToken(token); }}
+                onNote={readOnly ? undefined : () => { setNoteNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
                 keyLabel={radio ? String(idx + 1) : glass ? VOTE_KEYS[idx] : DESK_VOTE_KEYS[idx]}
                 infoKeyLabel={

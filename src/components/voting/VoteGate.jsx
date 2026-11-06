@@ -28,11 +28,11 @@ import {
 // The card is the hero: the printed invitation itself, held beside the words that answer
 // it on a desk, and standing over them on a phone — so the first thing a promoted link
 // shows is the same card that was sent.
-export default function VoteGate({ source }) {
+export default function VoteGate({ source, onPreviewContinue = null }) {
   // The channel travels with them through the door, so the arrival is still attributed
   // once the account exists and the ballot is what they land on.
   const door = source ? `/vote?src=${encodeURIComponent(source)}` : '/vote';
-  const toDoor = () => base44.auth.redirectToLogin(door);
+  const toDoor = () => onPreviewContinue ? onPreviewContinue() : base44.auth.redirectToLogin(door);
 
   useEffect(() => {
     const previous = document.title;

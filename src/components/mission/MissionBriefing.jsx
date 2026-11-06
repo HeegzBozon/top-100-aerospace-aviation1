@@ -25,22 +25,20 @@ const BRIEFINGS = [
     kicker: MANIFEST,
     lede: 'Ranked choice',
     objective: 'Order the field you would vouch for.',
-    body:
-      'The Manifest is a ranked-choice list — the ordinary kind, the one everybody already knows. One mark tells you which name is loudest; an order tells you how a whole field compares, and what you would stand behind if your first choice were not on the table. Nobody is asked to abandon a name, only to say what comes after it. Your second and third places are not thrown away. A name that is nobody’s single favourite but everybody’s third rises on a ranked ballot, and that is something a field of a hundred can be measured by. A favourite cannot.',
+    body: 'Choose the professionals you back. Put them in order. Submit your Manifest.',
     steps: [
-      {
-        label: 'Every place counts',
-        line: "Your second and third are not thrown away. A name that is nobody's single favourite but everybody's third rises on an ordered ballot — which is something a field can hold and a tick box cannot.",
-      },
-      {
-        label: 'One list, held in order',
-        line: 'Position one reads as position one. Move an entry up and the names below it make room; nothing is dropped off the tail. Every entry carries the reason you wrote for them.',
-      },
-      {
-        label: 'Nothing counts until you submit',
-        line: 'Build it, rearrange it, sit with it. The Manifest keeps your order as you work and is written to the record once, when you submit it.',
-      },
+      { label: 'Choose', line: 'Add a professional and write why you back them.' },
+      { label: 'Order', line: 'Strongest first. Move a professional up; the others make room.' },
+      { label: 'Submit', line: 'Review your order, then submit it for this cycle.' },
     ],
+    more: {
+      label: 'More on the Manifest',
+      lines: [
+        'Ranked choice records an order, not just a favourite. Your second and third choices matter too.',
+        'Your draft keeps your order as you work. Nothing counts until you submit; it stays editable while the window is open.',
+        'You choose the professionals in your Manifest. In the Crosscheck, four professionals are shuffled for you.',
+      ],
+    },
   },
   {
     key: 'vote',

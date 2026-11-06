@@ -166,7 +166,8 @@ export default function JudgeCard({
             </span>
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onInfo(); }}
+              disabled={!onInfo}
+              onClick={(e) => { e.stopPropagation(); onInfo?.(); }}
               aria-label={`More information about ${name}${infoKeyLabel ? ` — key ${infoKeyLabel}` : ''}`}
               title={infoKeyLabel ? `${infoKeyLabel} opens ${name}` : `More information about ${name}`}
               className={`relative flex shrink-0 items-center justify-center transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 ${keyBox}`}

@@ -48,7 +48,7 @@ async function resolveOpenCohort() {
 // The ballot, open to every Fellow. One call opens it — which cohort is counting,
 // where its window stands, and the ladder already climbed — and the weighing itself
 // is the anchor surface, unchanged.
-export default function VoteSurface({ user }) {
+export default function VoteSurface({ user, readOnly = false }) {
   const { toast } = useToast();
   const [context, setContext] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -235,7 +235,8 @@ export default function VoteSurface({ user }) {
             user={user}
             activeSeason={target}
             onRecorded={onRecorded}
-            progress={context.progress}
+            progress={readOnly ? null : context.progress}
+            readOnly={readOnly}
             onPoolSize={setPoolSize}
           />
         </div>
@@ -244,7 +245,7 @@ export default function VoteSurface({ user }) {
             weighed; a Fellow is handed their own record, because the line that reads wrong
             on a card is corrected in the workspace, not here. The Fellow's ladder is not
             repeated in this column: it stands once, at the head of the set. */}
-        <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
+        {!readOnly && <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
           {isAdmin ? (
             <>
               <div className="flex gap-1.5" role="tablist" aria-label="Column">
@@ -281,7 +282,7 @@ export default function VoteSurface({ user }) {
           ) : (
             <FellowQuickEdit />
           )}
-        </aside>
+        </aside>}
       </div>
     </div>
   );
