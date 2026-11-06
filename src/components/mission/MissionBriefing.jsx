@@ -8,8 +8,6 @@ import {
   CROSSCHECK,
   BALLOT_DISTINCTION,
   CROSSCHECK_LINE,
-  CROSSCHECK_IS,
-  CROSSCHECK_HOW,
 } from '@/components/voting/ballotNaming';
 
 // The committee's briefing: two surfaces, one objective each, and the key results that
@@ -25,10 +23,10 @@ const BRIEFINGS = [
   {
     key: 'nominate',
     kicker: MANIFEST,
-    lede: 'Ranked choice voting 101',
-    objective: 'Why an order, and not a single pick?',
+    lede: 'Ranked choice',
+    objective: 'Order the field you would vouch for.',
     body:
-      'One mark tells you which name is loudest. An order tells you how a whole field compares — and what you would stand behind if your first choice were not on the table. That is the whole case for a ranked ballot: nobody is asked to abandon a name, only to say what comes after it. A field of a hundred can be measured this way. It cannot be measured by a favourite.',
+      'The Manifest is a ranked-choice list — the ordinary kind, the one everybody already knows. One mark tells you which name is loudest; an order tells you how a whole field compares, and what you would stand behind if your first choice were not on the table. Nobody is asked to abandon a name, only to say what comes after it. Your second and third places are not thrown away. A name that is nobody’s single favourite but everybody’s third rises on a ranked ballot, and that is something a field of a hundred can be measured by. A favourite cannot.',
     steps: [
       {
         label: 'Every place counts',
@@ -53,20 +51,35 @@ const BRIEFINGS = [
   },
   {
     key: 'vote',
-    kicker: CROSSCHECK,
-    objective: 'Analyse the field.',
+    kicker: `${CROSSCHECK} · mini ranked choice`,
+    lede: 'Mini ranked choice',
+    objective: 'Put four records in order.',
     body:
-      'You serve this season as an Analyst. Voting is analysis: a mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Put all four in order: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A review you would rather not weigh can be skipped, with nothing scored from it, or saved for later and taken up again exactly as it was dealt.',
+      'This is the same method as the Manifest, four records deep — a mini ranked-choice ballot. Four records are dealt together and the house picks which four, so you are never choosing your own comparison. All you do is put them in order: the one that leads, then the next, then the next. Three taps finish a set, because the fourth record takes the last place by itself. Every set you finish is one complete ballot. A set you would rather not weigh can be skipped, and nothing is recorded from it — or held, and it comes back exactly as it was dealt.',
     results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
+    steps: [
+      {
+        label: 'Ranked choice, four deep',
+        line: 'Not one pick out of four. An order across all four, so every place you give counts and nothing is thrown away.',
+      },
+      {
+        label: 'Three taps and the set is complete',
+        line: 'Tap the record that leads, then the next, then the next. The fourth places itself, so a set is never left half-ordered.',
+      },
+      {
+        label: 'One set, one ballot',
+        line: 'Four records, one order, one complete ballot. Skip a set and nothing is recorded from it; hold it and it comes back as it was dealt.',
+      },
+    ],
     // The measure itself, and the keys that hold it. Both stand here rather than in print
     // laid over the set: the surface keeps the whole of its height for the four cards, and
     // the words are one press away on every machine, glass and desk alike.
-    note: `${CROSSCHECK_LINE} ${CROSSCHECK_IS} ${CROSSCHECK_HOW}`,
+    note: CROSSCHECK_LINE,
     keys: [
-      ['\u2190 \u2192', 'walk the set'],
-      ['Enter', 'mark'],
-      ['X Y A B', 'vote'],
-      ['I', 'info'],
+      ['arrows / wheel', 'walk the four'],
+      ['Enter', 'place the record'],
+      ['card key', 'place that card'],
+      ['\u24d8 on a card', 'read its file'],
     ],
   },
 ];
@@ -188,6 +201,20 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
               {single ? (
                 <>
                   {brief.steps && <Steps steps={brief.steps} />}
+                  {brief.keys && (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {brief.keys.map(([key, what]) => (
+                        <span
+                          key={key}
+                          className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[9.5px]"
+                          style={{ border: `1px solid ${brand.navy}18`, color: `${brand.navy}99` }}
+                        >
+                          <span className="font-bold" style={{ color: brand.navy }}>{key}</span>
+                          {what}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <KeyResults kicker={brief.kicker} results={brief.results} />
                 </>
               ) : (

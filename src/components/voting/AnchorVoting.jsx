@@ -9,9 +9,7 @@ import {
   Loader2, Info, Check, Undo2, ArrowLeft, Bookmark, BookmarkPlus, SkipForward,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  CROSSCHECK_PROMPTS, CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL,
-} from '@/components/voting/ballotNaming';
+import { CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
 import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
@@ -507,13 +505,15 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     return null;
   };
 
-  const prompt =
-    phase === 'ordering' ? CROSSCHECK_PROMPTS[Math.min(order.length, 2)] :
+  // A standing set asks no question of its own: the plate prints the place each tap fills,
+  // and how the ballot works is the briefing's job. The row only speaks while something is
+  // happening to the set — being recorded, recorded, skipped, or read back.
+  const status =
     phase === 'submitting' ? 'Recording the review…' :
-    phase === 'success' ? 'Review recorded.' :
+    phase === 'success' ? 'Review recorded' :
     phase === 'skipped' ? 'Skipped · nothing recorded' :
-    phase === 'review' ? 'Reading back your last review.' :
-    CROSSCHECK_PROMPTS[0];
+    phase === 'review' ? 'Reading back your last review' :
+    null;
 
   // Undo, skip, hold, review and resume are offered only when they mean something: the one
   // row the ballot ever adds, and on the glass it is kept to a single line of small keys.
@@ -536,6 +536,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             flash={phase === 'success'}
             flashLabel={`Recorded · +${XP_PER_REVIEW} XP`}
             label={nextRung}
+            lane={lane}
           />
         )}
         {/* The bar names this surface, so nothing is printed over the set to name it
@@ -544,53 +545,50 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             on the one line under it, so the four cards keep the whole of the height. */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={prompt}
+            key={status || 'standing'}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
             className="mb-1.5 mt-0 flex min-w-0 flex-wrap items-center gap-1.5 md:mb-3 md:mt-1 md:flex-nowrap md:gap-2"
           >
-            {phase === 'ordering' && (
-              // The place the next tap fills, so the sequence is legible without reading.
-              <span
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9.5px] font-bold tabular-nums"
-                style={{ background: `${brand.gold}1F`, color: brand.navy }}
-              >
-                {order.length + 1}
-              </span>
-            )}
-            {phase === 'submitting' && (
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
-                <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
-              </span>
-            )}
-            {(phase === 'success' || phase === 'skipped') && (
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
-                <Check className="h-3 w-3" style={{ color: phase === 'success' ? brand.gold : `${brand.navy}70` }} />
-              </span>
-            )}
-            <p className="min-w-0 truncate font-heading text-[14px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
-            {/* The one way in: the info key opens the briefing — the vote's own objective
-                and the ladder that says it has been reached, and nothing from the other
-                surface. */}
+            {/* The one way in. The briefing is the instruction: what the ballot is, how a
+                set is ordered, and what it is measured by — so the surface itself carries
+                no question and no helper line, and the four cards keep the height. */}
             <button
               type="button"
               onClick={() => setGuideOpen(true)}
-              aria-label="Mission briefing — the vote's objective and key results"
-              title="Mission briefing"
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-              style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}1A`, color: ink.soft }}
+              aria-label="How this works — open the briefing"
+              title="How this works"
+              className="flex h-7 shrink-0 items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[9.5px] font-bold uppercase tracking-[0.14em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110"
+              style={{
+                background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
+                color: '#F4F0E7',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 10px -6px rgba(7,17,31,0.8)',
+              }}
             >
-              <Info className="h-3 w-3" />
-              </button>
+              <Info className="h-3.5 w-3.5" /> How this works
+            </button>
 
-              {/* Everything that acts on the set stands on this same line, to the right of
-                the prompt: one row for the words and the keys, so the four cards keep
-                every other row of the height. */}
+            {status && (
+              <span className="flex min-w-0 items-center gap-1.5">
+                {phase === 'submitting' ? (
+                  <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" style={{ color: brand.gold }} />
+                ) : phase === 'review' ? null : (
+                  <Check className="h-3.5 w-3.5 shrink-0" style={{ color: phase === 'success' ? brand.gold : `${brand.navy}70` }} />
+                )}
+                <p className="min-w-0 truncate font-heading text-[13px] leading-none md:text-[15px]" style={{ color: brand.navy }}>
+                  {status}
+                </p>
+              </span>
+            )}
+
+              {/* Everything that acts on the set stands on this same line, held to the far
+                end of it: one row for the briefing key, the status and the keys, so the
+                four cards keep every other row of the height. */}
               {hasControls && (
               <>
-                <span aria-hidden className="mx-0.5 h-3.5 w-px shrink-0" style={{ background: `${brand.navy}16` }} />
+                <span aria-hidden className="ml-auto mr-0.5 h-3.5 w-px shrink-0" style={{ background: `${brand.navy}16` }} />
                 {phase === 'ordering' && (
                   <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
                     <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
@@ -630,7 +628,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             at once, so the grid takes its rows from the height it is given. */}
         <CrosscheckDeal
           dealKey={setKey}
-          className="grid grid-cols-2 auto-rows-min content-start items-start gap-2 sm:gap-3 lg:gap-3 flex-1 min-h-0 overflow-y-auto scrollbar-hide"
+          className="grid grid-cols-2 content-start gap-2 sm:gap-3 lg:gap-3 flex-1 min-h-0 overflow-y-auto scrollbar-hide"
         >
           {currentSet.map((nominee, idx) => {
             const token = String.fromCharCode(65 + idx);

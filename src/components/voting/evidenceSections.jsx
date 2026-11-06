@@ -1,6 +1,6 @@
 import {
   Award, BookOpen, Briefcase, Compass, FileText, GraduationCap, Lightbulb,
-  Link2, Quote, Rocket, ShieldCheck, TrendingUp, Users,
+  Link2, Quote, Rocket, TrendingUp, Users,
 } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
@@ -15,7 +15,7 @@ import {
 // The candidate's file, composed from the record itself.
 //
 // This is the same record the public profile reads — the story, the standing, the
-// flightography, the credentials, the counted signals, the ecosystem — laid out as a
+// flightography, the counted signals, the ecosystem — laid out as a
 // short read rather than as a dossier. Every section is built only when the record
 // actually holds something: a sparse profile reads as a short file, never as a page of
 // empty headings. A new field on the record becomes a section by adding one builder
@@ -27,20 +27,6 @@ const STAGE = {
   senior: 'Senior',
   executive: 'Executive',
 };
-
-const VERIFICATION = {
-  unverified: 'Unverified',
-  self_verified: 'Self verified',
-  partially_verified: 'Partially verified',
-  fully_verified: 'Fully verified',
-};
-
-const CHECKS = [
-  ['LinkedIn', 'linkedin_verified'],
-  ['Employer', 'employer_verified'],
-  ['Fellow review', 'sme_reviewed'],
-  ['Metrics', 'metrics_validated'],
-];
 
 const text = (v) => (typeof v === 'string' ? v.trim() : '');
 const list = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()) : []);
@@ -186,23 +172,6 @@ export function buildEvidenceSections({ nominee = {}, volumes = [] } = {}) {
       </div>
     ));
   }
-
-  // ── The credential ──────────────────────────────────────────────────────────
-  const verified = nominee.verified_status || 'unverified';
-  const checks = nominee.verification_status || {};
-  const confirmed = CHECKS.filter(([, key]) => checks[key]);
-  say('credential', 'Credential', ShieldCheck, (
-    <div className="space-y-2">
-      <p className="text-sm font-semibold" style={{ color: brand.navy }}>
-        {VERIFICATION[verified] || VERIFICATION.unverified}
-      </p>
-      {confirmed.length > 0 ? (
-        <ChipList items={confirmed.map(([label]) => label)} />
-      ) : (
-        <Empty note="No checkpoints confirmed yet." />
-      )}
-    </div>
-  ));
 
   // ── The honoree record: the volumes they stood in ───────────────────────────
   if (volumes.length) {

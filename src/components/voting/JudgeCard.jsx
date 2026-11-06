@@ -42,6 +42,20 @@ function pitchLine(nominee) {
   return clipPitch(text.charAt(0).toUpperCase() + text.slice(1));
 }
 
+// The one word is set as large as the plate can carry it: a short word stands at full
+// size, a long discipline steps down a rung at a time and is allowed to break across two
+// lines, so it is never cut. Nothing here truncates a word — the whole of it is the point.
+function oneWordSize(word, dense) {
+  const n = word.length;
+  if (dense) return n > 12 ? 'text-[11px]' : n > 8 ? 'text-[13px]' : 'text-[15px]';
+  // The phone is the tight measure — the card there is half of a narrow glass — so the
+  // word steps down with its length. A desk has room and keeps its size.
+  if (n > 17) return 'text-[11px] md:text-[18px] lg:text-[21px]';
+  if (n > 13) return 'text-[13px] md:text-[20px] lg:text-[23px]';
+  if (n > 9) return 'text-[15px] md:text-[22px] lg:text-[25px]';
+  return 'text-[17px] md:text-[25px] lg:text-[28px]';
+}
+
 // The card is a printed plate: warm stock under a machined rule, a face in a well, a name
 // set in the display serif, and the story quoted beneath it in the same hand.
 const CARD_STOCK = 'linear-gradient(180deg, #FFFFFF 0%, #FEFCF8 46%, #F6F0E6 100%)';
@@ -58,9 +72,8 @@ function initials(name) {
 // keys that vote for and open it, the face and the name, the badges the record has earned,
 // then the three lines the plate exists to say — one word, the six word story, the pitch.
 //
-// The card is only as tall as what it holds. A sparse record prints a short plate, so the
-// stock never runs on past the last line into empty paper; the set still stands square
-// because every card starts at the same edge.
+// The card fills its row: the four plates are the same height as the tallest in their row,
+// so the set reads as one sheet of stock rather than as four lengths of paper.
 //
 // The ring walks these cards while a set is standing: the card the cursor is on carries a
 // copper ring, so where the wheel is pointing is legible on the glass.
@@ -90,13 +103,13 @@ export default function JudgeCard({
     : 'h-[28px] w-[28px] rounded-[9px] md:h-[30px] md:w-[30px]';
 
   return (
-    <div className="relative min-w-0">
+    <div className="relative flex h-full min-w-0">
       <motion.div
         whileTap={selectable ? { scale: 0.98 } : undefined}
         onClick={() => selectable && onSelect()}
         role="button"
         tabIndex={selectable ? 0 : -1}
-        className={`isolate relative flex flex-col overflow-hidden ${
+        className={`isolate relative flex h-full w-full flex-col overflow-hidden ${
           dense ? 'gap-1.5 rounded-[14px] p-2' : 'gap-1.5 rounded-[18px] p-2.5 md:gap-2 md:p-3'
         }`}
         style={{
@@ -244,9 +257,7 @@ export default function JudgeCard({
         <div className={`flex flex-col ${dense ? 'gap-1' : 'gap-1 md:gap-1.5'}`}>
           {oneWord ? (
             <p
-              className={`truncate font-heading uppercase leading-none tracking-[0.06em] ${
-                dense ? 'text-[15px]' : 'text-[17px] md:text-[23px] lg:text-[27px]'
-              }`}
+              className={`break-words font-heading uppercase leading-[1.05] tracking-[0.06em] ${oneWordSize(oneWord, dense)}`}
               style={{ color: ink.label }}
             >
               {oneWord}

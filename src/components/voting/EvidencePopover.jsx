@@ -12,7 +12,7 @@ import { useNavHint } from '@/components/handheld/faceHint';
 //
 // It reads as a short profile rather than as four headings: the story, the record, the
 // standing, the flightography, the education, the recognition, the counted signals, the
-// innovation, the ecosystem, the credential, the volumes, and the keys out to the
+// innovation, the ecosystem, the volumes, and the keys out to the
 // record's artifacts. The sections are composed in evidenceSections from whatever the
 // record actually holds, so the file deepens as the record does and a sparse one stays
 // short. The chip strip across the head is the index; it is also what the click wheel

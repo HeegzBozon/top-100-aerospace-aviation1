@@ -20,12 +20,6 @@ export const CROSSCHECK_LINE =
 export const CROSSCHECK_IS =
   'A mini ranked-choice ballot — four records, one order, every review a complete ballot.';
 
-// How a set is taken: three taps, and the fourth record places itself. The verb is "put in
-// order", never "rank": the instrument orders, the house measures, and nobody ranks a
-// colleague.
-export const CROSSCHECK_HOW =
-  'Put the four records in order: tap the one that leads, then the next — the fourth places itself.';
-
 // The office the ballot confers, and the word for the work.
 //
 // A Fellow who takes up the Crosscheck is not a campaigner and not a fan: they serve the
@@ -76,12 +70,6 @@ export const ANALYST_FOUNDATION =
 // admitted to. It is never paraphrased per surface.
 export const ANALYST_STANDING =
   'The office belongs to every Fellow, reader and subscriber. If you are here, you already hold it.';
-
-// The question standing before each tap, by how many records are already placed. The
-// question is the place being filled, never a comparative: "first", "second", "third",
-// and the fourth places itself. Internally the house calls this ABC voting (or 1-2-3),
-// because that is all the cards ever print.
-export const CROSSCHECK_PROMPTS = ['First?', 'Second?', 'Third?'];
 
 // A review the voter sets aside. A set is measured across all four, so nothing is scored
 // from one that is skipped, and a held one comes back exactly as it was dealt.

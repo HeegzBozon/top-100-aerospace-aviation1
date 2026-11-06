@@ -235,15 +235,12 @@ export default function VoteSurface({ user }) {
           />
         </div>
 
-        {(context.progress || isAdmin) && (
+        {/* The operator watches the field while it is being weighed. The Fellow's own
+            ladder is not repeated here: it stands once, at the head of the set, and opens
+            from there. */}
+        {isAdmin && (
           <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
-            {/* The operator watches the field while it is being weighed. A set cast by an
-                admin is a test of the flow, so the monitor stands on its own rather than
-                beside a ladder that does not move. */}
-            {isAdmin && (
-              <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
-            )}
-            {context.progress && <VotingProgressPanel progress={context.progress} />}
+            <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
           </aside>
         )}
       </div>

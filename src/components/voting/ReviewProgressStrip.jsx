@@ -1,9 +1,17 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import VotingProgressPanel from '@/components/voting/VotingProgressPanel';
 
 // The ladder, read as one instrument across the head of the set: the office on the left,
-// the tally and the experience on the right, and beneath them the measure itself. The
-// +XP of a recorded review lands here, on the readout, rather than over the cards.
+// the tally and the experience on the right, and beneath them the measure itself. The +XP
+// of a recorded review lands here, on the readout, rather than over the cards.
+//
+// The strip is also the whole of the record. The tall panel that used to stand beside the
+// ballot said the same three things in a second column; it now opens from this strip on a
+// press, so the ladder is stated once at the head of the set and read in depth when a
+// Fellow asks for it.
 export default function ReviewProgressStrip({
   progress = 0,
   levelName = null,
@@ -13,11 +21,12 @@ export default function ReviewProgressStrip({
   flash = false,
   flashLabel = null,
   label = null,
+  lane = null,
 }) {
   const pct = Math.max(0, Math.min(1, Number(progress) || 0));
 
-  return (
-    <div className="mb-1 shrink-0 md:mb-2.5" aria-label={label || 'Progress to the next rung'}>
+  const readout = (
+    <>
       <div className="flex items-baseline justify-between gap-2">
         <span className="min-w-0 truncate text-[8.5px] font-semibold uppercase tracking-[0.18em] text-editorial-label md:text-[9.5px]">
           {levelName || 'Analyst'}
@@ -39,6 +48,7 @@ export default function ReviewProgressStrip({
             </motion.span>{' '}
             XP
           </span>
+          {lane ? <ChevronDown className="h-3 w-3 shrink-0 text-editorial-navy/40" aria-hidden /> : null}
         </span>
       </div>
 
@@ -70,6 +80,39 @@ export default function ReviewProgressStrip({
           </motion.span>
         </AnimatePresence>
       </div>
+    </>
+  );
+
+  // Without the record to open, the strip is the readout alone.
+  if (!lane) {
+    return (
+      <div className="mb-1 shrink-0 md:mb-2.5" aria-label={label || 'Progress to the next rung'}>
+        {readout}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-1 shrink-0 md:mb-2.5">
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label="Your Analyst record — reviews, experience, the next rung and the milestones climbed"
+            title="Your record"
+            className="block w-full rounded-lg text-left transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-navy/30 focus-visible:ring-offset-2 active:brightness-[0.98]"
+          >
+            {readout}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          sideOffset={6}
+          className="w-[min(340px,calc(100vw-24px))] rounded-xl border-0 bg-transparent p-0 shadow-none"
+        >
+          <VotingProgressPanel progress={lane} />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
