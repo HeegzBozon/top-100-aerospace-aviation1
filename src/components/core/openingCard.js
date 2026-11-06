@@ -17,7 +17,10 @@ const BOOT_KEY = 'colony-boot-seen';
 // standing the plate in front of it hands a stranger a menu instead of a rate card. The
 // legacy /patronage address is kept here too, so the redirect it makes is never hidden
 // behind the plate either.
-const DIRECT_ENTRY = [/^\/vote$/i, /^\/mediakit$/i, /^\/patronage$/i];
+// /media-kit is a door that only ever redirects now, and the plate must not be drawn in
+// front of a redirect: a sponsor following an old link would be handed the menu, then the
+// media kit, having asked only for the rate card.
+const DIRECT_ENTRY = [/^\/vote$/i, /^\/mediakit$/i, /^\/patronage$/i, /^\/media-kit(\/.*)?$/i];
 
 function currentPath() {
   try {

@@ -274,6 +274,13 @@ const AuthenticatedApp = () => {
           admin-only and unindexed. */}
       <Route path="/mediakit" element={<Patronage />} />
       <Route path="/patronage" element={<Navigate to="/mediakit" replace />} />
+      {/* One address for the media kit. The hand-written mirror plate that stood at
+          /media-kit is retired: its copy was a frozen snapshot of a desk that is now
+          driven from the live patronage configuration, and it split one offer across
+          two documents. Every older door lands on the canonical route instead —
+          including the file path the plate was once served from. */}
+      <Route path="/media-kit" element={<Navigate to="/mediakit" replace />} />
+      <Route path="/media-kit/*" element={<Navigate to="/mediakit" replace />} />
       <Route path="/patronage/desk" element={<PatronDesk />} />
       {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
           classified page — the old desk's address lands on it. */}
