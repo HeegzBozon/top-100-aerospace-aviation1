@@ -440,7 +440,7 @@ export default function MyTop100() {
         }}
         saving={saving}
         count={rankings.length}
-        note="In order, strongest first — the order is the finding. Yours to edit and publish."
+        note="In your own order, strongest first — yours to edit until you submit."
       />
       <BallotStatusBanner
         rankings={rankings}

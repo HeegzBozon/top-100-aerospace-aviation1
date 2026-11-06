@@ -16,9 +16,24 @@ const BRIEFINGS = [
   {
     key: 'nominate',
     kicker: MANIFEST,
-    objective: 'Build the field.',
+    lede: 'Ranked choice voting 101',
+    objective: 'Why an order, and not a single pick?',
     body:
-      "An Analyst builds the field before measuring it. Naming puts someone forward, and the order says how strongly you stand behind them. The Manifest is your own TOP 100 in order — you choose who to back, and nothing is counted until you submit it. A short list you would vouch for is worth more than a long one you would not.",
+      'One mark tells you which name is loudest. An order tells you how a whole field compares — and what you would stand behind if your first choice were not on the table. That is the whole case for a ranked ballot: nobody is asked to abandon a name, only to say what comes after it. A field of a hundred can be measured this way. It cannot be measured by a favourite.',
+    steps: [
+      {
+        label: 'Every place counts',
+        line: "Your second and third are not thrown away. A name that is nobody's single favourite but everybody's third rises on an ordered ballot — which is something a field can hold and a tick box cannot.",
+      },
+      {
+        label: 'One list, held in order',
+        line: 'Position one reads as position one. Move an entry up and the names below it make room; nothing is dropped off the tail. Every entry carries the reason you wrote for it.',
+      },
+      {
+        label: 'Nothing counts until you submit',
+        line: 'Build it, rearrange it, sit with it. The Manifest keeps your order as you work and is written to the record once, when you submit it.',
+      },
+    ],
     results: [
       'Name one person you vouch for',
       'Build your list in order',
@@ -68,6 +83,40 @@ function KeyResults({ kicker, results }) {
   );
 }
 
+// The method behind the manuscript: what a ranked ballot is, stated flat and in order,
+// before the ladder that says the work has been done. Nothing here names a tally or a
+// weight — a voter is owed the instrument's shape, never its arithmetic.
+function Steps({ steps }) {
+  return (
+    <>
+      <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}45` }}>
+        The method, in three lines
+      </p>
+      <ul className="mt-1">
+        {steps.map((step, i) => (
+          <li
+            key={step.label}
+            className="flex gap-2.5 border-b py-[6px] last:border-b-0"
+            style={{ borderColor: `${brand.navy}0F` }}
+          >
+            <span className="w-4 shrink-0 text-[9.5px] font-bold tabular-nums" style={{ color: '#B87333' }}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold" style={{ color: brand.navy }}>
+                {step.label}
+              </p>
+              <p className="mt-0.5 text-[11px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
+                {step.line}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 export default function MissionBriefing({ open, onOpenChange, section = null }) {
   // A surface's own briefing, or the whole committee's when none is named.
   const briefs = section ? BRIEFINGS.filter((brief) => brief.key === section) : BRIEFINGS;
@@ -89,7 +138,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
 
         <div className="max-h-[76vh] overflow-y-auto p-5">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: '#8F5C2C' }}>
-            Mission briefing &middot; objectives &amp; key results
+            {single?.lede || 'Mission briefing · objectives & key results'}
           </p>
           <DialogTitle className="mt-1 font-heading text-[21px] leading-tight" style={{ color: brand.navy }}>
             {single ? single.objective : 'Two duties, one Analyst.'}
@@ -103,7 +152,10 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
           {briefs.map((brief) => (
             <section key={brief.key} className="mt-4 border-t pt-3" style={{ borderColor: `${brand.navy}14` }}>
               {single ? (
-                <KeyResults kicker={brief.kicker} results={brief.results} />
+                <>
+                  {brief.steps && <Steps steps={brief.steps} />}
+                  <KeyResults kicker={brief.kicker} results={brief.results} />
+                </>
               ) : (
                 <>
                   <div className="flex items-baseline justify-between gap-3">

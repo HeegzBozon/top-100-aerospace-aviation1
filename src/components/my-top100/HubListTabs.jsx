@@ -45,7 +45,7 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount = 
         <p className="hidden shrink-0 pb-3 font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-navy/40 sm:block">
           {nominationCount > 0
             ? `${nominationCount} filed this session`
-            : 'The order is the finding'}
+            : 'A publication, never a vote'}
         </p>
       </div>
     </div>

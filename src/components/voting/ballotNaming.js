@@ -38,7 +38,7 @@ export const ANALYSIS = 'Analysis';
 
 // What the office asks, in one line, wherever the invitation is made.
 export const ANALYSIS_IS =
-  'Voting here is analysis. An Analyst measures four records against each other, one small ranked-choice ballot at a time, and the order they leave is the finding.';
+  'Voting here is analysis. An Analyst measures four records against each other, one small ranked-choice ballot at a time, and every order they leave is kept.';
 
 // The office in full.
 //

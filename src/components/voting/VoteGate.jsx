@@ -67,7 +67,7 @@ export default function VoteGate({ source }) {
 
         <ul className="mb-9 flex flex-col gap-3">
           {[
-            'Four records at a time — one small ranked-choice ballot, and the order is the finding.',
+            'Four records at a time — one small ranked-choice ballot, and every order you leave is kept.',
             'A record you cannot judge closes the set; nothing is scored from it.',
             'Every set belongs to your own Analyst record, kept across cycles.',
             'The measure is public. The formulas are not.',
