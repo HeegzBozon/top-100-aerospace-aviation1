@@ -16,26 +16,29 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
   const [confKey, setConfKey] = useState('95');
   const [marginKey, setMarginKey] = useState('5');
 
-  const pool = Number(totals?.pool) || 0;
-  const marks = Number(totals?.comparisons_live) || 0;
-  const testMarks = Number(totals?.comparisons_test) || 0;
+  const live = mode === 'live';
 
-  // Who the community's marks have reached. The ledger resolves it in one pass; until that
-  // reading is on the wire, the same count is taken from the board's appearance tally —
-  // which is only the community's when the community's reading is the one on the glass.
+  const pool = Number(totals?.pool) || 0;
+  // Each reading counts its own marks: the community's, or the walk-through's. Never mixed.
+  const marks = Number(live ? totals?.comparisons_live : totals?.comparisons_test) || 0;
+  const heldApart = Number(live ? totals?.comparisons_test : totals?.comparisons_live) || 0;
+
+  // Who this reading's marks have reached. The ledger resolves the community's figure in one
+  // pass; until that reading is on the wire, the count comes from the board's own appearance
+  // tally, which is that same reading's standing.
   const tallied = standings.filter((row) => (row.appearances || 0) > 0).length;
   const stated = Number(totals?.evaluated);
-  const evaluated = Number.isFinite(stated) ? stated : mode === 'live' ? tallied : null;
+  const evaluated = live && Number.isFinite(stated) ? stated : tallied;
 
   const conf = CONFIDENCE.find((c) => c.key === confKey) || CONFIDENCE[1];
   const margin = MARGINS.find((m) => m.key === marginKey) || MARGINS[0];
   const required = marksRequired(pool, conf.z, margin.e);
 
-  const coverage = evaluated === null ? 0 : share(evaluated, pool);
+  const coverage = share(evaluated, pool);
   const marksShare = share(marks, required);
-  const strength = evaluated === null ? marksShare : Math.min(coverage, marksShare);
+  const strength = Math.min(coverage, marksShare);
   const band = bandFor(strength);
-  const remaining = Math.max(0, pool - (evaluated || 0));
+  const remaining = Math.max(0, pool - evaluated);
   const marksToGo = Math.max(0, required - marks);
 
   if (!pool) {
@@ -73,20 +76,18 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
       {/* The pool figure: X of the N standing in scope. */}
       <div className="mt-1.5 flex items-end justify-between gap-3">
         <p className="flex items-baseline gap-1 font-heading leading-none text-editorial-navy">
-          <span className="text-[30px] tabular-nums">{evaluated === null ? '—' : num(evaluated)}</span>
+          <span className="text-[30px] tabular-nums">{num(evaluated)}</span>
           <span className="text-[17px] tabular-nums text-editorial-navy/35">/ {num(pool)}</span>
         </p>
         <p className="pb-0.5 text-right text-[10px] leading-tight text-editorial-navy/55">
-          {evaluated === null ? (
-            'Coverage is counted on the community reading'
-          ) : (
-            <>
-              <span className="font-semibold tabular-nums text-editorial-navy">{pct(coverage)}</span> of the
-              pool evaluated
-              <br />
-              {remaining > 0 ? `${num(remaining)} still unreached` : 'every nominee reached'}
-            </>
-          )}
+          <span className="font-semibold tabular-nums text-editorial-navy">{pct(coverage)}</span> of the pool{' '}
+          {live ? 'evaluated' : 'walked'}
+          <br />
+          {remaining > 0
+            ? live
+              ? `${num(remaining)} still unreached`
+              : `${num(remaining)} not yet walked`
+            : 'every nominee reached'}
         </p>
       </div>
 
@@ -102,7 +103,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
       <div className="mt-2.5 flex flex-wrap items-end justify-between gap-x-4 gap-y-1.5 border-t border-editorial-navy/10 pt-2">
         <div>
           <p className="text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/45">
-            Marks toward a reliable signal
+            {live ? 'Marks toward a reliable signal' : 'Test marks toward a reliable signal'}
           </p>
           <p className="mt-0.5 flex items-baseline gap-1 text-editorial-navy">
             <span className="font-heading text-[15px] tabular-nums">{num(marks)}</span>
@@ -153,11 +154,15 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
 
       {/* The assumptions, stated where the target is read. */}
       <p className="mt-1.5 text-[9px] leading-relaxed text-editorial-navy/40">
-        A sample target for a pool of {num(pool)}, at {conf.label} confidence and {margin.label} margin. It
-        says how many marks the reading needs to hold still; it is an estimate, not a guarantee.
-        {testMarks > 0
-          ? ` ${num(testMarks)} test ${testMarks === 1 ? 'mark is' : 'marks are'} held apart from this figure.`
-          : ''}
+        A sample target for a pool of {num(pool)}, at {conf.label} confidence and {margin.label} margin —
+        the share of the pool the reading has to reach to hold still. An estimate, not a guarantee.
+        {live
+          ? heldApart > 0
+            ? ` ${num(heldApart)} test ${heldApart === 1 ? 'mark is' : 'marks are'} held apart from this figure.`
+            : ''
+          : ` Read from test marks alone; the community's figures are untouched. ${num(
+              heldApart
+            )} community ${heldApart === 1 ? 'mark stands' : 'marks stand'} outside this view.`}
       </p>
     </div>
   );
