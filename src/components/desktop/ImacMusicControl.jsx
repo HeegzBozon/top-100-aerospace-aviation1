@@ -80,10 +80,10 @@ export default function ImacMusicControl() {
         aria-pressed={playing}
         aria-label={
           playing
-            ? `Speaker on, playing ${track.title}. Mute the music`
+            ? `Speaker on, playing ${track.title} by ${track.artist}. Mute the music`
             : "Speaker off. Play the machine's music"
         }
-        title="Tap to play or mute · hold for the next loop"
+        title="Tap to play or mute · hold to shuffle on"
         className="imac-speaker imac-speaker-key"
       >
         {playing ? (
@@ -104,11 +104,12 @@ export default function ImacMusicControl() {
         >
           {playing ? track.title : "Sound off"}
         </span>
+        {/* The player's own print: the record above, who made it below. */}
         <span
-          className="mt-[4px] text-[6.5px] font-bold uppercase tracking-[0.18em]"
+          className="mt-[4px] max-w-[120px] truncate text-[6.5px] font-bold uppercase tracking-[0.18em]"
           style={{ color: "var(--imac-ink-soft)" }}
         >
-          {playing ? "Hold ▸ next loop" : "Tap to play"}
+          {playing ? track.artist : "Tap to play"}
         </span>
       </span>
     </div>

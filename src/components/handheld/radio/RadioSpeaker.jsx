@@ -63,7 +63,7 @@ export default function RadioSpeaker({ onAnnounce, onSoundOn }) {
       onContextMenu={(event) => event.preventDefault()}
       aria-pressed={playing}
       aria-label={playing ? "Speaker on. Mute the music" : "Speaker off. Play the console's music"}
-      title="Tap to play or mute · hold for the next loop"
+      title="Tap to play or mute · hold to shuffle on"
       className="hh-pad-key relative flex h-full w-[26px] shrink-0 items-center justify-center rounded-[7px]"
       style={{ color: playing ? "var(--hh-metal-1)" : "var(--hh-pad-ink)" }}
     >
