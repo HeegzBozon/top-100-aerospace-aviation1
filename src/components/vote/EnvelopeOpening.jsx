@@ -14,7 +14,7 @@ export default function EnvelopeOpening({ onDone }) {
     // The three-second hold starts only after the plane has become an envelope.
     const next = phase === 'flight' ? () => setPhase('holding')
       : phase === 'holding' ? () => setPhase('opening') : onDone;
-    const timer = setTimeout(next, phase === 'flight' ? 1800 : phase === 'holding' ? 3000 : 1350);
+    const timer = setTimeout(next, phase === 'flight' ? 3200 : phase === 'holding' ? 3000 : 1350);
     return () => clearTimeout(timer);
   }, [phase, onDone]);
 

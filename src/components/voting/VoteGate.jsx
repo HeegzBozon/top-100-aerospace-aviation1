@@ -28,7 +28,7 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
   return (
     <div className="flex min-h-full flex-col overflow-y-auto bg-editorial-sand">
       {opening && <EnvelopeOpening onDone={closeOpening} />}
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-14">
+      <div aria-hidden={opening || undefined} inert={opening ? '' : undefined} className={`mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-14${opening ? ' invisible' : ''}`}>
         <article className="pb-page border border-editorial-copper/40 px-5 py-8 shadow-xl sm:px-12 sm:py-14">
           <header className="text-center">
             <p className="pd-label">TOP 100 Aerospace &amp; Aviation · Selection Committee</p>

@@ -1,5 +1,16 @@
 /* One sheet arrives folded as a plane, then spreads into the envelope footprint. */
-.env-delivery .env-shell { animation: none; }
+.env-delivery .env-shell { animation: none; align-self: center; margin-right: 0; }
+.env-delivery { font-family: var(--font-body); }
+.env-delivery .env-letter p:last-child { font-family: var(--font-heading); }
+.env-delivery[data-phase="flight"] .env-letter,
+.env-delivery[data-phase="flight"] .env-caption { visibility: hidden; }
+.env-delivery:not([data-phase="flight"]) .env-letter,
+.env-delivery:not([data-phase="flight"]) .env-caption { animation: env-invite-reveal .5s ease-out both; }
+.env-delivery[data-phase="flight"] { background: transparent; border-color: transparent; box-shadow: none; }
+@keyframes env-invite-reveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .env-delivery .env-flap { animation: none; transform: rotateX(0deg); }
 .env-delivery .env-seal { animation: none; }
 .env-delivery .env-skip { font-family: var(--font-body); min-height: 40px; }
@@ -9,27 +20,30 @@
   inset: 0;
   z-index: 6;
   background: rgb(var(--editorial-cream-rgb));
-  clip-path: polygon(0% 0%,100% 45%,35% 58%,22% 100%);
+  clip-path: polygon(0% 0%,50% 22.5%,100% 45%,35% 58%,22% 100%,11% 50%);
   transform-origin: center;
-  animation: env-arrival 1.8s cubic-bezier(.22,1,.36,1) both;
+  transform-style: preserve-3d;
+  animation: env-arrival 3.2s cubic-bezier(.22,1,.36,1) both;
 }
 .env-delivery .env-plane span {
   position: absolute;
   inset: 0;
   background: rgb(var(--editorial-gold-rgb) / .42);
   clip-path: polygon(0% 0%,100% 45%,35% 58%);
-  animation: env-wing 1.8s ease both;
+  transform-origin: 35% 58%;
+  animation: env-wing 3.2s ease-in-out both;
 }
 .env-delivery .env-plane span:last-child {
   background: rgb(var(--editorial-navy-rgb) / .18);
   clip-path: polygon(0% 0%,35% 58%,22% 100%);
+  animation-name: env-wing-return;
 }
 .env-delivery[data-phase="flight"] .env-back,
 .env-delivery[data-phase="flight"] .env-lining,
 .env-delivery[data-phase="flight"] .env-pocket,
 .env-delivery[data-phase="flight"] .env-flap,
 .env-delivery[data-phase="flight"] .env-seal {
-  animation: env-materialize 1.8s ease both;
+  animation: env-materialize 3.2s ease both;
 }
 .env-delivery:not([data-phase="flight"]) .env-plane { display: none; }
 .env-delivery[data-phase="opening"] .env-flap {
@@ -39,14 +53,30 @@
   animation: env-break .7s .25s ease-out both;
 }
 @keyframes env-arrival {
-  0% { opacity: 0; transform: translate(-95vw, -20vh) rotate(-24deg) scale(.38); clip-path: polygon(0% 0%,100% 45%,35% 58%,22% 100%); }
+  0% { opacity: 0; transform: translate(-95vw, -22vh) rotate(-28deg) scale(.12); }
   12% { opacity: 1; }
-  52% { transform: translate(12%, -16%) rotate(12deg) scale(.75); clip-path: polygon(0% 0%,100% 45%,35% 58%,22% 100%); }
-  68% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); clip-path: polygon(0% 0%,100% 0%,100% 100%,0% 100%); }
-  88%,100% { opacity: 0; transform: translate(0,0) rotate(0deg) scale(1); clip-path: polygon(0% 0%,100% 0%,100% 100%,0% 100%); }
+  36% { transform: translate(10%, -15%) rotate(12deg) scale(1.15); clip-path: polygon(0% 0%,50% 22.5%,100% 45%,35% 58%,22% 100%,11% 50%); }
+  48% { transform: translate(0,0) rotate(-8deg) scale(.95); clip-path: polygon(0% 20%,50% 0%,100% 20%,80% 80%,50% 100%,20% 80%); }
+  62% { transform: perspective(900px) rotateY(32deg) rotate(-4deg) scale(.95); clip-path: polygon(0% 0%,50% 0%,100% 0%,100% 100%,50% 100%,0% 100%); }
+  76% { transform: perspective(900px) rotateY(-18deg) rotate(0deg) scale(1); clip-path: polygon(0% 0%,50% 35%,100% 0%,100% 100%,50% 85%,0% 100%); }
+  90% { opacity: 1; transform: perspective(900px) rotateY(0deg) scale(1); clip-path: polygon(0% 0%,50% 0%,100% 0%,100% 100%,50% 100%,0% 100%); }
+  100% { opacity: 0; transform: perspective(900px) rotateY(0deg) scale(1); clip-path: polygon(0% 0%,50% 0%,100% 0%,100% 100%,50% 100%,0% 100%); }
 }
-@keyframes env-wing { 0%,52% { opacity: 1; } 75%,100% { opacity: 0; } }
-@keyframes env-materialize { 0%,65% { opacity: 0; } 88%,100% { opacity: 1; } }
+@keyframes env-wing {
+  0%,36% { opacity: 1; transform: perspective(600px) rotateY(0deg); }
+  50% { transform: perspective(600px) rotateY(-145deg); }
+  66% { opacity: 1; transform: perspective(600px) rotateY(0deg); clip-path: polygon(0% 0%,50% 50%,0% 100%); }
+  82% { opacity: 1; transform: perspective(600px) rotateY(120deg); }
+  94%,100% { opacity: 0; }
+}
+@keyframes env-wing-return {
+  0%,40% { opacity: 1; transform: perspective(600px) rotateX(0deg); }
+  56% { transform: perspective(600px) rotateX(145deg); }
+  70% { opacity: 1; transform: perspective(600px) rotateX(0deg); clip-path: polygon(100% 0%,50% 50%,100% 100%); }
+  86% { opacity: 1; transform: perspective(600px) rotateX(-120deg); }
+  94%,100% { opacity: 0; }
+}
+@keyframes env-materialize { 0%,90% { opacity: 0; } 100% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .env-delivery .env-plane { display: none; }
   .env-delivery[data-phase] .env-back,
