@@ -100,14 +100,20 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
             className="text-3xl sm:text-4xl font-bold leading-tight mb-5"
             style={{ color: '#0f2139', fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Serve the season as an Analyst.
+            The field is on your desk.
           </h1>
 
+          <p className="mb-6 max-w-xl text-[15px] leading-relaxed" style={{ color: 'rgb(var(--editorial-navy-rgb) / 0.82)' }}>
+            Welcome, and thank you. This season you hold the desk of an aerospace media house:
+            more than five hundred professionals have been placed before you, and the Top 100 is
+            yours to set. Nobody hands you a shortlist. You make one, and you say why.
+          </p>
+
           <details className="w-full max-w-xl border-t border-editorial-copper py-4 text-editorial-navy">
-            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">Why your nominations matter</summary>
+            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">Your commission</summary>
             <div className="mt-4 space-y-4">
             <p className="text-[15px] leading-relaxed" style={{ color: 'rgb(var(--editorial-navy-rgb) / 0.82)' }}>
-              A TOP 100 Analyst finds the field, measures it, and carries the record. The aerospace and aviation community is full of people doing remarkable work, and most of them will never be asked to step forward.
+              A TOP 100 Analyst finds the field, measures it, and carries the record. The aerospace and aviation community is full of people doing remarkable work, and most of them will never be asked to step forward. You are the one asking.
             </p>
             <p className="text-[15px] leading-relaxed" style={{ color: '#0f2139' }}>
               <span className="font-bold">You're about to change that for someone.</span>
@@ -147,9 +153,11 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
           </div>
 
           <details className="mt-6 w-full max-w-xl border-t border-editorial-copper py-4 text-editorial-navy">
-            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">Manifest and Crosscheck</summary>
+            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">The two duties</summary>
             <p className="mt-3 text-[13px] leading-relaxed text-editorial-navy/80">
-              The Manifest is your own TOP 100, in order — you choose who to back, and how strongly. The Crosscheck is where the analysis happens.
+              The Manifest is the order you set: the professionals you would back, strongest first,
+              each with a written reason. The Crosscheck is where the field is weighed: four names,
+              shuffled, given an order. Set the first, then take the second.
             </p>
           </details>
         </motion.div>
@@ -166,7 +174,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
             className="text-2xl font-bold leading-tight mb-6"
             style={{ color: '#1e293b', fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            First, tell us a little about you.
+            Before you take the desk, a little about you.
           </h2>
 
           {/* Logged-in status */}

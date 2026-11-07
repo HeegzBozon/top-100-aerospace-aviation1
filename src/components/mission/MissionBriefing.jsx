@@ -23,34 +23,35 @@ const BRIEFINGS = [
   {
     key: 'nominate',
     kicker: MANIFEST,
-    lede: 'Ranked choice',
-    objective: 'Order the field you would vouch for.',
-    body: 'Choose the professionals you back. Put them in order. Submit your Manifest.',
+    lede: 'Your commission',
+    objective: 'Five hundred names are on your desk.',
+    body:
+      'Welcome, and thank you. This season you hold the desk of an aerospace media house: a field of more than five hundred professionals has been placed before you, and the Top 100 is yours to set. Nobody hands you a shortlist. You make one, and you say why.',
     steps: [
-      { label: 'Choose', line: 'Add a professional and write why you back them.' },
-      { label: 'Order', line: 'Strongest first. Move a professional up; the others make room.' },
-      { label: 'Submit', line: 'Review your order, then submit it for this cycle.' },
+      { label: 'Survey the field', line: 'Walk the season\u2019s professionals and read the records. Nothing is decided yet.' },
+      { label: 'Set your order', line: 'Add the ones you would vouch for, strongest first, each with a written reason.' },
+      { label: 'File the Manifest', line: 'Submit your order for the cycle. It stays editable while the window is open.' },
     ],
     more: {
-      label: 'More on the Manifest',
+      label: 'More on the commission',
       lines: [
-        'Ranked choice records an order, not just a favourite. Your second and third choices matter too.',
-        'Your draft keeps your order as you work. Nothing counts until you submit; it stays editable while the window is open.',
-        'You choose the professionals in your Manifest. In the Crosscheck, four professionals are shuffled for you.',
+        'Ranked choice records an order, not a favourite. Your second and third choices carry weight too, which is how a hundred seats get set from five hundred names.',
+        'Your draft keeps the order as you work. Nothing counts until you submit.',
+        'The field is yours to choose on the Manifest. In the Crosscheck, four names are shuffled and dealt to you.',
       ],
     },
   },
   {
     key: 'vote',
-    kicker: `${CROSSCHECK} · mini ranked choice`,
-    lede: 'Mini ranked choice',
-    objective: 'Assemble a crew from four professionals.',
+    kicker: `${CROSSCHECK} · the weighing`,
+    lede: 'Your second duty',
+    objective: 'Four names at the table. One order.',
     body:
-      'Four professionals, shuffled. Three taps, in order. A, B, C.',
+      'The Crosscheck is where the field is measured. Four professionals are shuffled and dealt to you, and you give them an order: who takes the left seat, who is next in line, who keeps the desk.',
     steps: [
       {
         label: 'First tap — Commander',
-        line: 'The professional you would put in command.',
+        line: 'The one you would put in command.',
       },
       {
         label: 'Second tap — Pilot',
@@ -58,14 +59,14 @@ const BRIEFINGS = [
       },
       {
         label: 'Third tap — Flight Engineer',
-        line: 'The fourth professional takes the seat left standing. Set finished.',
+        line: 'The fourth takes the seat left standing. Set finished.',
       },
     ],
     more: {
-      label: 'More on the Crosscheck',
+      label: 'More on the weighing',
       lines: [
-        'The same method as the Manifest, four professionals deep. The four are shuffled for you, so the comparison is never your own.',
-        'Every set you finish is one complete ballot. Skip a set and nothing is recorded. Hold it and it returns exactly as it was shuffled.',
+        'The same method as the Manifest, four names deep. The names are shuffled for you, so no set is one you chose.',
+        'Every set you finish is one complete ballot. Skip a set and nothing is recorded. Hold it and it returns exactly as it was dealt.',
       ],
     },
     // The measure itself, and the keys that hold it. Both stand here rather than in print
@@ -88,7 +89,7 @@ function Steps({ steps }) {
   return (
     <>
       <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}45` }}>
-        The method, in three lines
+        Your three moves
       </p>
       <ul className="mt-1">
         {steps.map((step, i) => (
@@ -148,12 +149,12 @@ export default function MissionBriefing({ open, onOpenChange, section = null, ha
             {single?.lede || 'Mission briefing · two duties'}
           </p>
           <DialogTitle className="mt-1 font-heading text-[21px] leading-tight" style={{ color: brand.navy }}>
-            {single ? single.objective : 'Two duties, one Analyst.'}
+            {single ? single.objective : 'One season, two duties.'}
           </DialogTitle>
           <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
             {single
               ? single.body
-              : `${BALLOT_DISTINCTION} Each surface has a single objective.`}
+              : `A field to read and a field to weigh, one duty at a time. ${BALLOT_DISTINCTION} Each surface asks for one and does not borrow the other.`}
           </p>
 
           {single?.note && (
