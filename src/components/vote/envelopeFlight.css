@@ -57,22 +57,16 @@
   animation: env-materialize var(--env-flight, 4400ms) ease both;
 }
 .env-delivery:not([data-phase="flight"]) .env-fold { display: none; }
+/* The seal lets go first, then the flap turns back; the lining catches the light the
+   lifting flap lets in. */
+.env-delivery[data-phase="opening"] .env-seal {
+  animation: env-wax-lift .95s cubic-bezier(.34,1.05,.5,1) both;
+}
 .env-delivery[data-phase="opening"] .env-flap {
-  animation: env-open 1.5s cubic-bezier(.34,.02,.24,1) both;
-}
-/* The wax gives first, then the flap turns; the lining catches the light the lifting
-   flap lets in. */
-.env-delivery[data-phase="opening"] .env-seal-half--left {
-  animation: env-wax-left .9s .18s cubic-bezier(.34,1.1,.5,1) both;
-}
-.env-delivery[data-phase="opening"] .env-seal-half--right {
-  animation: env-wax-right .9s .18s cubic-bezier(.34,1.1,.5,1) both;
-}
-.env-delivery[data-phase="opening"] .env-seal-crest {
-  animation: env-crest-break .55s .12s ease-out both;
+  animation: env-open 1.4s .38s cubic-bezier(.34,.02,.24,1) both;
 }
 .env-delivery[data-phase="opening"] .env-lining {
-  animation: env-lining-open 1.5s ease-out both;
+  animation: env-lining-open 1.8s ease-out both;
 }
 @keyframes env-lining-open {
   0% { filter: brightness(.9); }

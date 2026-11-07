@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import WaxSeal from '@/components/vote/WaxSeal';
 import '@/components/vote/envelopeOpening.css';
 import '@/components/vote/envelopeFlight.css';
 
@@ -7,9 +8,9 @@ import '@/components/vote/envelopeFlight.css';
 // runs longer than one fold. The duration is published to the stylesheet as --env-flight
 // so the shape sequence, the turn of the paper and the envelope's arrival share one clock.
 const FLIGHT_MS = 4400;
-// The wax gives, the halves fall and the flap turns back — the card is handed over once
-// that unsealing has finished rather than in the middle of it.
-const OPEN_MS = 1600;
+// The seal lifts away, then the flap turns back — the card is handed over once that
+// unsealing has finished rather than in the middle of it.
+const OPEN_MS = 1900;
 
 export default function EnvelopeOpening({ onDone }) {
   const [phase, setPhase] = useState('flight');
@@ -40,12 +41,7 @@ export default function EnvelopeOpening({ onDone }) {
           <div className="env-lining" aria-hidden="true" />
           <div className="env-pocket" aria-hidden="true" />
           <div className="env-flap" aria-hidden="true" />
-          {/* Sealing wax, struck in two halves: they meet on the seam it breaks along. */}
-          <div className="env-seal" aria-hidden="true">
-            <span className="env-seal-half env-seal-half--left" />
-            <span className="env-seal-half env-seal-half--right" />
-            <span className="env-seal-crest" />
-          </div>
+          <WaxSeal />
         </div>
         <p className="env-caption">A letter from the Selection Committee</p>
         <div className="flex flex-wrap justify-center gap-3">
