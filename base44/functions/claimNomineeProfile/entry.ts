@@ -4,6 +4,7 @@ import {
   linkedinUrlsMatch,
   fetchClaimerLinkedInIdentity,
 } from '../../shared/nomineeResolve.ts';
+import { verifiedFields } from '../../shared/verification.ts';
 
 // Workspace-registered LinkedIn connector (APP_USER-capable). Each claimer
 // connects their own LinkedIn account; this reads THAT user's token, not a shared one.
@@ -61,7 +62,7 @@ export default async function(req: Request): Promise<Response> {
         claim_method: 'email_match',
         claimed_by_user_id: user.id,
         claimed_by_user_email: user.email,
-        verified_status: 'self_verified',
+        ...verifiedFields({ ...nominee, claim_status: 'approved' }),
         claim_requested_by: user.email,
         claim_requested_date: new Date().toISOString(),
       });
@@ -119,7 +120,7 @@ export default async function(req: Request): Promise<Response> {
           claim_method: 'linkedin_match',
           claimed_by_user_id: user.id,
           claimed_by_user_email: user.email,
-          verified_status: 'self_verified',
+          ...verifiedFields({ ...nominee, claim_status: 'approved' }, { linkedin_verified: true }),
           claim_requested_by: user.email,
           claim_requested_date: new Date().toISOString(),
         });

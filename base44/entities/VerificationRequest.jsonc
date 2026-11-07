@@ -1,0 +1,114 @@
+{
+  "name": "VerificationRequest",
+  "description": "One attempt to confirm a Fellow's work address. The address itself is never shown on a public surface: only the domain is read, and only by the committee. This row is the evidence behind the employer check on a record.",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Auth id of the Fellow who asked for the confirmation. Ownership is anchored on created_by_id; this mirrors it for reporting."
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Account email of the Fellow who asked. Display only."
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "The record the confirmation belongs to."
+    },
+    "work_email": {
+      "type": "string",
+      "description": "The work address the code was sent to. Private: never rendered on a public surface."
+    },
+    "work_domain": {
+      "type": "string",
+      "description": "The domain of the work address, e.g. boeing.com. This is the only part of the address the record's badge speaks to."
+    },
+    "code_hash": {
+      "type": "string",
+      "description": "SHA-256 of the six-digit code. The code itself is never stored."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "expired",
+        "refused"
+      ],
+      "enumColors": [
+        "yellow",
+        "green",
+        "gray",
+        "red"
+      ],
+      "default": "pending",
+      "description": "Where the attempt stands: waiting on the code, confirmed, timed out, or refused by the mail service."
+    },
+    "attempts": {
+      "type": "number",
+      "default": 0,
+      "description": "Wrong codes entered against this request. Closed after five."
+    },
+    "basis": {
+      "type": "string",
+      "enum": [
+        "on_record",
+        "employer"
+      ],
+      "description": "Why the domain was accepted: it was already the address on the record, or it matches the employer named on it."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the code stops working."
+    },
+    "confirmed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the code was answered correctly."
+    },
+    "note": {
+      "type": "string",
+      "description": "What the mail service said when a send failed."
+    }
+  },
+  "required": [
+    "nominee_id",
+    "work_email",
+    "work_domain"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

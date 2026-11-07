@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Vote } from 'lucide-react';
 import useBoardingPass from '@/components/my-top100/useBoardingPass';
+import { labelOf } from '@/components/verify/verificationLadder';
 
 // ── The Boarding Pass ──
 //
@@ -44,9 +45,7 @@ export default function BoardingPass({ user, hasExisting, onBegin, onVote }) {
     { label: 'Base', value: card?.location || nominee?.location },
     { label: 'Connection', value: user?.aerospace_connection },
     { label: 'Field', value: DISCIPLINE_WORDS[nominee?.discipline] || nominee?.discipline },
-    { label: 'Verified', value: nominee?.verified_status && nominee.verified_status !== 'unverified'
-      ? nominee.verified_status.replace(/_/g, ' ')
-      : '' },
+    { label: 'Verified', value: nominee?.claim_status === 'approved' ? labelOf(nominee) : '' },
     { label: 'Reachable about', value: card?.tagline },
   ].filter((row) => row.value && String(row.value).trim());
 

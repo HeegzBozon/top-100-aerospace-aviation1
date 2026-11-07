@@ -36,7 +36,14 @@ export default function RecordSurface({
   }
 
   if (surfaceKey === 'view') {
-    return <ViewSurface account={account} nominee={nominee} settings={settings} />;
+    return (
+      <ViewSurface
+        account={account}
+        nominee={nominee}
+        settings={settings}
+        onReload={onReload}
+      />
+    );
   }
 
   if (surfaceKey === 'dataroom') {

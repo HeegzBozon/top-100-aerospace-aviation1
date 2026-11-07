@@ -1,30 +1,20 @@
 import { BadgeCheck, ShieldCheck, Layers } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-
-const LABELS = {
-  unverified: 'Unverified',
-  self_verified: 'Self verified',
-  partially_verified: 'Partially verified',
-  fully_verified: 'Fully verified',
-};
+import { CHECKS_TOTAL, confirmedCount, labelOf } from '@/components/verify/verificationLadder';
 
 const TIERS = ['Bronze', 'Silver', 'Gold', 'Platinum'];
 
 // Slide 2 — locked. Full-bleed credential and influence band. Present and
 // quiet. Bands are visible, weights are never exposed.
 export default function VerificationSlide({ nominee, accent }) {
-  const status = nominee?.verified_status || 'unverified';
   const rank = nominee?.aura_rank_name || '';
   const tier = TIERS.find((t) => rank.toLowerCase().includes(t.toLowerCase())) || 'Unbanded';
-  const checks = nominee?.verification_status || {};
-  const confirmed = ['linkedin_verified', 'employer_verified', 'sme_reviewed', 'metrics_validated'].filter(
-    (k) => checks[k]
-  ).length;
+  const confirmed = confirmedCount(nominee);
 
   const stats = [
-    { icon: BadgeCheck, label: 'Credential', value: LABELS[status] || LABELS.unverified },
+    { icon: BadgeCheck, label: 'Credential', value: labelOf(nominee) },
     { icon: Layers, label: 'Influence band', value: tier },
-    { icon: ShieldCheck, label: 'Checks confirmed', value: `${confirmed} of 4` },
+    { icon: ShieldCheck, label: 'Checks confirmed', value: `${confirmed} of ${CHECKS_TOTAL}` },
   ];
 
   return (

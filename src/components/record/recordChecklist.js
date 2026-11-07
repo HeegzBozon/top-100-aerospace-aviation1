@@ -1,4 +1,5 @@
 import { RECORD_SURFACES, recordUrl } from './recordMenu';
+import { rungOf, labelOf } from '@/components/verify/verificationLadder';
 
 // Where the line is actually written. The profile page is this workspace now, so a row
 // that pointed at the old editor points at the surface holding the field it names.
@@ -119,8 +120,8 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
         key: 'verification',
         label: 'Verification checkpoint',
         hint: 'A checkpoint on the record, never a score.',
-        done: !!record.verified_status && record.verified_status !== 'unverified',
-        value: record.verified_status ? record.verified_status.replace(/_/g, ' ') : '',
+        done: rungOf(record) !== 'unverified',
+        value: rungOf(record) !== 'unverified' ? labelOf(record) : '',
         to: '/Profile',
       }),
       item({
