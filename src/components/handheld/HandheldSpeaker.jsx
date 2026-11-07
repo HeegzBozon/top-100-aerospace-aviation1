@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { blip, buzz } from "./handheldSound";
-import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying, onTrackChange } from "./consoleMusic";
+import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying, onTrackChange, trackCredit } from "./consoleMusic";
 
 // The case speaker, and the machine's own record.
 //
@@ -85,10 +85,10 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
       aria-pressed={playing}
       aria-label={
         playing
-          ? `Speaker on, playing ${track.title}. Mute the music`
-          : "Speaker off. Play the console's music, three house loops and two lo-fi"
+          ? `Speaker on, playing ${track.title} by ${track.artist}. Mute the music`
+          : "Speaker off. Play the console's music"
       }
-      title="Tap to play or mute · hold for the next loop"
+      title={playing ? trackCredit(track) : "Tap to play or mute · hold to shuffle on"}
       className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.97]"
     >
       {/* The well itself: plastic, punched through, under its resin lens. */}
@@ -115,11 +115,13 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
         >
           {playing ? track.title : "Sound off"}
         </span>
+        {/* Who the record is by, where a speaker's label carries the artist: the
+            credit is the condition of the licence, so it is always in the print. */}
         <span
-          className="mt-[2px] text-[5.5px] font-bold uppercase tracking-[0.16em]"
+          className="mt-[2px] w-full truncate text-center text-[5.5px] font-bold uppercase tracking-[0.16em]"
           style={{ color: "var(--hh-metal-1)" }}
         >
-          {playing ? "Hold ▸ next" : "Tap to play"}
+          {playing ? track.artist : "Tap to play"}
         </span>
       </span>
     </button>
