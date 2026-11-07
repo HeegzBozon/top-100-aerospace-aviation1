@@ -2,11 +2,11 @@ const TABS = [
   { key: 'all', label: 'All' },
   { key: 'women', label: 'Women' },
   { key: 'men', label: 'Men' },
-  { key: 'angels', label: 'Angels' },
 ];
 
-// The columns of the Manifest, drawn as keys on a rule rather than as pills: the count
+// The readings of the Manifest, drawn as keys on a rule rather than as pills: the count
 // sits in the margin of each label, and the one in hand is struck in copper along its foot.
+// There is one list here, and Women and Men are views of it — not lists of their own.
 export default function ListCategoryTabs({ activeTab, onTabChange, counts = {} }) {
   return (
     <div className="mb-1 flex items-end gap-5 overflow-x-auto border-b border-editorial-navy/10 scrollbar-hide">

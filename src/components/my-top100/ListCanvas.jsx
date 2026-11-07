@@ -19,6 +19,8 @@ export default function ListCanvas({
   onViewProfile,
   totalCount,
   readOnly = false,
+  emptyTitle = 'Nothing listed',
+  emptyNote = 'Analysis has closed for this cycle.',
 }) {
   const [dragging, setDragging] = useState(null);
   const total = totalCount ?? rankings.length;
@@ -29,10 +31,10 @@ export default function ListCanvas({
         <div className="border-t border-editorial-copper py-12 text-center">
           <Lock className="mx-auto mb-3 h-4 w-4 text-editorial-navy/35" aria-hidden="true" />
           <p className="font-body text-[11px] font-bold uppercase tracking-[0.18em] text-editorial-navy/55">
-            Nothing listed
+            {emptyTitle}
           </p>
           <p className="mt-2 font-body text-[12px] leading-relaxed text-editorial-navy/45">
-            Analysis has closed for this cycle.
+            {emptyNote}
           </p>
         </div>
       );
@@ -42,6 +44,27 @@ export default function ListCanvas({
 
   return (
     <div className="min-w-0">
+      {/* The way in stands at the head of the roll, where a reader begins: adding a record
+          is the first act on the list, not a footnote under a hundred names. */}
+      {!readOnly && total < 100 && (
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.995 }}
+          onClick={onAddMore}
+          className="mb-3 flex w-full items-center justify-between gap-3 border border-dashed border-editorial-copper/50 px-4 py-3.5 text-left transition-colors hover:bg-editorial-copper/5"
+        >
+          <span className="flex items-center gap-2">
+            <Plus className="h-3.5 w-3.5 text-editorial-copper" aria-hidden="true" />
+            <span className="font-body text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-navy">
+              Add a record
+            </span>
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-[0.14em] text-editorial-navy/45 tabular-nums">
+            {100 - total} places open
+          </span>
+        </motion.button>
+      )}
+
       <Reorder.Group
         axis="y"
         values={rankings}
@@ -50,7 +73,8 @@ export default function ListCanvas({
       >
         <AnimatePresence>
           {rankings.map((item, index) => {
-            const place = index + 1;
+            // A view keeps the place each record holds on the whole TOP 100.
+            const place = item.list_place ?? index + 1;
             const leads = place <= 3;
             const isDragging = dragging === item.nominee_id;
 
@@ -164,25 +188,6 @@ export default function ListCanvas({
           })}
         </AnimatePresence>
       </Reorder.Group>
-
-      {!readOnly && total < 100 && (
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.995 }}
-          onClick={onAddMore}
-          className="mt-5 flex w-full items-center justify-between gap-3 border border-dashed border-editorial-copper/50 px-4 py-3.5 text-left transition-colors hover:bg-editorial-copper/5"
-        >
-          <span className="flex items-center gap-2">
-            <Plus className="h-3.5 w-3.5 text-editorial-copper" aria-hidden="true" />
-            <span className="font-body text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-navy">
-              Add a record
-            </span>
-          </span>
-          <span className="font-body text-[10px] uppercase tracking-[0.14em] text-editorial-navy/45 tabular-nums">
-            {100 - total} places open
-          </span>
-        </motion.button>
-      )}
     </div>
   );
 }

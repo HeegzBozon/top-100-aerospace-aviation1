@@ -347,17 +347,7 @@ export default function MyTop100({ initialTab = null } = {}) {
     scheduleSave(newOrder, listName);
   };
 
-  const handleReorder = (newFilteredOrder) => {
-    if (votingClosed) return;
-    let newOrder = newFilteredOrder;
-    if (listCategory !== 'all') {
-      const filteredIds = new Set(newFilteredOrder.map(r => r.nominee_id));
-      let fi = 0;
-      newOrder = rankings.map(item => filteredIds.has(item.nominee_id) ? newFilteredOrder[fi++] : item);
-    }
-    setRankings(newOrder);
-    scheduleSave(newOrder, listName);
-  };
+
 
   const handleAdd = (nominee, meta = {}) => {
     if (votingClosed) return;
@@ -392,14 +382,19 @@ export default function MyTop100({ initialTab = null } = {}) {
 
   const addedIds = new Set(rankings.map(r => r.nominee_id));
   const totalNominations = Object.values(hubNominations).reduce((sum, arr) => sum + arr.length, 0);
+  // There is one TOP 100, and Women and Men are readings of it: the same ballot, filtered,
+  // each record keeping the place it holds on the whole. Neither view is a list of its own,
+  // so neither is reordered or saved on its own.
   const womenRankings = rankings.filter(r => r.nomination_category === 'women');
   const menRankings = rankings.filter(r => r.nomination_category === 'men');
-  const angelsRankings = rankings.filter(r => r.nomination_category === 'angels' || r.also_angels);
-  const visibleRankings = listCategory === 'all' ? rankings
-    : listCategory === 'women' ? womenRankings
+  const filtered = listCategory === 'women' ? womenRankings
     : listCategory === 'men' ? menRankings
-    : angelsRankings;
-  const listCategoryCounts = { all: rankings.length, women: womenRankings.length, men: menRankings.length, angels: angelsRankings.length };
+    : rankings;
+  const visibleRankings = filtered.map(r => ({
+    ...r,
+    list_place: rankings.findIndex(x => x.nominee_id === r.nominee_id) + 1,
+  }));
+  const listCategoryCounts = { all: rankings.length, women: womenRankings.length, men: menRankings.length };
 
   if (loading) {
     return (
@@ -476,13 +471,15 @@ export default function MyTop100({ initialTab = null } = {}) {
       <ListCanvas
         rankings={visibleRankings}
         totalCount={rankings.length}
-        onReorder={handleReorder}
-        readOnly={votingClosed}
+        onReorder={handleReorderAll}
+        readOnly={votingClosed || listCategory !== 'all'}
         onRemove={handleRemove}
         onAddMore={openExplorer}
         onAdd={handleAdd}
         addedIds={addedIds}
         onViewProfile={openProfileFromList}
+        emptyTitle={listCategory === 'men' ? 'No men listed yet' : 'No women listed yet'}
+        emptyNote="This is a view of your TOP 100. Add records on All; this view follows the same order."
       />
     </>
   );

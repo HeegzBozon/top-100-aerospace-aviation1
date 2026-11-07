@@ -325,14 +325,14 @@ export default function GlassNominateSurface({
           />
         </div>
 
-        {/* One order, read three ways: the cohorts are counted off the ballot, never
+        {/* One order, read as it stands: the counts are taken off the ballot, never
             arranged a second time in a list of their own. */}
         {totalCount > 0 && (
           <p
             className="mt-1.5 text-[7.5px] font-bold uppercase tracking-[0.16em] tabular-nums"
             style={{ color: `${brand.navy}45` }}
           >
-            Women {counts?.women ?? 0} · Men {counts?.men ?? 0} · Angels {counts?.angels ?? 0}
+            Women {counts?.women ?? 0} · Men {counts?.men ?? 0}
           </p>
         )}
       </div>
