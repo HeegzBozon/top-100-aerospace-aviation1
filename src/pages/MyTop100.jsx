@@ -457,7 +457,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         }}
         saving={saving}
         count={rankings.length}
-        note="A hundred places, one hand on the order. Set it as you would defend it — the vote itself is cast later, in private."
+        note="Who would you choose?"
       />
       <BallotStatusBanner
         rankings={rankings}
@@ -505,6 +505,12 @@ export default function MyTop100({ initialTab = null } = {}) {
       onOpenBriefing={() => briefing.setOpen(true)}
     />
   );
+
+  // The step past the order, held at the right margin while the window is open. It states
+  // itself only once there are two names to weigh; the shut window closes it.
+  const crosscheckNode = !votingClosed ? (
+    <ManifestToCrosscheck count={rankings.length} onOpenVote={() => openTab('vote')} />
+  ) : null;
 
   const startNode = (
     <div className="flex-1 overflow-y-auto">
@@ -638,18 +644,25 @@ export default function MyTop100({ initialTab = null } = {}) {
       {activeTab === 'nominate' && (
         <div className="flex-1 overflow-y-auto bg-editorial-sand/45">
           <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-5 lg:px-6 lg:pb-12 lg:pt-7">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
-              <aside className="border-t-2 border-editorial-copper pt-4 lg:sticky lg:top-[64px] lg:w-[330px] lg:shrink-0">
+            {/* Three columns on a desk: the guide at the left margin, the publication on the
+                page, and the next step standing at the right margin rather than trailing the
+                list. On a phone the guide and the next step stay together at the head, so the
+                way on is never a scroll past a hundred names. */}
+            <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[300px_minmax(0,1fr)_248px] lg:items-start lg:gap-8">
+              <aside className="border-t-2 border-editorial-copper pt-4 lg:sticky lg:top-[64px]">
                 {builderPanel}
-                {/* Once there is an order to weigh, the next step is stated here, beside the
-                    guide that taught it — and the window being shut closes it too. */}
-                {!votingClosed && (
-                  <ManifestToCrosscheck count={rankings.length} onOpenVote={() => openTab('vote')} />
-                )}
+                <div className="lg:hidden">{crosscheckNode}</div>
               </aside>
-              <div className="min-w-0 flex-1 border border-editorial-copper/25 bg-editorial-cream px-5 py-6 lg:max-w-2xl lg:px-8 lg:py-7">
+              <div className="min-w-0 border border-editorial-copper/25 bg-editorial-cream px-5 py-6 lg:px-7 lg:py-7">
                 {listBlock}
               </div>
+              <aside className="hidden lg:sticky lg:top-[64px] lg:block">
+                {crosscheckNode || (
+                  <p className="border-t-2 border-editorial-copper pt-3.5 font-body text-[10px] font-bold uppercase tracking-[0.22em] text-editorial-label">
+                    Next · The Crosscheck
+                  </p>
+                )}
+              </aside>
             </div>
           </div>
         </div>
