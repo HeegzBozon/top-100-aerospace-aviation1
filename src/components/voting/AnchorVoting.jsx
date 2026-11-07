@@ -34,8 +34,8 @@ const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
 const DESK_VOTE_KEYS = ['D', 'F', 'J', 'K'];
 const DESK_INFO_KEYS = ['E', 'R', 'Y', 'U'];
 
-// One review is ten XP on the ladder (see base44/shared/votingProgress.ts). Held here so
-// the tally can say how many reviews stand between a Fellow and the next rung.
+// One completed set is ten XP on the ladder (see base44/shared/votingProgress.ts). Held
+// here so the tally can turn the points still owed into the sets still owed.
 const XP_PER_REVIEW = 10;
 
 function shuffle(arr) {
@@ -100,9 +100,21 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const testing = progress?.lane === 'test';
   const lane = progress;
   const reviews = progress?.sets_completed ?? sessionCount;
-  const nextRung = lane?.next_name
-    ? `${Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)} to ${lane.next_name}`
-    : null;
+
+  // Two rungs stand ahead of a Fellow — the next named level, and the next interim mark.
+  // Whichever is nearer is the one the measure carries them towards, so the bar moves on
+  // the small increments and not only when a whole level turns over.
+  const mile = lane?.next_milestone || null;
+  const levelSetsTo = lane?.next_name
+    ? Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)
+    : Infinity;
+  const mileFirst = Boolean(mile) && mile.to_next <= levelSetsTo;
+  const nextRung = mileFirst
+    ? `${mile.to_next} ${mile.to_next === 1 ? 'set' : 'sets'} to ${mile.sets}`
+    : lane?.next_name
+      ? `${levelSetsTo} ${levelSetsTo === 1 ? 'set' : 'sets'} to ${lane.next_name}`
+      : null;
+  const rungProgress = lane ? (mileFirst ? mile.progress : lane.progress) : 0;
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -528,7 +540,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             experience and the measure. Everything the ladder reports lives here. */}
         {lane && (
           <ReviewProgressStrip
-            progress={lane.progress}
+            progress={rungProgress}
             levelName={testing ? `Test · ${lane.name}` : lane.name}
             reviews={reviews}
             xp={lane.xp}

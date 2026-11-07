@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts, windowState } from '../../shared/votingWindow.ts';
-import { levelFor, milestonesFor, ALL_MILESTONES, XP_PER_SET, XP_PER_BALLOT } from '../../shared/votingProgress.ts';
+import { levelFor, milestonesFor, nextMilestoneFor, ALL_MILESTONES, XP_PER_SET } from '../../shared/votingProgress.ts';
 
 // Everything the ballot needs to open, in one call: which cohorts are counting, and where
 // the window stands, the Fellow's saved ballot, and the contribution ladder they have
@@ -82,10 +82,13 @@ export default async function (req) {
     const COMPARISONS_PER_REVIEW = 7;
     totals.sets = Math.max(totals.sets, Math.floor(fellowVotes / COMPARISONS_PER_REVIEW));
     totals.comparisons = Math.max(totals.comparisons, fellowVotes);
-    totals.xp = Math.max(totals.xp, totals.sets * XP_PER_SET + totals.ballots * XP_PER_BALLOT);
+    // Experience is sets measured, and only sets measured — so it is counted from the
+    // ledger rather than read back off a stored figure that a retired ladder may have
+    // inflated.
+    totals.xp = totals.sets * XP_PER_SET;
     testTotals.sets = Math.max(testTotals.sets, Math.floor(testVotes / COMPARISONS_PER_REVIEW));
     testTotals.comparisons = Math.max(testTotals.comparisons, testVotes);
-    testTotals.xp = Math.max(testTotals.xp, testTotals.sets * XP_PER_SET);
+    testTotals.xp = testTotals.sets * XP_PER_SET;
 
     const level = levelFor(totals.xp);
     const fellowLane = {
@@ -94,6 +97,7 @@ export default async function (req) {
       ballots_saved: totals.ballots,
       comparisons_recorded: totals.comparisons,
       milestones: totals.milestones,
+      next_milestone: nextMilestoneFor(totals.sets),
     };
     // The house's own testers climb a ladder of their own. Their reviews are stamped as
     // tests and never move the field, so their experience is kept apart from the
@@ -105,6 +109,7 @@ export default async function (req) {
       ballots_saved: 0,
       comparisons_recorded: testTotals.comparisons,
       milestones: milestonesFor(testTotals.sets, 0),
+      next_milestone: nextMilestoneFor(testTotals.sets),
     };
 
     return Response.json({
