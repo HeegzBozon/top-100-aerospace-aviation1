@@ -12,12 +12,11 @@ import HubListTabs from '@/components/my-top100/HubListTabs';
 import BallotBuilderPanel from '@/components/my-top100/BallotBuilderPanel';
 import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
-import StartHereSplit from '@/components/my-top100/StartHereSplit';
+import PreFlightSurface from '@/components/my-top100/PreFlightSurface';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
-import { Loader2, Rocket, LogIn, Sparkles, ListOrdered, Mail } from 'lucide-react';
+import { Loader2, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import VoteSurface from '@/components/voting/VoteSurface';
-import VoteGate from '@/components/voting/VoteGate';
 import GateExportKey from '@/components/vote/GateExportKey';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import GlassNominateSurface from '@/components/my-top100/GlassNominateSurface';
@@ -38,9 +37,14 @@ function generateShareCode() {
 // device: a Fellow's place in their own work, not a setting.
 const COMMITTEE_TAB_KEY = 'top100_committee_tab';
 
-// The surfaces of the committee, in the order the keys are drawn: the letter that convened
-// it, Pre-Flight, the Manifest, then the Crosscheck.
-const COMMITTEE_TABS = ['invitation', 'start', 'nominate', 'vote'];
+// The surfaces of the committee, in the order the keys are drawn: Pre-Flight (the letter and
+// the check-in), the Manifest, then the Crosscheck.
+const COMMITTEE_TABS = ['start', 'nominate', 'vote'];
+
+// The Invitation was a key of its own until it was folded into Pre-Flight as the first of its
+// two sub-keys, so an address — or a note left in the session — that still names it opens
+// Pre-Flight rather than falling through to the Manifest.
+const normalizeTab = (key) => (key === 'invitation' ? 'start' : key);
 
 // `initialTab` is for a door that already knows which surface it opens: /vote is sent to a
 // Fellow in a post or a message and promises the ballot, so it mounts the committee on the
@@ -65,7 +69,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   const [activeTab, setActiveTab] = useState(() => {
     // A deep link names the surface outright — the start screen's Vote now lands
     // on the ballot, not on the orientation copy in front of it.
-    const requested = new URLSearchParams(window.location.search).get('tab');
+    const requested = normalizeTab(new URLSearchParams(window.location.search).get('tab'));
     if (COMMITTEE_TABS.includes(requested)) return requested;
     // The door that knows where it goes stands next in line.
     if (COMMITTEE_TABS.includes(initialTab)) return initialTab;
@@ -73,7 +77,7 @@ export default function MyTop100({ initialTab = null } = {}) {
     // committee comes back to the surface they were on rather than being walked back to
     // the Manifest every time. The session's own note, so tomorrow opens afresh.
     try {
-      const held = sessionStorage.getItem(COMMITTEE_TAB_KEY);
+      const held = normalizeTab(sessionStorage.getItem(COMMITTEE_TAB_KEY));
       if (COMMITTEE_TABS.includes(held)) return held;
     } catch { /* nothing held */ }
     // Everyone opens on the Manifest, however new they are: the order is where ranked
@@ -95,7 +99,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   // is open at a time. Null is the menu itself.
   const glass = useGlass();
   const [glassOpen, setGlassOpen] = useState(() => {
-    const requested = new URLSearchParams(window.location.search).get('tab');
+    const requested = normalizeTab(new URLSearchParams(window.location.search).get('tab'));
     if (COMMITTEE_TABS.includes(requested)) return requested;
     return COMMITTEE_TABS.includes(initialTab) ? initialTab : null;
   });
@@ -512,32 +516,24 @@ export default function MyTop100({ initialTab = null } = {}) {
     <ManifestToCrosscheck count={rankings.length} onOpenVote={() => openTab('vote')} />
   ) : null;
 
-  const startNode = (
-    <div className="flex-1 overflow-y-auto">
-      <StartHereSplit
-        user={user}
-        hasExisting={totalNominations > 0 || rankings.length > 0}
-        onBegin={() => openTab('nominate')}
-        onVote={() => openTab('vote')}
-        onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
-        onOpenOS={() => setShowOS(true)}
-      />
-    </div>
-  );
-
-  // The letter that convened the committee, read again: the same page a visitor is given,
-  // shown as the letter rather than delivered a second time. Accepting it returns the
-  // Fellow to Pre-Flight, where their two duties are set out. The operator can take it
-  // away as a file from here.
-  const invitationNode = (
-    <div className="flex flex-1 flex-col">
-      {user?.role === 'admin' && (
+  // Pre-Flight: the letter that convened the committee and the check-in that answers it,
+  // read as two keys on one desk. The surface owns the sub-key, so accepting the letter
+  // turns to the Boarding Pass rather than leaving the tab. The operator can still take the
+  // letter away as a file.
+  const preflightNode = (
+    <PreFlightSurface
+      user={user}
+      hasExisting={totalNominations > 0 || rankings.length > 0}
+      onBegin={() => openTab('nominate')}
+      onVote={() => openTab('vote')}
+      onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
+      onOpenOS={() => setShowOS(true)}
+      adminKey={user?.role === 'admin' ? (
         <div className="shrink-0 border-b border-editorial-copper/30 bg-editorial-cream px-4 py-2">
           <GateExportKey />
         </div>
-      )}
-      <VoteGate sealed={false} onPreviewContinue={() => openTab('start')} />
-    </div>
+      ) : null}
+    />
   );
 
   // The ballot is open to the whole committee now, not to admins alone: the surface
@@ -594,8 +590,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
-    { key: 'invitation', label: 'Invitation', hint: 'The letter that convened the committee', icon: Mail, node: invitationNode },
-    { key: 'start', label: 'Pre-Flight', hint: "An Analyst's two duties, and where to begin", icon: Rocket, node: startNode },
+    { key: 'start', label: 'Pre-Flight', hint: 'The letter, and your boarding pass', icon: Rocket, node: preflightNode },
     { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
   ];
@@ -634,11 +629,8 @@ export default function MyTop100({ initialTab = null } = {}) {
         listCount={rankings.length}
       />
 
-      {/* ── INVITATION TAB — the letter that convened the committee, read again ── */}
-      {activeTab === 'invitation' && invitationNode}
-
-      {/* ── PRE-FLIGHT TAB ── */}
-      {activeTab === 'start' && startNode}
+      {/* ── PRE-FLIGHT — the letter that convened the committee, and the check-in ── */}
+      {activeTab === 'start' && preflightNode}
 
       {/* ── THE MANIFEST (the guide at the margin, the publication itself on the page) ── */}
       {activeTab === 'nominate' && (

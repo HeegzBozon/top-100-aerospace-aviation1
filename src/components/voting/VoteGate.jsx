@@ -5,6 +5,7 @@ import EnvelopeOpening from '@/components/vote/EnvelopeOpening';
 import { base44 } from '@/api/base44Client';
 import InvitationPlate from '@/components/vote/InvitationPlate';
 import GateHowItWorks from '@/components/vote/GateHowItWorks';
+import AnalystOffice from '@/components/voting/AnalystOffice';
 import GateFaq from '@/components/vote/GateFaq';
 import { invitation } from '@/components/vote/voteGateCopy';
 import { CROSSCHECK, ANALYSIS } from '@/components/voting/ballotNaming';
@@ -85,6 +86,10 @@ export default function VoteGate({ source, onPreviewContinue = null, sealed = tr
           </div>
 
           <GateHowItWorks />
+          {/* The office, stated in full: what the letter commissions, before the questions.
+              It is read from ballotNaming, so the committee and the invitation cannot say the
+              role two different ways. */}
+          <AnalystOffice className="mt-12 max-w-2xl sm:mt-16" />
           <GateFaq />
 
           <div className="mx-auto mt-12 max-w-md text-center sm:mt-16">
