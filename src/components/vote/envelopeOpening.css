@@ -1,0 +1,201 @@
+/* ===== THE ENVELOPE =====
+   The ballot's front door, opened. A visitor who follows a promoted link is handed a
+   letter: the plate sits on the navy desk, the wax is broken, the flap turns back and the
+   invitation rises out of the pocket before the desk gives the glass back to the page
+   beneath. One 2.9s timeline drives every part, so nothing waits on a timer that did not
+   fire, and the whole thing is skipped on a tap — or before it starts, for a reader who
+   asked their device for reduced motion. Every tone is an editorial token. */
+.env-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgb(var(--editorial-gold-rgb) / 0.18) 0%, transparent 62%),
+    radial-gradient(96% 60% at 50% 112%, rgb(var(--editorial-navy-rgb) / 0.9) 0%, transparent 72%),
+    linear-gradient(168deg, rgb(var(--editorial-navy-rgb)) 0%, rgb(var(--editorial-navy-rgb) / 0.94) 54%, rgb(var(--editorial-navy-rgb) / 0.82) 100%);
+  animation: env-veil 2.9s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes env-veil {
+  0% { opacity: 0; }
+  10%, 84% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* The plate itself: cream stock on the desk, seated with the weight of a real object. */
+.env-shell {
+  position: relative;
+  width: min(360px, 78vw);
+  aspect-ratio: 1.5;
+  perspective: 1200px;
+  animation: env-seat 2.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes env-seat {
+  0% { opacity: 0; transform: translateY(16px) scale(0.965); }
+  14%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.env-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgb(var(--editorial-cream-rgb)) 0%, rgb(var(--editorial-sand-rgb)) 62%, rgb(var(--editorial-gold-rgb) / 0.52) 100%);
+  box-shadow:
+    0 44px 74px -38px rgb(var(--editorial-navy-rgb) / 0.95),
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / 0.34);
+}
+
+/* What shows when the flap turns back: the inside of the envelope, in shadow. */
+.env-lining {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 58%;
+  z-index: 1;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(180deg, rgb(var(--editorial-sand-rgb)) 0%, rgb(var(--editorial-gold-rgb) / 0.42) 100%);
+  box-shadow: inset 0 8px 14px -8px rgb(var(--editorial-navy-rgb) / 0.7);
+}
+
+/* The invitation, folded inside: it rises out of the pocket and shows its masthead. */
+.env-letter {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 9%;
+  height: 78%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 15px 10px;
+  border-radius: 2px;
+  background: rgb(var(--editorial-cream-rgb));
+  box-shadow:
+    0 18px 30px -18px rgb(var(--editorial-navy-rgb) / 0.6),
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / 0.22);
+  animation: env-letter 2.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes env-letter {
+  0%, 46% { transform: translateY(0); }
+  76%, 100% { transform: translateY(-64%); }
+}
+
+/* The front of the envelope, folded over the letter, with its two seams. */
+.env-pocket {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 3px;
+  background: linear-gradient(135deg, rgb(var(--editorial-sand-rgb)) 0%, rgb(var(--editorial-cream-rgb)) 48%, rgb(var(--editorial-sand-rgb)) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / 0.26),
+    inset 0 -24px 34px -28px rgb(var(--editorial-navy-rgb) / 0.55),
+    0 10px 18px -14px rgb(var(--editorial-navy-rgb) / 0.6);
+}
+.env-pocket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background:
+    linear-gradient(to bottom right, transparent calc(50% - 0.5px), rgb(var(--editorial-copper-rgb) / 0.2) calc(50% - 0.5px), rgb(var(--editorial-copper-rgb) / 0.2) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom left, transparent calc(50% - 0.5px), rgb(var(--editorial-copper-rgb) / 0.2) calc(50% - 0.5px), rgb(var(--editorial-copper-rgb) / 0.2) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+}
+
+/* The flap: one triangle turning back off its own top edge. Once it passes the plane it
+   is edge-on and then gone, which is exactly how paper behaves. */
+.env-flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 58%;
+  z-index: 4;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(180deg, rgb(var(--editorial-cream-rgb)) 0%, rgb(var(--editorial-sand-rgb)) 100%);
+  box-shadow: 0 10px 20px -14px rgb(var(--editorial-navy-rgb) / 0.65);
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  animation: env-flap 2.9s cubic-bezier(0.36, 0, 0.24, 1) both;
+}
+@keyframes env-flap {
+  0%, 24% { transform: rotateX(0deg); }
+  66%, 100% { transform: rotateX(-178deg); }
+}
+
+/* The wax, pressed over the seam, breaking as the flap comes away. */
+.env-seal {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 34% 26%, rgb(var(--editorial-gold-rgb)) 0%, rgb(var(--editorial-copper-rgb)) 62%, rgb(var(--editorial-copper-rgb) / 0.72) 100%);
+  box-shadow:
+    inset 0 2px 3px rgb(var(--editorial-cream-rgb) / 0.45),
+    inset 0 -6px 10px rgb(var(--editorial-navy-rgb) / 0.55),
+    0 12px 22px -12px rgb(var(--editorial-navy-rgb) / 0.9);
+  animation: env-seal 2.9s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes env-seal {
+  0%, 18% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  26% { opacity: 1; transform: translate(-50%, -50%) scale(1.12) rotate(-6deg); }
+  34%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.28) rotate(-12deg); }
+}
+
+/* The line under the plate. */
+.env-caption {
+  animation: env-caption 2.9s ease both;
+}
+@keyframes env-caption {
+  0%, 10% { opacity: 0; transform: translateY(6px); }
+  22%, 74% { opacity: 1; transform: translateY(0); }
+  94%, 100% { opacity: 0; transform: translateY(0); }
+}
+
+/* The way out of the theatre. */
+.env-skip {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(var(--editorial-cream-rgb) / 0.55);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 160ms ease;
+}
+.env-skip:hover,
+.env-skip:focus-visible {
+  color: rgb(var(--editorial-cream-rgb) / 0.92);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .env-stage,
+  .env-shell,
+  .env-letter,
+  .env-flap,
+  .env-seal,
+  .env-caption {
+    animation: none;
+  }
+  .env-flap {
+    transform: rotateX(-178deg);
+  }
+  .env-seal {
+    opacity: 0;
+  }
+}
