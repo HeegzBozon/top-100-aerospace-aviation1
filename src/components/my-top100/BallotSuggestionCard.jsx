@@ -19,7 +19,7 @@ const label = (value) => String(value || '').replace(/_/g, ' ');
 function Face({ children, turned = false }) {
   return (
     <div
-      className={`col-start-1 row-start-1 rounded-2xl p-2.5 [backface-visibility:hidden] ${
+      className={`col-start-1 row-start-1 min-w-0 overflow-hidden break-words rounded-2xl p-2.5 [backface-visibility:hidden] ${
         turned ? '[transform:rotateY(180deg)]' : ''
       }`}
       style={{ background: 'white', border: `1px solid ${brand.navy}10` }}
@@ -39,9 +39,9 @@ export default function BallotSuggestionCard({ person, viewer, onAdd, onView }) 
   const standing = [label(person.discipline), label(person.category)].filter(Boolean).join(' · ');
 
   return (
-    <div className="[perspective:1000px]">
+    <div className="min-w-0 [perspective:1000px]">
       <div
-        className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${
+        className={`grid w-full min-w-0 transition-transform duration-500 [transform-style:preserve-3d] ${
           flipped ? '[transform:rotateY(180deg)]' : ''
         }`}
       >

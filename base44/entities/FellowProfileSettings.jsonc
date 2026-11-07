@@ -32,6 +32,15 @@
       "type": "string",
       "description": "Key of the curated hardware finish the Fellow has put on their handheld console (one of the approved finish set). Curated choice, never a free-form colour. Display only; never read by discovery, ranking, or scoring."
     },
+    "specialty_key": {
+      "type": "string",
+      "description": "The specialty an Analyst has filed on their Flight Plan, chosen from the curated specialty set. It steers what the platform puts in front of the Fellow and which desks open first. Personalization only; never read by discovery ordering, measurement, influence tier, or scoring, and never used to alter, obscure or reorder verification display."
+    },
+    "specialty_set_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the specialty on the Flight Plan was last filed."
+    },
     "module_order": {
       "type": "array",
       "items": {

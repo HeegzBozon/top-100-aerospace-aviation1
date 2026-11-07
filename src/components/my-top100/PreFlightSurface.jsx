@@ -5,17 +5,18 @@ import BoardingPass from '@/components/my-top100/BoardingPass';
 
 // ── Pre-Flight ──
 //
-// Two keys on one desk. The Invitation is the letter that convened the committee, read
-// again, and it carries everything the office is: how the two ballots work, who may serve,
-// and the questions a reader writes back with. The Boarding Pass is the check-in — the one
-// form only the Fellow can fill, now that the letter says the rest.
+// Two keys on one desk, read in the order the desk is worked. The Invitation is the letter
+// that convened the committee: it carries everything the office is — how the two ballots
+// work, who may serve, and the questions a reader writes back with. The Boarding Pass
+// follows it, because it is the answer: the record the Fellow is known by, handed over once
+// the letter has been accepted.
 //
 // The sub-key row sits under the committee's own tabs, smaller and quieter, so a reader can
 // see at a glance that Pre-Flight holds two things rather than three.
 
 const KEYS = [
-  { key: 'boarding', label: 'Boarding Pass', icon: PlaneTakeoff },
   { key: 'invitation', label: 'Invitation', icon: Mail },
+  { key: 'boarding', label: 'Boarding Pass', icon: PlaneTakeoff },
 ];
 
 export default function PreFlightSurface({
@@ -23,10 +24,9 @@ export default function PreFlightSurface({
   hasExisting,
   onBegin,
   onVote,
-  onSaved,
   onOpenOS,
   adminKey = null,
-  initial = 'boarding',
+  initial = 'invitation',
 }) {
   const [sub, setSub] = useState(() => {
     const asked = new URLSearchParams(window.location.search).get('preflight');
@@ -89,7 +89,6 @@ export default function PreFlightSurface({
             hasExisting={hasExisting}
             onBegin={onBegin}
             onVote={onVote}
-            onSaved={onSaved}
           />
         )}
       </div>

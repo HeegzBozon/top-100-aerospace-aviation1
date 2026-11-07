@@ -1,16 +1,18 @@
 import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
 
-// The three surfaces of the committee, drawn as keys on a rule rather than as pills:
-// Pre-Flight (the letter and the check-in), the Fellow's own publication, then the
-// weighing. The one in hand is struck in copper along its foot; the count sits in the
-// margin of its label.
+// The four surfaces of the committee, drawn as keys on a rule rather than as pills:
+// Pre-Flight (the letter and the check-in), the Fellow's own publication, the weighing,
+// and then the Flight Plan — the field the Analyst reads it all from. The one in hand is
+// struck in copper along its foot; the count sits in the margin of its label.
 const PREFLIGHT = 'Pre-Flight';
+const FLIGHT_PLAN = 'Flight Plan';
 
 export default function HubListTabs({ activeTab, onTabChange, nominationCount = 0, listCount = 0 }) {
   const tabs = [
     { key: 'start', label: PREFLIGHT },
     { key: 'nominate', label: MANIFEST, count: listCount, of: 100 },
     { key: 'vote', label: CROSSCHECK },
+    { key: 'flight', label: FLIGHT_PLAN },
   ];
 
   return (

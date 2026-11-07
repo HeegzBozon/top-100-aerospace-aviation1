@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Vote } from 'lucide-react';
 import useBoardingPass from '@/components/my-top100/useBoardingPass';
+import { specialtyLabel } from '@/components/flight-plan/specialties';
 
 // ── The Boarding Pass ──
 //
@@ -33,20 +34,20 @@ function initialsOf(name) {
 }
 
 export default function BoardingPass({ user, hasExisting, onBegin, onVote }) {
-  const { status, card, nominee, error } = useBoardingPass(user);
+  const { status, card, nominee, settings, error } = useBoardingPass(user);
 
   const name = card?.card_name || nominee?.name || user?.full_name || '';
   const roleLine = card?.role_line || nominee?.title || '';
   const organisation = card?.organisation || nominee?.company || '';
   const portrait = nominee?.avatar_url || '';
 
+  // The pass carries what the record holds, and nothing that has to be asked for: the base
+  // they work from, the field the record names, the specialty they filed on their Flight
+  // Plan, and the one thing they are glad to be reached about.
   const rows = [
     { label: 'Base', value: card?.location || nominee?.location },
-    { label: 'Connection', value: user?.aerospace_connection },
     { label: 'Field', value: DISCIPLINE_WORDS[nominee?.discipline] || nominee?.discipline },
-    { label: 'Verified', value: nominee?.verified_status && nominee.verified_status !== 'unverified'
-      ? nominee.verified_status.replace(/_/g, ' ')
-      : '' },
+    { label: 'Specialty', value: specialtyLabel(settings?.specialty_key) },
     { label: 'Reachable about', value: card?.tagline },
   ].filter((row) => row.value && String(row.value).trim());
 

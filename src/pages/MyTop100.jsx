@@ -15,7 +15,8 @@ import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import PreFlightSurface from '@/components/my-top100/PreFlightSurface';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
-import { Loader2, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
+import { Loader2, Rocket, LogIn, Sparkles, ListOrdered, Route } from 'lucide-react';
+import FlightPlan from '@/components/flight-plan/FlightPlan';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GateExportKey from '@/components/vote/GateExportKey';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
@@ -38,8 +39,9 @@ function generateShareCode() {
 const COMMITTEE_TAB_KEY = 'top100_committee_tab';
 
 // The surfaces of the committee, in the order the keys are drawn: Pre-Flight (the letter and
-// the check-in), the Manifest, then the Crosscheck.
-const COMMITTEE_TABS = ['start', 'nominate', 'vote'];
+// the check-in), the Manifest, the Crosscheck, then the Flight Plan — the field an Analyst
+// reads the rest from, once the first set has made them one.
+const COMMITTEE_TABS = ['start', 'nominate', 'vote', 'flight'];
 
 // The Invitation was a key of its own until it was folded into Pre-Flight as the first of its
 // two sub-keys, so an address — or a note left in the session — that still names it opens
@@ -526,7 +528,6 @@ export default function MyTop100({ initialTab = null } = {}) {
       hasExisting={totalNominations > 0 || rankings.length > 0}
       onBegin={() => openTab('nominate')}
       onVote={() => openTab('vote')}
-      onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
       onOpenOS={() => setShowOS(true)}
       adminKey={user?.role === 'admin' ? (
         <div className="shrink-0 border-b border-editorial-copper/30 bg-editorial-cream px-4 py-2">
@@ -541,6 +542,10 @@ export default function MyTop100({ initialTab = null } = {}) {
   const chamberNode = <VoteSurface user={user} />;
 
   const voteNode = <div className="flex-1 min-h-0 flex flex-col overflow-hidden">{chamberNode}</div>;
+
+  // The Flight Plan: the Analyst's own desk rather than the field's. It reads standing from
+  // the contribution record and files the specialty the rest of the platform steers by.
+  const flightNode = <FlightPlan user={user} onOpenVote={() => openTab('vote')} />;
 
   // On the glass the ballot is read the way the title screen is read: the surfaces the
   // vote tab reaches are drawn as keys and walked by the wheel — the ballot itself,
@@ -593,6 +598,7 @@ export default function MyTop100({ initialTab = null } = {}) {
     { key: 'start', label: 'Pre-Flight', hint: 'The letter, and your boarding pass', icon: Rocket, node: preflightNode },
     { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
+    { key: 'flight', label: 'Flight Plan', hint: 'The field you read the industry from', icon: Route, node: <div className="px-3 pb-28">{flightNode}</div> },
   ];
 
   const shownTab = glass ? glassOpen : activeTab;
@@ -662,6 +668,11 @@ export default function MyTop100({ initialTab = null } = {}) {
 
       {/* ── VOTE TAB (anchor selection — admins only; teaser for everyone else) ── */}
       {activeTab === 'vote' && voteNode}
+
+      {/* ── FLIGHT PLAN — the specialty an Analyst reads the field from ── */}
+      {activeTab === 'flight' && (
+        <div className="flex-1 overflow-y-auto bg-editorial-sand/45">{flightNode}</div>
+      )}
         </>
       )}
 
