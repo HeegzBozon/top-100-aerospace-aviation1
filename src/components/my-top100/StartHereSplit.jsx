@@ -90,7 +90,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
         >
           <span
             className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full mb-6"
-            style={{ color: brand.gold, border: `1px solid ${brand.gold}55`, background: `${brand.gold}08` }}
+            style={{ color: 'rgb(var(--editorial-label-rgb))', border: '1px solid var(--editorial-copper)', background: 'var(--editorial-cream)' }}
           >
             <Sparkles className="w-3 h-3" />
             The Selection Committee
@@ -103,22 +103,28 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
             Serve the season as an Analyst.
           </h1>
 
-          <div className="space-y-4 max-w-xl">
-            <p className="text-[15px] leading-relaxed" style={{ color: '#7c838d' }}>
+          <details className="w-full max-w-xl border-t border-editorial-copper py-4 text-editorial-navy">
+            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">Why your nominations matter</summary>
+            <div className="mt-4 space-y-4">
+            <p className="text-[15px] leading-relaxed" style={{ color: 'rgb(var(--editorial-navy-rgb) / 0.82)' }}>
               A TOP 100 Analyst finds the field, measures it, and carries the record. The aerospace and aviation community is full of people doing remarkable work, and most of them will never be asked to step forward.
             </p>
             <p className="text-[15px] leading-relaxed" style={{ color: '#0f2139' }}>
               <span className="font-bold">You're about to change that for someone.</span>
             </p>
-            <p className="text-[15px] leading-relaxed" style={{ color: '#7c838d' }}>
+            <p className="text-[15px] leading-relaxed" style={{ color: 'rgb(var(--editorial-navy-rgb) / 0.82)' }}>
               TOP 100 Aerospace &amp; Aviation has recognized over 300 Fellows across 40+ countries since 2021. Analysts are how the field is chosen. This year we're expanding. More programs. More recognition. More community.
             </p>
-            <p className="text-[13px] leading-relaxed" style={{ color: '#a8a8a8' }}>
+            <p className="text-[13px] leading-relaxed" style={{ color: 'rgb(var(--editorial-navy-rgb) / 0.78)' }}>
               This form takes about 3 minutes per nomination. There's no limit on how many people you nominate. Every single one gets reviewed personally.
             </p>
-          </div>
+            </div>
+          </details>
 
-          <AnalystOffice className="mt-7 max-w-xl" />
+          <details className="w-full max-w-xl border-t border-editorial-copper py-4 text-editorial-navy">
+            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">The office of Analyst</summary>
+            <AnalystOffice className="mt-4 max-w-xl" />
+          </details>
 
           <div className="mt-7 flex flex-col sm:flex-row items-start gap-3">
             <button
@@ -140,9 +146,12 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
             </button>
           </div>
 
-          <p className="text-[12px] mt-6 max-w-md leading-relaxed" style={{ color: '#b5b5b5' }}>
-            The Manifest is your own TOP 100, in order — you choose who to back, and how strongly. The Crosscheck is where the analysis happens.
-          </p>
+          <details className="mt-6 w-full max-w-xl border-t border-editorial-copper py-4 text-editorial-navy">
+            <summary className="cursor-pointer font-body text-sm font-semibold focus-visible:outline-editorial-copper">Manifest and Crosscheck</summary>
+            <p className="mt-3 text-[13px] leading-relaxed text-editorial-navy/80">
+              The Manifest is your own TOP 100, in order — you choose who to back, and how strongly. The Crosscheck is where the analysis happens.
+            </p>
+          </details>
         </motion.div>
 
         {/* ── Right: About You form ── */}
@@ -171,7 +180,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
                 <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>
                   {user?.full_name || user?.email}
                 </p>
-                <p className="text-xs truncate" style={{ color: `${brand.navy}80` }}>
+                <p className="text-xs truncate" style={{ color: 'rgb(var(--editorial-navy-rgb) / 0.78)' }}>
                   Signed in — your details are pre-filled
                 </p>
               </div>
@@ -192,7 +201,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jane Doe"
-                className="bg-white h-12 text-base"
+                className="h-12 text-base bg-editorial-cream text-editorial-navy border-editorial-navy/30 placeholder:text-editorial-navy/70 dark:bg-editorial-cream dark:text-editorial-navy dark:border-editorial-navy/30 dark:placeholder:text-editorial-navy/70"
               />
             </Field>
             <Field label="Your Email" required>
@@ -201,7 +210,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jane@aerospace.com"
-                className="bg-white h-12 text-base"
+                className="h-12 text-base bg-editorial-cream text-editorial-navy border-editorial-navy/30 placeholder:text-editorial-navy/70 dark:bg-editorial-cream dark:text-editorial-navy dark:border-editorial-navy/30 dark:placeholder:text-editorial-navy/70"
               />
             </Field>
             <Field label="Your connection to aerospace and aviation" required>
@@ -214,11 +223,12 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
                     ref={(node) => {
                       nodes.current[1 + i] = node;
                     }}
-                    className="w-full flex items-center justify-between gap-2 text-left p-3.5 rounded-xl border-2 text-sm transition-all cursor-pointer"
+                    aria-pressed={connection === opt}
+                    className="w-full flex items-center justify-between gap-2 text-left p-3.5 rounded-xl border-2 text-sm text-editorial-navy transition-all cursor-pointer focus-visible:outline-editorial-copper"
                     style={
                       connection === opt
-                        ? { borderColor: brand.gold, background: `${brand.gold}14`, ...focused(1 + i) }
-                        : { borderColor: `${brand.navy}14`, background: 'white', ...focused(1 + i) }
+                        ? { borderColor: 'var(--editorial-copper)', background: 'var(--editorial-sand)', ...focused(1 + i) }
+                        : { borderColor: 'rgb(var(--editorial-navy-rgb) / 0.25)', background: 'var(--editorial-cream)', ...focused(1 + i) }
                     }
                   >
                     <span className="min-w-0">{opt}</span>
@@ -253,8 +263,8 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
             className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 text-sm font-semibold transition-all"
             style={{
               background: 'transparent',
-              border: `1.5px solid ${brand.gold}`,
-              color: brand.gold,
+              border: '1.5px solid var(--editorial-copper)',
+              color: 'rgb(var(--editorial-label-rgb))',
               ...focused(continuation + 1),
             }}
           >
@@ -271,9 +281,9 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
 function Field({ label, required, children }) {
   return (
     <div>
-      <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94a3b8' }}>
+      <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block text-editorial-label">
         {label}
-        {required && <span style={{ color: brand.gold }}> *</span>}
+        {required && <span className="text-editorial-label"> *</span>}
       </label>
       {children}
     </div>
