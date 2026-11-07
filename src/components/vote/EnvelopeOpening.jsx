@@ -8,7 +8,7 @@ import '@/components/vote/envelopeFlight.css';
 // The sheet is folded through four shapes before it becomes the envelope, so the flight
 // runs longer than one fold. The duration is published to the stylesheet as --env-flight
 // so the shape sequence, the turn of the paper and the envelope's arrival share one clock.
-const FLIGHT_MS = 6400;
+const FLIGHT_MS = 8400;
 // The seal lifts away, then the flap turns back — the card is handed over once that
 // unsealing has finished rather than in the middle of it.
 const OPEN_MS = 1900;

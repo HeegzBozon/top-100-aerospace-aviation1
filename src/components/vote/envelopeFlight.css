@@ -22,7 +22,8 @@
   z-index: 6;
   transform-origin: 50% 52%;
   filter: drop-shadow(0 12px 15px rgb(var(--editorial-navy-rgb) / .18));
-  animation: env-fold-flight var(--env-flight, 6400ms) cubic-bezier(.22,1,.36,1) both;
+  will-change: transform, opacity;
+  animation: env-fold-flight var(--env-flight, 8400ms) linear both;
 }
 .env-origami { display: block; width: 100%; height: 100%; overflow: visible; }
 .env-paper { fill: rgb(var(--editorial-cream-rgb)); }
@@ -41,7 +42,7 @@
   stroke: rgb(var(--editorial-copper-rgb) / .4);
   stroke-width: .65;
   stroke-linejoin: round;
-  animation-duration: var(--env-flight, 6400ms);
+  animation-duration: var(--env-flight, 8400ms);
   animation-timing-function: ease-in-out;
   animation-fill-mode: both;
 }
@@ -51,27 +52,27 @@
 .env-model-star { animation-name: env-model-star; }
 .env-model-sheet { animation-name: env-model-sheet; }
 @keyframes env-model-plane {
-  0%, 15% { opacity: 1; transform: scaleX(1); }
-  20%, 100% { opacity: 0; transform: scaleX(.04); }
-}
-@keyframes env-model-crane {
-  0%, 17% { opacity: 0; transform: scaleX(.04); }
-  23%, 37% { opacity: 1; transform: scaleX(1); }
+  0%, 36% { opacity: 1; transform: scaleX(1); }
   42%, 100% { opacity: 0; transform: scaleX(.04); }
 }
-@keyframes env-model-boat {
+@keyframes env-model-crane {
   0%, 39% { opacity: 0; transform: scaleX(.04); }
-  45%, 59% { opacity: 1; transform: scaleX(1); }
-  64%, 100% { opacity: 0; transform: scaleX(.04); }
+  45%, 55% { opacity: 1; transform: scaleX(1); }
+  60%, 100% { opacity: 0; transform: scaleX(.04); }
+}
+@keyframes env-model-boat {
+  0%, 57% { opacity: 0; transform: scaleX(.04); }
+  63%, 73% { opacity: 1; transform: scaleX(1); }
+  78%, 100% { opacity: 0; transform: scaleX(.04); }
 }
 @keyframes env-model-star {
-  0%, 61% { opacity: 0; transform: scaleX(.04); }
-  67%, 79% { opacity: 1; transform: scaleX(1); }
-  84%, 100% { opacity: 0; transform: scaleX(.04); }
+  0%, 75% { opacity: 0; transform: scaleX(.04); }
+  81%, 88% { opacity: 1; transform: scaleX(1); }
+  93%, 100% { opacity: 0; transform: scaleX(.04); }
 }
 @keyframes env-model-sheet {
-  0%, 81% { opacity: 0; transform: scaleX(.04); }
-  88%, 100% { opacity: 1; transform: scaleX(1); }
+  0%, 90% { opacity: 0; transform: scaleX(.04); }
+  96%, 100% { opacity: 1; transform: scaleX(1); }
 }
 .env-delivery[data-phase="flight"] .env-back,
 .env-delivery[data-phase="flight"] .env-lining,
@@ -97,15 +98,34 @@
   45% { filter: brightness(1.16); }
   100% { filter: brightness(1); }
 }
-/* Arrival, a steady face-on hold for the models, then the envelope handoff. */
+/* A continuous circular flight, not eased waypoint hops. The translated pivot
+   makes one full loop; the final zoom settles before any paper changes shape. */
 @keyframes env-fold-flight {
-  0% { opacity: 0; transform: translate(-90vw,-18vh) rotate(-26deg) scale(.14); }
-  6% { opacity: 1; transform: translate(-35vw,-8vh) rotate(-12deg) scale(.7); }
-  14% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
-  92% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
-  100% { opacity: 0; transform: translate(0,0) rotate(0deg) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translate3d(-70vw,-100px,0) rotate(-14deg) translateY(60px) scale(.18);
+    animation-timing-function: cubic-bezier(.2,.55,.45,1);
+  }
+  8% {
+    opacity: 1;
+    transform: translate3d(0,-60px,0) rotate(0deg) translateY(60px) scale(.82);
+    animation-timing-function: linear;
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(0,-60px,0) rotate(-360deg) translateY(60px) scale(.82);
+    animation-timing-function: cubic-bezier(.22,.61,.36,1);
+  }
+  36%, 96% {
+    opacity: 1;
+    transform: translate3d(0,-60px,0) rotate(-360deg) translateY(60px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0,-60px,0) rotate(-360deg) translateY(60px) scale(1);
+  }
 }
-@keyframes env-materialize { 0%, 90% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes env-materialize { 0%, 96% { opacity: 0; } 100% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .env-delivery .env-fold { display: none; }
   .env-delivery[data-phase] .env-back,
