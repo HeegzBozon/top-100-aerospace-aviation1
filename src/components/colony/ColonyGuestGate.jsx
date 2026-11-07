@@ -7,7 +7,7 @@ export default function ColonyGuestGate({ onGuest }) {
   const login = () => base44.auth.redirectToLogin(window.location.href);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950">
+    <div data-tube-fill="" className="hh-slide-window relative min-h-0 flex-1 overflow-hidden bg-slate-950">
       <img src={SPLASH} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
       <div className="absolute inset-x-3 bottom-6 mx-auto max-w-sm rounded-xl border border-editorial-gold/40 bg-slate-950/85 p-4 backdrop-blur">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-editorial-gold">Colony · Beta</p>

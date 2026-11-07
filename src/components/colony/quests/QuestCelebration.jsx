@@ -13,8 +13,9 @@ export default function QuestCelebration({ quest, passport, onClose }) {
     return () => clearTimeout(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div onClick={onClose} className="as-veil absolute inset-0 z-40 flex items-center justify-center bg-editorial-navy/70 p-4">
-      <div className="as-rise w-full max-w-xs rounded-lg border-2 border-editorial-gold bg-editorial-navy p-4 text-center shadow-2xl">
+    // The plate rolls inside the picture if the glass is short, so the way on stays reachable.
+    <div onClick={onClose} className="as-veil absolute inset-0 z-40 flex items-center justify-center overflow-y-auto overscroll-contain bg-editorial-navy/70 p-4">
+      <div className="as-rise my-auto w-full max-w-xs rounded-lg border-2 border-editorial-gold bg-editorial-navy p-4 text-center shadow-2xl">
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-editorial-gold">Quest complete</p>
         <h3 className="mt-1 font-heading text-2xl text-editorial-cream">{quest.title}</h3>
         {reward && (

@@ -51,7 +51,10 @@ export default function ColonyOnboarding({ isGuest, memberName, onDone }) {
     // The cutscene sits in the same opening as every other Colony surface — the glass on a
     // phone, the tube on a desk — instead of standing a viewport tall inside it. The scene
     // is a band of the frame, so the concierge's line and its key always have room beneath.
-    <div className="hh-slide-window relative flex flex-col overflow-hidden bg-editorial-navy md:h-[calc(100%-41px)]">
+    <div
+      data-tube-fill=""
+      className="hh-slide-window relative flex min-h-0 flex-1 flex-col overflow-hidden bg-editorial-navy"
+    >
       <div className="cc-scene relative h-[30%] max-h-[46vh] min-h-[96px] w-full shrink-0 overflow-hidden">
         <img src={SCENE} alt="The TOP 100 concierge desk" className="h-full w-full object-cover [image-rendering:pixelated]" />
       </div>
