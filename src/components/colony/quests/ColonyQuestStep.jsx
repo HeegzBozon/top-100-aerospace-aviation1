@@ -21,12 +21,14 @@ export default function ColonyQuestStep({ quest, npc, passport, onComplete, onCl
   const reward = REWARDS[quest.reward];
   const text = done ? (quest.explain || 'Logged in your Campus Passport.') : wrong ? 'Not quite. Try again.' : `${lineFor(quest, passport)} ${quest.prompt}`;
   if (quest.input) return (
-    <div className="absolute inset-x-3 bottom-3 z-30 mx-auto flex max-h-[85%] max-w-md flex-col overflow-y-auto rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 shadow-xl">
-      <div className="px-3 pt-3">
+    // The line rolls; the answer's field and its keys stay pinned at the foot of the panel,
+    // so an interview step never hides the way to finish it.
+    <div className="absolute inset-x-3 bottom-3 z-30 mx-auto flex max-h-[85%] max-w-md flex-col overflow-hidden rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 shadow-xl">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pt-3">
         <p className="text-[10px] uppercase tracking-widest text-editorial-gold">The Origin Story · {quest.title}</p>
         <div className="mt-2"><DialogueBox speaker={npc.name} text={`${quest.line} ${quest.prompt}`} /></div>
       </div>
-      <QuestAnswerInput onAnswer={(a) => onComplete(a, 0)} />
+      <div className="shrink-0"><QuestAnswerInput onAnswer={(a) => onComplete(a, 0)} /></div>
     </div>
   );
   return (

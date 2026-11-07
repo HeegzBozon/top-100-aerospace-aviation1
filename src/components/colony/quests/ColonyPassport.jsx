@@ -22,7 +22,7 @@ export default function ColonyPassport({ passport, isGuest, onSave, makeLink, on
             className={`flex-1 py-2 text-[11px] uppercase tracking-widest ${tab === t.key ? 'border-b-2 border-editorial-copper text-editorial-cream' : 'text-editorial-cream/50'}`}>{t.label}</button>
         ))}
       </div>
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
         {!passport ? <Loader2 className="mx-auto h-5 w-5 animate-spin text-editorial-gold" />
           : tab === 'quests' ? <PassportQuests passport={passport} onGo={onGo} />
           : tab === 'record' ? <PassportRecord passport={passport} isGuest={isGuest} onSave={onSave} />

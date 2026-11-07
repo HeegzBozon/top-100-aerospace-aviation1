@@ -43,39 +43,44 @@ export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, on
   };
 
   return (
-    <div className="absolute inset-x-2 top-2 z-40 mx-auto max-h-[calc(100%-1rem)] max-w-sm overflow-y-auto rounded-lg border border-editorial-copper/60 bg-editorial-navy p-3 text-editorial-cream shadow-2xl">
-      <div className="mb-2 flex items-center justify-between">
+    // The panel fills the picture it is opened in and rolls only its own options, so the
+    // key that keeps the character — "That's me, let's go" — is always standing at its foot,
+    // however many options are shown and however short the glass is.
+    <div className="absolute inset-x-2 bottom-2 top-2 z-40 mx-auto flex max-w-sm flex-col overflow-hidden rounded-lg border border-editorial-copper/60 bg-editorial-navy p-3 text-editorial-cream shadow-2xl">
+      <div className="mb-2 flex flex-none items-center justify-between">
         <p className="font-heading text-lg">Your character</p>
         <button onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></button>
       </div>
-      <canvas ref={ref} width={96} height={96} className={`mx-auto mb-2 rounded bg-editorial-cream/10 ${draft.image ? 'hidden' : 'block'}`} />
-      {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-32 w-24 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
-      <div className="mb-2 flex gap-2">
-        <button onClick={regenerate} disabled={regen} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-gold py-1.5 text-xs font-semibold text-editorial-gold">
-          {regen ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shuffle className="h-3.5 w-3.5" />} Shuffle
-        </button>
-        <button onClick={() => setOpen(o => !o)} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-cream/30 py-1.5 text-xs font-semibold">
-          <SlidersHorizontal className="h-3.5 w-3.5" /> {open ? 'Hide options' : 'Customize'}
-        </button>
-      </div>
-      {open && <>
-      {GROUPS.map(([k, label]) => (
-        <div key={k} className="mb-2">
-          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-editorial-gold">{label}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {AVATAR_OPTIONS[k].map(o => (
-              <button key={o.key} onClick={() => pickPart(k, o.key)} title={o.label} aria-pressed={draft[k] === o.key}
-                className={`rounded border px-2 py-1 text-xs ${draft[k] === o.key ? 'border-editorial-copper bg-editorial-copper/30' : 'border-editorial-cream/20'}`}>
-                {o.color ? <span className="block h-4 w-4 rounded-full" style={{ background: o.color }} /> : o.label}
-              </button>
-            ))}
-          </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <canvas ref={ref} width={96} height={96} className={`mx-auto mb-2 rounded bg-editorial-cream/10 ${draft.image ? 'hidden' : 'block'}`} />
+        {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-32 w-24 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
+        <div className="mb-2 flex gap-2">
+          <button onClick={regenerate} disabled={regen} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-gold py-1.5 text-xs font-semibold text-editorial-gold">
+            {regen ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shuffle className="h-3.5 w-3.5" />} Shuffle
+          </button>
+          <button onClick={() => setOpen(o => !o)} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-cream/30 py-1.5 text-xs font-semibold">
+            <SlidersHorizontal className="h-3.5 w-3.5" /> {open ? 'Hide options' : 'Customize'}
+          </button>
         </div>
-      ))}
-      <AvatarGenerator draft={draft} setDraft={setDraft} />
-      </>}
-      {error && <p className="mb-2 text-xs text-red-300">{error}</p>}
-      <button onClick={save} disabled={saving} className="flex w-full items-center justify-center gap-2 rounded bg-editorial-copper py-2 text-sm font-semibold">
+        {open && <>
+        {GROUPS.map(([k, label]) => (
+          <div key={k} className="mb-2">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-editorial-gold">{label}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {AVATAR_OPTIONS[k].map(o => (
+                <button key={o.key} onClick={() => pickPart(k, o.key)} title={o.label} aria-pressed={draft[k] === o.key}
+                  className={`rounded border px-2 py-1 text-xs ${draft[k] === o.key ? 'border-editorial-copper bg-editorial-copper/30' : 'border-editorial-cream/20'}`}>
+                  {o.color ? <span className="block h-4 w-4 rounded-full" style={{ background: o.color }} /> : o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <AvatarGenerator draft={draft} setDraft={setDraft} />
+        </>}
+      </div>
+      {error && <p className="mb-1 flex-none text-xs text-red-300">{error}</p>}
+      <button onClick={save} disabled={saving} className="mt-2 flex flex-none w-full items-center justify-center gap-2 rounded bg-editorial-copper py-2 text-sm font-semibold">
         {saving && <Loader2 className="h-4 w-4 animate-spin" />} {saveLabel}
       </button>
     </div>

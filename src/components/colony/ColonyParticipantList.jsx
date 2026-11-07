@@ -60,7 +60,7 @@ export default function ColonyParticipantList({ participants, localSessionId, on
           <X className="w-4 h-4" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2">
         {participants.map((p) => (
           <ParticipantRow
             key={p.session_id}

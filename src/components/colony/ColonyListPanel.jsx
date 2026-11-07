@@ -10,7 +10,7 @@ export default function ColonyListPanel({ title, items, empty, onPick, onClose }
         <p className="font-heading text-lg text-editorial-cream">{title}</p>
         <button type="button" onClick={onClose} aria-label={`Close ${title}`} className="text-editorial-cream/70"><X className="h-4 w-4" /></button>
       </div>
-      <ul className="flex-1 overflow-y-auto p-2">
+      <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
         {items.length === 0 && <li className="px-3 py-8 text-center text-sm text-editorial-cream/70">{empty}</li>}
         {items.map((it) => (
           <li key={it.key} id={`colony-list-${it.key}`}>

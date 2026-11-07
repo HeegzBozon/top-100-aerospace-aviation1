@@ -8,6 +8,9 @@ import GateHowItWorks from '@/components/vote/GateHowItWorks';
 import GateFaq from '@/components/vote/GateFaq';
 import { CROSSCHECK, ANALYSIS, ANALYST, ANALYST_STANDING } from '@/components/voting/ballotNaming';
 
+// How long the curtain takes to lift, and the letter to arrive behind it.
+const HANDOVER_MS = 640;
+
 // The invitation the ballot stands behind, read as a letter: the card that was sent, the
 // letter that answers why, then how it works and the questions a reader writes back with.
 // The press opens the platform's own door, and /vote is what the visitor returns to.
@@ -15,9 +18,22 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
   const door = source ? `/vote?src=${encodeURIComponent(source)}` : '/vote';
   const toDoor = () => onPreviewContinue ? onPreviewContinue() : base44.auth.redirectToLogin(door);
 
-  // The letter is opened once, over the page, before it is read.
-  const [opening, setOpening] = useState(true);
-  const closeOpening = useCallback(() => setOpening(false), []);
+  // The letter is opened once, over the page, before it is read. Three beats rather than
+  // two: the envelope is on screen, then it lifts while the letter rises through the gap
+  // beneath it, then the letter is simply the page. HANDOVER_MS matches the curtain's own
+  // departure in envelopeOpening.css, so the two halves of the crossfade share one clock.
+  const [stage, setStage] = useState('opening');
+  const closeOpening = useCallback(() => {
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    setStage((s) => (s !== 'opening' ? s : reduced ? 'open' : 'departing'));
+  }, []);
+  useEffect(() => {
+    if (stage !== 'departing') return undefined;
+    const timer = setTimeout(() => setStage('open'), HANDOVER_MS);
+    return () => clearTimeout(timer);
+  }, [stage]);
+  const opening = stage === 'opening';
+  const revealed = stage !== 'opening';
 
   useEffect(() => {
     const previous = document.title;
@@ -27,8 +43,14 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
 
   return (
     <div className="flex min-h-full flex-col overflow-y-auto bg-editorial-sand">
-      {opening && <EnvelopeOpening onDone={closeOpening} />}
-      <div aria-hidden={opening || undefined} inert={opening ? '' : undefined} className={`mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-14${opening ? ' invisible' : ''}`}>
+      {stage !== 'open' && <EnvelopeOpening onDone={closeOpening} leaving={stage === 'departing'} />}
+      <div
+        aria-hidden={opening || undefined}
+        inert={opening ? '' : undefined}
+        className={`mx-auto w-full max-w-5xl px-4 py-8 transition-all duration-700 ease-out sm:px-6 sm:py-14 ${
+          revealed ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+        }`}
+      >
         <article className="pb-page border border-editorial-copper/40 px-5 py-8 shadow-xl sm:px-12 sm:py-14">
           <header className="text-center">
             <p className="pd-label">TOP 100 Aerospace &amp; Aviation · Selection Committee</p>

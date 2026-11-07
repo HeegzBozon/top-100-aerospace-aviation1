@@ -4,6 +4,29 @@
   place-items: center;
   overflow: auto;
   background: rgb(var(--editorial-sand-rgb));
+  animation: env-curtain-in 420ms ease both;
+}
+
+/* The handover. The curtain is the sheet the envelope arrived on: once the card has been
+   opened it lifts away — fading and easing back a hair — and the letter underneath is
+   already coming up to meet it. Two movements on one clock, so nothing ever cuts. */
+.env-curtain[data-leaving="true"] {
+  animation: env-curtain-out 640ms cubic-bezier(.4,0,.2,1) both;
+  pointer-events: none;
+}
+@keyframes env-curtain-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes env-curtain-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.02); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .env-curtain,
+  .env-curtain[data-leaving="true"] {
+    animation: none;
+  }
 }
 .env-stage {
   box-sizing: border-box;

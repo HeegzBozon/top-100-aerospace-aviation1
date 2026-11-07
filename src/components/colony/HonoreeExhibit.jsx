@@ -15,7 +15,7 @@ export default function HonoreeExhibit({ exhibit, passport, onSave, onClose }) {
         </div>
         <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-editorial-cream/70" /></button>
       </div>
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
         <AtlasStarCard key={n.id} nominee={n} lit={!!passport?.stars?.[n.id]} onLight={light} onBack={onClose} />
       </div>
     </div>

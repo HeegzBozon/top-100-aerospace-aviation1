@@ -13,7 +13,9 @@ const FLIGHT_MS = 9400;
 // unsealing has finished rather than in the middle of it.
 const OPEN_MS = 1900;
 
-export default function EnvelopeOpening({ onDone }) {
+// `leaving` is set by the page once the card has been handed over: the curtain lifts and
+// the letter beneath it comes up through the gap, so the envelope never simply vanishes.
+export default function EnvelopeOpening({ onDone, leaving = false }) {
   const [phase, setPhase] = useState('flight');
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function EnvelopeOpening({ onDone }) {
   }, [phase, onDone]);
 
   return (
-    <div className="as-frame env-curtain" role="presentation">
+    <div className="as-frame env-curtain" role="presentation" data-leaving={leaving ? 'true' : undefined}>
       <div className="env-stage env-delivery" data-phase={phase} style={{ '--env-flight': `${FLIGHT_MS}ms` }}>
         <div className="env-letter">
           <p className="pd-label">TOP 100 Aerospace &amp; Aviation</p>

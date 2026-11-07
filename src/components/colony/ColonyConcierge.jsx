@@ -64,8 +64,12 @@ export default function ColonyConcierge({ onClose }) {
   };
 
   return (
-    <div className="absolute inset-0 z-30 flex flex-col overflow-hidden bg-editorial-navy p-2">
-      <div className="cc-scene relative min-h-0 flex-[0_1_26%] overflow-hidden rounded-md border-2 border-editorial-gold/70">
+    // The desk is held to a reading measure rather than stretched across the whole picture:
+    // on a desk it stands as one card in the tube, on the glass it fills it. Its scene, its
+    // line and its field each take a fixed share, so the line rolls inside the box and the
+    // way to answer never leaves the frame.
+    <div className="absolute inset-0 z-30 flex flex-col overflow-hidden bg-editorial-navy p-2 md:inset-y-3 md:mx-auto md:w-[480px] md:rounded-lg md:border md:border-editorial-copper/60 md:p-3 md:shadow-2xl">
+      <div className="cc-scene relative h-[26%] max-h-[190px] min-h-[92px] shrink-0 overflow-hidden rounded-md border-2 border-editorial-gold/70">
         <img src={SCENE} alt="" className="h-full w-full object-cover object-[45%_40%] [image-rendering:pixelated]" />
         <button type="button" onClick={onClose} aria-label="Leave the desk" className="absolute right-1.5 top-1.5 rounded bg-editorial-navy/80 p-1.5 text-editorial-cream"><X className="h-4 w-4" /></button>
         <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-sm bg-editorial-navy/90 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-editorial-gold">

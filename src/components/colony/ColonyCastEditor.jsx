@@ -23,7 +23,7 @@ export default function ColonyCastEditor({ cast, configs, onSave, onClose }) {
         <p className="font-heading text-lg">Campus cast</p>
         <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></button>
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto p-4 text-sm">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 text-sm">
         <select value={id} onChange={e => setId(e.target.value)} className="w-full rounded bg-white/10 px-2 py-2">
           {cast.map(c => <option key={c.id} value={c.id} className="text-black">{c.name} · {c.role}</option>)}
         </select>
