@@ -112,12 +112,20 @@ export function domainOnRecord(
 }
 
 export type DomainVerdict =
-  | { ok: true; domain: string; basis: 'on_record' | 'employer' }
+  | { ok: true; domain: string; basis: 'on_record' | 'employer' | 'unnamed' }
   | { ok: false; reason: 'personal' | 'malformed' | 'unmatched'; domain: string };
 
-// The decision the work-email desk makes before it sends anything. Nothing reaches
-// an admin queue from here: an unmatched domain is answered on the spot, with what
-// the record actually says.
+// The decision the work-email desk makes before it sends anything.
+//
+// What the code proves is that a person holds a mailbox at that domain. What the
+// record adds is which employer that is meant to be. So the rule runs in three steps:
+// a personal mailbox proves nothing about an employer and is refused; an address the
+// record already carries is taken as the same employer; a named employer must own the
+// domain. Only a domain that contradicts a named employer is turned away.
+//
+// A record that names no employer is not held against the Fellow — most of the index
+// names none, and refusing them would make the check unreachable for almost everyone.
+// A proven work mailbox is still a proven work mailbox.
 export function verifyWorkDomain(
   workEmail: string | null | undefined,
   nominee: any,
@@ -127,6 +135,7 @@ export function verifyWorkDomain(
   if (!isWorkDomain(workEmail)) return { ok: false, reason: 'personal', domain };
   if (domainOnRecord(domain, nominee)) return { ok: true, domain, basis: 'on_record' };
   const employer = nominee?.company || nominee?.organization;
+  if (!String(employer || '').trim()) return { ok: true, domain, basis: 'unnamed' };
   if (employerMatchesDomain(employer, domain)) return { ok: true, domain, basis: 'employer' };
   return { ok: false, reason: 'unmatched', domain };
 }

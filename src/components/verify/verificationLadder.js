@@ -19,7 +19,7 @@ export const RUNGS = [
   {
     key: 'partially_verified',
     label: 'Verified professional',
-    hint: 'A work address at the stated employer has been confirmed.',
+    hint: 'A work address has been confirmed for this record.',
   },
   {
     key: 'fully_verified',

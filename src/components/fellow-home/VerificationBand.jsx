@@ -1,24 +1,14 @@
 import { BadgeCheck, ShieldCheck, Layers } from 'lucide-react';
 import { B } from './fellowHomeConfig';
-
-const LABELS = {
-  unverified: 'Unverified',
-  self_verified: 'Self verified',
-  partially_verified: 'Partially verified',
-  fully_verified: 'Fully verified',
-};
+import { CHECKS_TOTAL, confirmedCount, labelOf } from '@/components/verify/verificationLadder';
 
 const TIERS = ['Bronze', 'Silver', 'Gold', 'Platinum'];
 
 // Locked to position 2. Present and quiet. Bands are visible, weights never are.
 export default function VerificationBand({ nominee, accent }) {
-  const status = nominee?.verified_status || 'unverified';
   const rank = nominee?.aura_rank_name || '';
   const tier = TIERS.find((t) => rank.toLowerCase().includes(t.toLowerCase())) || 'Bronze';
-  const checks = nominee?.verification_status || {};
-  const confirmed = ['linkedin_verified', 'employer_verified', 'sme_reviewed', 'metrics_validated'].filter(
-    (k) => checks[k]
-  ).length;
+  const confirmed = confirmedCount(nominee);
 
   return (
     <section
@@ -32,7 +22,7 @@ export default function VerificationBand({ nominee, accent }) {
             Credential
           </p>
           <p className="text-sm font-semibold" style={{ color: B.navy }}>
-            {LABELS[status] || LABELS.unverified}
+            {labelOf(nominee)}
           </p>
         </div>
       </div>
@@ -60,7 +50,7 @@ export default function VerificationBand({ nominee, accent }) {
             Checks confirmed
           </p>
           <p className="text-sm font-semibold" style={{ color: B.navy }}>
-            {confirmed} of 4
+            {confirmed} of {CHECKS_TOTAL}
           </p>
         </div>
       </div>

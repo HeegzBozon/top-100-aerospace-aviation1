@@ -1,4 +1,5 @@
 import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
+import { labelOf } from '@/components/verify/verificationLadder';
 import {
   enabledModes,
   MODES,
@@ -43,12 +44,7 @@ const list = (items) => {
 
 const year = (v) => (clean(v) ? clean(v).slice(0, 4) : '');
 
-const VERIFICATION = {
-  unverified: 'Unverified',
-  self_verified: 'Self verified',
-  partially_verified: 'Partially verified',
-  fully_verified: 'Fully verified',
-};
+
 
 const CHECKS = [
   ['LinkedIn', 'linkedin_verified'],
@@ -110,7 +106,6 @@ function coverPage({ user, nominee, settings, accent }) {
 function credentialPage({ nominee }) {
   if (!nominee) return null;
 
-  const status = nominee.verified_status || 'unverified';
   const checks = nominee.verification_status || {};
   const confirmed = CHECKS.filter(([, key]) => checks[key]).length;
 
@@ -125,7 +120,7 @@ function credentialPage({ nominee }) {
     key: 'verification',
     kind: 'credential',
     label: 'Credential',
-    title: VERIFICATION[status] || VERIFICATION.unverified,
+    title: labelOf(nominee),
     standfirst: `${confirmed} of ${CHECKS.length} checks confirmed`,
     facts: CHECKS.map(([label, key]) => ({ label, value: checks[key] ? 'Confirmed' : 'Open' })),
     tier: tierOf(nominee),

@@ -53,9 +53,10 @@
       "type": "string",
       "enum": [
         "on_record",
-        "employer"
+        "employer",
+        "unnamed"
       ],
-      "description": "Why the domain was accepted: it was already the address on the record, or it matches the employer named on it."
+      "description": "Why the domain was accepted: it was already the address on the record, it matches the employer named on it, or the record names no employer and the mailbox is a genuine work address."
     },
     "expires_at": {
       "type": "string",
