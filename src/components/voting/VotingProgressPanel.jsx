@@ -10,8 +10,6 @@ export default function VotingProgressPanel({ progress, compact = false }) {
   if (!progress) return null;
 
   const pct = Math.round((progress.progress || 0) * 100);
-  const earned = new Set(progress.milestones || []);
-  const ladder = progress.ladder || [];
 
   const figures = [
     { label: 'Sets', value: progress.sets_completed || 0 },
@@ -75,13 +73,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
         ))}
       </div>
 
-      {!compact && ladder.length > 0 && (
-        <MilestoneRail
-          ladder={ladder}
-          earned={earned}
-          completed={progress.sets_completed || 0}
-        />
-      )}
+      {!compact && <MilestoneRail completed={progress.sets_completed || 0} />}
     </div>
   );
 }

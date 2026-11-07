@@ -15,6 +15,7 @@ import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import RecordContributionSheet from '@/components/voting/RecordContributionSheet';
 import LadderCelebration from '@/components/voting/LadderCelebration';
+import { markAhead, markReached, marksClimbedBetween } from '@/components/voting/ladderMarks';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
@@ -105,20 +106,26 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const lane = progress;
   const reviews = progress?.sets_completed ?? sessionCount;
 
-  // Two rungs stand ahead of a Fellow — the next named level, and the next interim mark.
+  // Two rungs stand ahead of a Fellow — the next named office, and the next named mark.
   // Whichever is nearer is the one the measure carries them towards, so the bar moves on
-  // the small increments and not only when a whole level turns over.
-  const mile = lane?.next_milestone || null;
+  // the small increments and not only when a whole office turns over. The marks are read
+  // from the surface's own table so a mark is named the moment it is reached.
+  const ahead = markAhead(reviews);
+  const mileTo = ahead ? ahead.sets - reviews : 0;
+  const behind = markReached(reviews);
+  const mileProgress = ahead
+    ? (reviews - (behind?.sets || 0)) / (ahead.sets - (behind?.sets || 0))
+    : 0;
   const levelSetsTo = lane?.next_name
     ? Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)
     : Infinity;
-  const mileFirst = Boolean(mile) && mile.to_next <= levelSetsTo;
+  const mileFirst = Boolean(ahead) && mileTo <= levelSetsTo;
   const nextRung = mileFirst
-    ? `${mile.to_next} ${mile.to_next === 1 ? 'set' : 'sets'} to ${mile.name}`
+    ? `${mileTo} ${mileTo === 1 ? 'set' : 'sets'} to ${ahead.name}`
     : lane?.next_name
       ? `${levelSetsTo} ${levelSetsTo === 1 ? 'set' : 'sets'} to ${lane.next_name}`
       : null;
-  const rungProgress = lane ? (mileFirst ? mile.progress : lane.progress) : 0;
+  const rungProgress = lane ? (mileFirst ? mileProgress : lane.progress) : 0;
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -320,15 +327,17 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       // mark reached on the same set, so the plate carries the promotion and the rail keeps
       // the mark. The mark ahead is read from the ladder the context already handed in.
       const receipt = res.data?.progress;
-      const movedSets = receipt?.progress?.sets_completed || 0;
-      const freshMark = (receipt?.new_milestones || []).slice(-1)[0] || null;
-      if (receipt?.leveled_up || freshMark) {
-        const ahead = (lane?.ladder || []).find((m) => m.sets && m.sets > movedSets) || null;
+      const movedSets = receipt?.progress?.sets_completed ?? reviews + 1;
+      const climbed = marksClimbedBetween(reviews, movedSets);
+      const top = climbed[climbed.length - 1] || null;
+      if (receipt?.leveled_up || top) {
+        const onward = markAhead(movedSets);
+        const office = receipt?.leveled_up ? receipt.progress?.name : null;
         setMoment({
-          kind: receipt.leveled_up ? 'level' : 'mark',
-          name: receipt.leveled_up ? receipt.progress?.name : freshMark.label,
+          kind: receipt?.leveled_up ? 'level' : 'mark',
+          name: office || top?.name || '',
           sets: movedSets,
-          next: ahead ? { name: ahead.name, sets: ahead.sets } : null,
+          next: onward ? { name: onward.name, sets: onward.sets } : null,
         });
       }
 
