@@ -1,0 +1,148 @@
+/* One sheet arrives folded as a plane, then spreads into the envelope footprint. */
+.env-delivery .env-shell { animation: none; align-self: center; margin-right: 0; }
+.env-delivery { font-family: var(--font-body); }
+.env-delivery .env-letter p:last-child { font-family: var(--font-heading); }
+.env-delivery[data-phase="flight"] .env-letter,
+.env-delivery[data-phase="flight"] .env-caption { visibility: hidden; }
+.env-delivery:not([data-phase="flight"]) .env-letter,
+.env-delivery:not([data-phase="flight"]) .env-caption { animation: env-invite-reveal .5s ease-out both; }
+.env-delivery[data-phase="flight"] { background: transparent; border-color: transparent; box-shadow: none; }
+@keyframes env-invite-reveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.env-delivery .env-flap { animation: none; transform: rotateX(0deg); }
+.env-delivery .env-seal { animation: none; }
+.env-delivery .env-skip { font-family: var(--font-body); min-height: 40px; }
+.env-delivery .env-skip:disabled { opacity: .55; cursor: default; }
+/* Faceted models: each holds face-on, then folds edge-on before the next opens. */
+.env-delivery .env-fold {
+  --env-loop-radius: clamp(48px, 10vw, 150px);
+  --env-loop-lead: calc(var(--env-loop-radius) * -.6);
+  --env-air-scale: .68;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  transform-origin: 50% 52%;
+  filter: drop-shadow(0 12px 15px rgb(var(--editorial-navy-rgb) / .18));
+  will-change: transform, opacity;
+  animation: env-fold-flight var(--env-flight, 9400ms) linear both;
+}
+.env-origami { display: block; width: 100%; height: 100%; overflow: visible; }
+.env-paper { fill: rgb(var(--editorial-cream-rgb)); }
+.env-paper-light { fill: rgb(var(--editorial-cream-rgb)); }
+.env-paper-shade { fill: rgb(var(--editorial-gold-rgb) / .66); }
+.env-crease {
+  fill: none;
+  stroke: rgb(var(--editorial-copper-rgb) / .65);
+  stroke-width: .8;
+  stroke-linejoin: round;
+}
+.env-model {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: center;
+  stroke: rgb(var(--editorial-copper-rgb) / .4);
+  stroke-width: .65;
+  stroke-linejoin: round;
+  animation-duration: var(--env-flight, 9400ms);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+.env-model-plane { animation-name: env-model-plane; }
+.env-model-crane { animation-name: env-model-crane; }
+.env-model-boat { animation-name: env-model-boat; }
+.env-model-star { animation-name: env-model-star; }
+.env-model-sheet { animation-name: env-model-sheet; }
+@keyframes env-model-plane {
+  0%, 36% { opacity: 1; transform: scaleX(1); }
+  42%, 100% { opacity: 0; transform: scaleX(.04); }
+}
+@keyframes env-model-crane {
+  0%, 39% { opacity: 0; transform: scaleX(.04); }
+  45%, 55% { opacity: 1; transform: scaleX(1); }
+  60%, 100% { opacity: 0; transform: scaleX(.04); }
+}
+@keyframes env-model-boat {
+  0%, 57% { opacity: 0; transform: scaleX(.04); }
+  63%, 73% { opacity: 1; transform: scaleX(1); }
+  78%, 100% { opacity: 0; transform: scaleX(.04); }
+}
+@keyframes env-model-star {
+  0%, 75% { opacity: 0; transform: scaleX(.04); }
+  81%, 88% { opacity: 1; transform: scaleX(1); }
+  93%, 100% { opacity: 0; transform: scaleX(.04); }
+}
+@keyframes env-model-sheet {
+  0%, 90% { opacity: 0; transform: scaleX(.04); }
+  96%, 100% { opacity: 1; transform: scaleX(1); }
+}
+.env-delivery[data-phase="flight"] .env-back,
+.env-delivery[data-phase="flight"] .env-lining,
+.env-delivery[data-phase="flight"] .env-pocket,
+.env-delivery[data-phase="flight"] .env-flap,
+.env-delivery[data-phase="flight"] .env-seal {
+  animation: env-materialize var(--env-flight, 4400ms) ease both;
+}
+.env-delivery:not([data-phase="flight"]) .env-fold { display: none; }
+/* The seal lets go first, then the flap turns back; the lining catches the light the
+   lifting flap lets in. */
+.env-delivery[data-phase="opening"] .env-seal {
+  animation: env-wax-lift .95s cubic-bezier(.34,1.05,.5,1) both;
+}
+.env-delivery[data-phase="opening"] .env-flap {
+  animation: env-open 1.4s .38s cubic-bezier(.34,.02,.24,1) both;
+}
+.env-delivery[data-phase="opening"] .env-lining {
+  animation: env-lining-open 1.8s ease-out both;
+}
+@keyframes env-lining-open {
+  0% { filter: brightness(.9); }
+  45% { filter: brightness(1.16); }
+  100% { filter: brightness(1); }
+}
+/* Momentum carries the sheet uphill, slows at the crest, then gathers on descent.
+   Matched endpoint slopes join approach, both half-loops and the landing glide:
+   speed stays continuous at every join, then decays to zero at touchdown. */
+@keyframes env-fold-flight {
+  0% {
+    opacity: 0;
+    transform: translate3d(calc(var(--env-loop-lead) - var(--env-loop-radius) * 5),calc(0px - var(--env-loop-radius)),0) rotate(0deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
+    animation-timing-function: cubic-bezier(.24,.32,.7,.8355);
+  }
+  8% {
+    opacity: 1;
+    transform: translate3d(var(--env-loop-lead),calc(0px - var(--env-loop-radius)),0) rotate(0deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
+    animation-timing-function: cubic-bezier(.3,.36,.7,.805);
+  }
+  19% {
+    opacity: 1;
+    transform: translate3d(var(--env-loop-lead),calc(0px - var(--env-loop-radius)),0) rotate(-180deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
+    animation-timing-function: cubic-bezier(.3,.195,.7,.64);
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(var(--env-loop-lead),calc(0px - var(--env-loop-radius)),0) rotate(-360deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
+    animation-timing-function: cubic-bezier(.22,.754,.55,1);
+  }
+  36%, 96% {
+    opacity: 1;
+    transform: translate3d(0,calc(0px - var(--env-loop-radius)),0) rotate(-360deg) translateY(var(--env-loop-radius)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0,calc(0px - var(--env-loop-radius)),0) rotate(-360deg) translateY(var(--env-loop-radius)) scale(1);
+  }
+}
+@media (max-width: 767px) {
+  .env-delivery .env-fold { --env-air-scale: .48; }
+}
+@keyframes env-materialize { 0%, 96% { opacity: 0; } 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .env-delivery .env-fold { display: none; }
+  .env-delivery[data-phase] .env-back,
+  .env-delivery[data-phase] .env-lining,
+  .env-delivery[data-phase] .env-pocket,
+  .env-delivery[data-phase] .env-flap,
+  .env-delivery[data-phase] .env-seal { animation: none; }
+}

@@ -29,6 +29,7 @@ import {
     Mic,
     Eye,
     Mail,
+    Route,
 } from 'lucide-react';
 
 /**
@@ -41,6 +42,14 @@ import {
  * all consume this config.
  */
 export const ADMIN_SECTIONS = [
+    {
+        id: 'journeys',
+        label: 'Journey Mapping',
+        icon: Route,
+        tabs: [
+            { id: 'journey-mapping', label: 'Journey Mapping', icon: Route, component: 'JourneyMapping' },
+        ],
+    },
     {
         id: 'nominations',
         label: 'Nominations',

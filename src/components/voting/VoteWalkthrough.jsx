@@ -6,16 +6,26 @@ import MissionBriefing from '@/components/mission/MissionBriefing';
 export default function VoteWalkthrough({ user, onClose }) {
   const [step, setStep] = useState(0);
   const [guideOpen, setGuideOpen] = useState(true);
+  // A restart puts the reader back at the beginning of the road as a signed-out visitor
+  // would meet it, so the landing is remounted rather than merely returned to: the paper
+  // airplane flies in again and the envelope seals itself a second time.
+  const [run, setRun] = useState(0);
   if (user?.role !== 'admin') return null;
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-editorial-cream text-editorial-navy">
       <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-editorial-copper/40 p-2 font-body">
         <span className="flex-1 text-xs">Read-only walkthrough · {['Signed-out landing', 'Account handoff', 'First Crosscheck'][step]}</span>
+        <button
+          className="desk-key"
+          onClick={() => { setGuideOpen(true); setStep(0); setRun((n) => n + 1); }}
+        >
+          Restart
+        </button>
         {step > 0 && <button className="desk-key" onClick={() => setStep(step - 1)}>Back</button>}
         <button className="desk-key desk-key-primary" onClick={onClose}>Exit walkthrough</button>
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {step === 0 && <VoteGate onPreviewContinue={() => setStep(1)} />}
+        {step === 0 && <VoteGate key={run} onPreviewContinue={() => setStep(1)} />}
         {step === 1 && (
           <div className="m-auto max-w-md p-6 font-body">
             <p className="pd-label">Account handoff · preview only</p>

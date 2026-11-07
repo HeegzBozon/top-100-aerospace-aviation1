@@ -1,0 +1,226 @@
+/* Isolated invitation plate; the existing curtain still owns dismissal. */
+.env-curtain {
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  background: rgb(var(--editorial-sand-rgb));
+}
+.env-stage {
+  box-sizing: border-box;
+  width: 560px;
+  max-width: 100%;
+  padding: 30px 30px 24px;
+  background: #EFE7DC;
+  border: 1px solid #d8c9b6;
+  box-shadow: 0 20px 50px -32px rgba(30,58,90,.42);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  color: #1E3A5A;
+  font-family: system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+.env-stage .env-letter {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 34px 30px 32px;
+  background: #FAF8F5;
+  border: 1px solid rgba(184,115,51,.38);
+  box-shadow: 0 10px 26px -20px rgba(30,58,90,.48),inset 0 0 0 5px rgba(239,231,220,.48);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.env-stage .pd-label {
+  margin: 0;
+  color: #8F5C2C;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+}
+.env-stage .pd-rule {
+  width: 52px;
+  height: 1px;
+  background: #B87333;
+  animation: env-rule 1.1s cubic-bezier(.22,1,.36,1) both;
+}
+.env-stage .env-letter p:last-child {
+  margin: 0;
+  font-family: Georgia,"Times New Roman",serif;
+  font-size: 34px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -.025em;
+  color: #1E3A5A;
+}
+.env-stage .env-shell {
+  position: relative;
+  box-sizing: border-box;
+  width: 330px;
+  max-width: 100%;
+  aspect-ratio: 1.5;
+  align-self: flex-end;
+  margin-right: 4px;
+  perspective: 900px;
+  filter: drop-shadow(0 14px 15px rgba(30,58,90,.16));
+  animation: env-settle 1.3s cubic-bezier(.22,1,.36,1) both;
+}
+.env-stage .env-back {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(184,115,51,.52);
+  border-radius: 3px;
+  background: linear-gradient(145deg,#FAF8F5 0%,#EFE7DC 62%,#e5d7c4 100%);
+}
+.env-stage .env-lining {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 60%;
+  clip-path: polygon(0 0,100% 0,50% 100%);
+  background: linear-gradient(180deg,#c9a987,#efe2cf);
+}
+.env-stage .env-letter::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: rgba(184,115,51,.5);
+  margin-top: 2px;
+}
+.env-stage .env-pocket {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  border: 1px solid rgba(184,115,51,.34);
+  border-radius: 3px;
+  background: linear-gradient(135deg,#e9ddce 0%,#FAF8F5 48%,#e8dbca 100%);
+  box-shadow: inset 0 -15px 22px -21px rgba(30,58,90,.7);
+}
+.env-stage .env-pocket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: linear-gradient(to bottom right,transparent calc(50% - .5px),rgba(184,115,51,.3) calc(50% - .5px),rgba(184,115,51,.3) calc(50% + .5px),transparent calc(50% + .5px)),linear-gradient(to bottom left,transparent calc(50% - .5px),rgba(184,115,51,.3) calc(50% - .5px),rgba(184,115,51,.3) calc(50% + .5px),transparent calc(50% + .5px));
+}
+.env-stage .env-flap {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 60%;
+  clip-path: polygon(0 0,100% 0,50% 100%);
+  transform-origin: top center;
+  transform: rotateX(-178deg);
+  background: linear-gradient(180deg,#FAF8F5 0%,#e6d8c5 100%);
+  backface-visibility: hidden;
+  box-shadow: 0 9px 16px -14px rgba(30,58,90,.6);
+  animation: env-open 1.5s cubic-bezier(.34,.02,.24,1) both;
+}
+/* ===== THE SEAL — ONE STRUCK DISC OF WAX =====
+   Whole, the way a seal is: a single round of gold wax, matte at the surface and lit
+   along its upper lip, with the house mark sunk into it — a rocket inside a thin ring.
+   It sits proud of the flap and casts its own shadow onto the card, so it reads as an
+   object laid on the paper rather than a print in it. */
+.env-stage .env-seal {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 58%;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  background: radial-gradient(circle at 32% 22%,rgb(var(--editorial-gold-rgb)) 0%,rgb(var(--editorial-gold-rgb) / .97) 36%,rgb(var(--editorial-copper-rgb) / .9) 82%,rgb(var(--editorial-copper-rgb)) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / .5),
+    inset 0 2px 3px rgb(250 248 245 / .55),
+    inset 0 -5px 8px rgb(var(--editorial-navy-rgb) / .35),
+    0 8px 14px -6px rgb(var(--editorial-navy-rgb) / .66),
+    0 2px 3px rgb(var(--editorial-navy-rgb) / .3);
+}
+/* The mark is sunk, not printed: light catches its lower edge and its upper edge falls
+   into shade, which is how a stamp reads on wax. */
+.env-stage .env-seal-mark {
+  width: 64%;
+  height: 64%;
+  color: rgb(var(--editorial-copper-rgb));
+  filter: drop-shadow(0 1px 0 rgb(250 248 245 / .6)) drop-shadow(0 -1px 0 rgb(var(--editorial-navy-rgb) / .42));
+}
+.env-stage .env-seal-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: .9;
+  opacity: .78;
+}
+.env-stage .env-seal-body { fill: currentColor; }
+.env-stage .env-seal-window { fill: rgb(var(--editorial-gold-rgb) / .96); }
+.env-stage .env-caption {
+  margin: 0;
+  color: #6e5841;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  text-align: center;
+}
+.env-stage .env-skip {
+  cursor: pointer;
+  border: 1px solid rgba(184,115,51,.42);
+  border-radius: 999px;
+  padding: 8px 17px;
+  background: rgba(250,248,245,.48);
+  color: #1E3A5A;
+  font: 600 10px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color .18s ease,background-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.env-stage .env-skip:hover {
+  color: #8F5C2C;
+  background: #FAF8F5;
+  box-shadow: 0 4px 12px rgba(30,58,90,.12);
+}
+.env-stage .env-skip:active { transform: translateY(1px); }
+.env-stage .env-skip:focus-visible { outline: 2px solid #B87333; outline-offset: 3px; }
+@keyframes env-rule { 0% { opacity: 0; } 100% { opacity: 1; } }
+/* The flap is not merely hinged: the wax takes the strain (so the paper springs and
+   settles back for a beat) before it turns all the way back on itself. */
+@keyframes env-open {
+  0% { transform: rotateX(0deg); }
+  12% { transform: rotateX(-10deg); }
+  20% { transform: rotateX(-5deg); }
+  100% { transform: rotateX(-178deg); }
+}
+/* Unsealing: the wax takes the strain, lets go of the flap, and falls away whole. */
+@keyframes env-wax-lift {
+  0% { transform: translate(-50%,-50%) rotate(0deg) scale(1); opacity: 1; }
+  15% { transform: translate(-50%,-50%) rotate(-3deg) scale(1.07); opacity: 1; }
+  40% { transform: translate(-50%,-64%) rotate(6deg) scale(1.02); opacity: 1; }
+  72% { transform: translate(-46%,-14%) rotate(15deg) scale(1); opacity: .85; }
+  100% { transform: translate(-43%,66%) rotate(28deg) scale(.95); opacity: 0; }
+}
+@keyframes env-settle {
+  0% { opacity: 0; transform: translateY(12px) rotate(-1deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .env-stage .env-shell,.env-stage .env-flap,.env-stage .env-seal,.env-stage .pd-rule { animation: none; }
+  .env-stage .env-flap { transform: rotateX(-178deg); }
+  .env-stage .env-seal { opacity: 0; }
+}
