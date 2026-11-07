@@ -14,8 +14,10 @@ import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
-import { Loader2, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
+import { Loader2, Rocket, LogIn, Sparkles, ListOrdered, Mail } from 'lucide-react';
 import VoteSurface from '@/components/voting/VoteSurface';
+import VoteGate from '@/components/voting/VoteGate';
+import GateExportKey from '@/components/vote/GateExportKey';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import GlassNominateSurface from '@/components/my-top100/GlassNominateSurface';
 import QuickAddBar from '@/components/my-top100/QuickAddBar';
@@ -34,6 +36,10 @@ function generateShareCode() {
 // The surface the committee was last left on, held for the session rather than the
 // device: a Fellow's place in their own work, not a setting.
 const COMMITTEE_TAB_KEY = 'top100_committee_tab';
+
+// The surfaces of the committee, in the order the keys are drawn: the letter that convened
+// it, Pre-Flight, the Manifest, then the Crosscheck.
+const COMMITTEE_TABS = ['invitation', 'start', 'nominate', 'vote'];
 
 export default function MyTop100() {
   const [user, setUser] = useState(null);
@@ -55,13 +61,13 @@ export default function MyTop100() {
     // A deep link names the surface outright — the start screen's Vote now lands
     // on the ballot, not on the orientation copy in front of it.
     const requested = new URLSearchParams(window.location.search).get('tab');
-    if (['start', 'nominate', 'vote'].includes(requested)) return requested;
+    if (COMMITTEE_TABS.includes(requested)) return requested;
     // Where the session was left, this morning or an hour ago: a Fellow working the
     // committee comes back to the surface they were on rather than being walked back to
     // the Manifest every time. The session's own note, so tomorrow opens afresh.
     try {
       const held = sessionStorage.getItem(COMMITTEE_TAB_KEY);
-      if (['start', 'nominate', 'vote'].includes(held)) return held;
+      if (COMMITTEE_TABS.includes(held)) return held;
     } catch { /* nothing held */ }
     try {
       const priorVisits = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
@@ -93,7 +99,7 @@ export default function MyTop100() {
   const glass = useGlass();
   const [glassOpen, setGlassOpen] = useState(() => {
     const requested = new URLSearchParams(window.location.search).get('tab');
-    return ['start', 'nominate', 'vote'].includes(requested) ? requested : null;
+    return COMMITTEE_TABS.includes(requested) ? requested : null;
   });
   // The briefing is read once, and it belongs to nominating: it opens the first time a
   // Fellow stands on the Nominate surface, and never again after that — not on a reload,
@@ -518,6 +524,21 @@ export default function MyTop100() {
     </div>
   );
 
+  // The letter that convened the committee, read again: the same page a visitor is given,
+  // shown as the letter rather than delivered a second time. Accepting it returns the
+  // Fellow to Pre-Flight, where their two duties are set out. The operator can take it
+  // away as a file from here.
+  const invitationNode = (
+    <div className="flex flex-1 flex-col">
+      {user?.role === 'admin' && (
+        <div className="shrink-0 border-b border-editorial-copper/30 bg-editorial-cream px-4 py-2">
+          <GateExportKey />
+        </div>
+      )}
+      <VoteGate sealed={false} onPreviewContinue={() => openTab('start')} />
+    </div>
+  );
+
   // The ballot is open to the whole committee now, not to admins alone: the surface
   // resolves the counting cohort and carries the ladder beside the weighing.
   const chamberNode = <VoteSurface user={user} />;
@@ -572,6 +593,7 @@ export default function MyTop100() {
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
+    { key: 'invitation', label: 'Invitation', hint: 'The letter that convened the committee', icon: Mail, node: invitationNode },
     { key: 'start', label: 'Pre-Flight', hint: "An Analyst's two duties, and where to begin", icon: Rocket, node: startNode },
     { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
@@ -610,6 +632,9 @@ export default function MyTop100() {
         nominationCount={totalNominations}
         listCount={rankings.length}
       />
+
+      {/* ── INVITATION TAB — the letter that convened the committee, read again ── */}
+      {activeTab === 'invitation' && invitationNode}
 
       {/* ── PRE-FLIGHT TAB ── */}
       {activeTab === 'start' && startNode}

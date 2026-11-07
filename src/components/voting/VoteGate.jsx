@@ -15,7 +15,9 @@ const HANDOVER_MS = 420;
 // The invitation the ballot stands behind, read as a letter: the card that was sent, the
 // letter that answers why, then how it works and the questions a reader writes back with.
 // The press opens the platform's own door, and /vote is what the visitor returns to.
-export default function VoteGate({ source, onPreviewContinue = null }) {
+// `sealed` is the first arrival, envelope and all. A Fellow re-reading the letter from
+// inside the committee has already opened it once, so the sheet is not delivered again.
+export default function VoteGate({ source, onPreviewContinue = null, sealed = true }) {
   const door = source ? `/vote?src=${encodeURIComponent(source)}` : '/vote';
   const toDoor = () => onPreviewContinue ? onPreviewContinue() : base44.auth.redirectToLogin(door);
 
@@ -23,7 +25,7 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
   // two: the envelope is on screen, then it lifts while the letter rises through the gap
   // beneath it, then the letter is simply the page. HANDOVER_MS matches the curtain's own
   // departure in envelopeOpening.css, so the two halves of the crossfade share one clock.
-  const [stage, setStage] = useState('opening');
+  const [stage, setStage] = useState(sealed ? 'opening' : 'open');
   const closeOpening = useCallback(() => {
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
     setStage((s) => (s !== 'opening' ? s : reduced ? 'open' : 'departing'));

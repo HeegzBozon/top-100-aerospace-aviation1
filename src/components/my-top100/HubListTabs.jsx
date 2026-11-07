@@ -1,12 +1,14 @@
 import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
 
-// The three surfaces of the committee, drawn as keys on a rule rather than as pills: the
-// office at the left, then the Fellow's own publication, then the weighing. The one in
-// hand is struck in copper along its foot; the count sits in the margin of its label.
+// The four surfaces of the committee, drawn as keys on a rule rather than as pills: the
+// letter that convened it, the office, the Fellow's own publication, then the weighing. The
+// one in hand is struck in copper along its foot; the count sits in the margin of its label.
+const INVITATION = 'Invitation';
 const PREFLIGHT = 'Pre-Flight';
 
 export default function HubListTabs({ activeTab, onTabChange, nominationCount = 0, listCount = 0 }) {
   const tabs = [
+    { key: 'invitation', label: INVITATION },
     { key: 'start', label: PREFLIGHT },
     { key: 'nominate', label: MANIFEST, count: listCount, of: 100 },
     { key: 'vote', label: CROSSCHECK },
