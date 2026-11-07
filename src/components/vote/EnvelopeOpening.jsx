@@ -8,10 +8,12 @@ import '@/components/vote/envelopeFlight.css';
 // The sheet is folded through four shapes before it becomes the envelope, so the flight
 // runs longer than one fold. The duration is published to the stylesheet as --env-flight
 // so the shape sequence, the turn of the paper and the envelope's arrival share one clock.
-const FLIGHT_MS = 9400;
+const FLIGHT_MS = 7500;
 // The seal lifts away, then the flap turns back — the card is handed over once that
 // unsealing has finished rather than in the middle of it.
-const OPEN_MS = 1900;
+const OPEN_MS = 1520;
+// The hold between the envelope landing and the seal letting go.
+const HOLD_MS = 2400;
 
 // `leaving` is set by the page once the card has been handed over: the curtain lifts and
 // the letter beneath it comes up through the gap, so the envelope never simply vanishes.
@@ -26,7 +28,7 @@ export default function EnvelopeOpening({ onDone, leaving = false }) {
     // The three-second hold starts only after the plane has become an envelope.
     const next = phase === 'flight' ? () => setPhase('holding')
       : phase === 'holding' ? () => setPhase('opening') : onDone;
-    const timer = setTimeout(next, phase === 'flight' ? FLIGHT_MS : phase === 'holding' ? 3000 : OPEN_MS);
+    const timer = setTimeout(next, phase === 'flight' ? FLIGHT_MS : phase === 'holding' ? HOLD_MS : OPEN_MS);
     return () => clearTimeout(timer);
   }, [phase, onDone]);
 

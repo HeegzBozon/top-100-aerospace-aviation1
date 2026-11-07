@@ -5,7 +5,7 @@
 .env-delivery[data-phase="flight"] .env-letter,
 .env-delivery[data-phase="flight"] .env-caption { visibility: hidden; }
 .env-delivery:not([data-phase="flight"]) .env-letter,
-.env-delivery:not([data-phase="flight"]) .env-caption { animation: env-invite-reveal .5s ease-out both; }
+.env-delivery:not([data-phase="flight"]) .env-caption { animation: env-invite-reveal .4s ease-out both; }
 .env-delivery[data-phase="flight"] { background: transparent; border-color: transparent; box-shadow: none; }
 @keyframes env-invite-reveal {
   from { opacity: 0; transform: translateY(12px); }
@@ -88,13 +88,13 @@
 /* The seal lets go first, then the flap turns back; the lining catches the light the
    lifting flap lets in. */
 .env-delivery[data-phase="opening"] .env-seal {
-  animation: env-wax-lift .95s cubic-bezier(.34,1.05,.5,1) both;
+  animation: env-wax-lift .76s cubic-bezier(.34,1.05,.5,1) both;
 }
 .env-delivery[data-phase="opening"] .env-flap {
-  animation: env-open 1.4s .38s cubic-bezier(.34,.02,.24,1) both;
+  animation: env-open 1.12s .3s cubic-bezier(.34,.02,.24,1) both;
 }
 .env-delivery[data-phase="opening"] .env-lining {
-  animation: env-lining-open 1.8s ease-out both;
+  animation: env-lining-open 1.44s ease-out both;
 }
 @keyframes env-lining-open {
   0% { filter: brightness(.9); }
