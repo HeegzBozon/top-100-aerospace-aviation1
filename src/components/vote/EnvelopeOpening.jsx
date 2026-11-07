@@ -21,33 +21,23 @@ export default function EnvelopeOpening({ onDone }) {
   }, [onDone]);
 
   return (
-    <div className="as-frame env-stage" role="presentation" onClick={onDone}>
-      <div className="env-shell">
-        <div className="env-back" aria-hidden="true" />
-        <div className="env-lining" aria-hidden="true" />
-        <div className="env-letter" aria-hidden="true">
+    <div className="as-frame env-curtain" role="presentation" onClick={onDone}>
+      <div className="env-stage" role="presentation">
+        <div className="env-letter">
           <p className="pd-label">TOP 100 Aerospace &amp; Aviation</p>
-          <div className="pd-rule w-7" />
-          <p className="mt-1 font-heading text-sm italic leading-tight text-editorial-navy">
-            You are invited
-          </p>
+          <div className="pd-rule" />
+          <p>You are invited</p>
         </div>
-        <div className="env-pocket" aria-hidden="true" />
-        <div className="env-flap" aria-hidden="true" />
-        <div className="env-seal" aria-hidden="true" />
+        <div className="env-shell">
+          <div className="env-back" aria-hidden="true" />
+          <div className="env-lining" aria-hidden="true" />
+          <div className="env-pocket" aria-hidden="true" />
+          <div className="env-flap" aria-hidden="true" />
+          <div className="env-seal" aria-hidden="true" />
+        </div>
+        <p className="env-caption">A letter from the Selection Committee</p>
+        <button type="button" onClick={onDone} className="env-skip">Skip</button>
       </div>
-
-      <p className="env-caption font-body text-[10px] font-bold uppercase tracking-[0.32em] text-editorial-cream/80">
-        A letter from the Selection Committee
-      </p>
-
-      <button
-        type="button"
-        onClick={onDone}
-        className="env-skip"
-      >
-        Skip
-      </button>
     </div>
   );
 }
