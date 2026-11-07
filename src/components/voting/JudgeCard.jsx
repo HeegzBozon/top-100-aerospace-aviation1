@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Info, MessageSquarePlus } from 'lucide-react';
+import { Info, Flag } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import { PLACE_LABELS } from '@/components/voting/ballotNaming';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
@@ -238,16 +238,19 @@ export default function JudgeCard({
             {honoreeVolumes.slice(0, 2).map((volume) => (
               <HonoreeChip key={volume.seasonId} volume={volume} size="sm" />
             ))}
+            {/* The card's own door to the desk: a line that reads wrong is flagged from the
+                card it is printed on, and the same sheet the information panel offers opens
+                here. Kept to a quiet disc so the plate is never made to look like a form. */}
             {onNote ? (
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onNote(); }}
-                aria-label={`Request an edit or add a note about ${name}`}
-                title="Request an edit or add a note"
+                aria-label={`Flag ${name}'s record for review`}
+                title="Flag for review"
                 className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2"
                 style={{ background: 'white', border: `1px solid ${brand.navy}14`, color: ink.soft }}
               >
-                <MessageSquarePlus className="h-3 w-3" />
+                <Flag className="h-3 w-3" />
               </button>
             ) : null}
           </div>

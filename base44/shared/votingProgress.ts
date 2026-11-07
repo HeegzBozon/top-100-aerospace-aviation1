@@ -28,14 +28,43 @@ export const LEVELS = [
   { level: 4, name: 'Principal Analyst', sets: PRINCIPAL_SETS },
 ].map((step) => ({ ...step, at: step.sets * XP_PER_SET }));
 
-// The interim marks. Four named levels over a thousand sets would be a grind, so the house
-// names the ground between them: a mark every few sets early on, widening as the work
-// deepens, and the last of them standing on the Principal threshold itself. Each one is
-// recognition only — it confers no office and is never read by measurement.
-export const SET_MILESTONES = [
-  1, 3, 6, 10, 15, 25, 40, 60, 85, 115, 150,
-  190, 240, 300, 400, 520, 660, 820, 1000, 1250, 1704,
+// The named marks on the ladder, in order. Four offices over a thousand sets would be a
+// grind, so the house names the ground between them: a mark a Fellow can recognise by name
+// every few sets early on, widening as the work deepens. The three offices the ladder
+// confers stand on this rail too, so a promotion is read as the same instrument turning
+// over rather than as a separate event. Each mark is recognition only — it confers no
+// influence and is never read by measurement, ordering or discovery.
+export const LADDER_MARKS = [
+  { sets: 1, name: 'First Light' },
+  { sets: 3, name: 'Flight Card' },
+  { sets: 6, name: 'Clean Sweep' },
+  { sets: 10, name: 'Steady Hand' },
+  { sets: 15, name: 'Field Note' },
+  { sets: 25, name: 'Silver Eye' },
+  { sets: 40, name: 'Long Watch' },
+  { sets: 60, name: 'Brass Rule' },
+  { sets: 85, name: 'Deep Read' },
+  { sets: 120, name: 'Senior Analyst', level: 2 },
+  { sets: 150, name: 'Cool Head' },
+  { sets: 190, name: 'Broad Sheet' },
+  { sets: 240, name: 'Seasoned Read' },
+  { sets: 300, name: 'Wide Ledger' },
+  { sets: 400, name: 'Lead Analyst', level: 3 },
+  { sets: 520, name: 'Long Record' },
+  { sets: 660, name: 'Standing Watch' },
+  { sets: 820, name: 'Full Survey' },
+  { sets: 1000, name: 'Thousandth Set' },
+  { sets: 1250, name: 'The Long Ledger' },
+  { sets: PRINCIPAL_SETS, name: 'Principal Analyst', level: 4 },
 ];
+
+export const SET_MILESTONES = LADDER_MARKS.map((mark) => mark.sets);
+
+// The name a count of sets answers to, in the house's own vocabulary.
+export function markFor(setsCompleted) {
+  const done = Math.max(0, Number(setsCompleted) || 0);
+  return [...LADDER_MARKS].reverse().find((mark) => done >= mark.sets) || null;
+}
 export const BALLOT_MILESTONE = 'ballot_saved';
 
 export function levelFor(xp) {
@@ -67,10 +96,17 @@ export function milestonesFor(setsCompleted, ballotsSaved) {
   return earned;
 }
 
-// Every milestone the ladder defines, so a surface can draw the ones still ahead.
+// Every milestone the ladder defines, so a surface can draw the ones still ahead. Each is
+// carried by name — the rail and the celebration read the name, never the count alone.
 export const ALL_MILESTONES = [
-  ...SET_MILESTONES.map((n) => ({ key: `sets_${n}`, sets: n, label: `${n} set${n === 1 ? '' : 's'}` })),
-  { key: BALLOT_MILESTONE, sets: null, label: 'Ballot submitted' },
+  ...LADDER_MARKS.map((mark) => ({
+    key: `sets_${mark.sets}`,
+    sets: mark.sets,
+    name: mark.name,
+    label: mark.name,
+    level: mark.level || null,
+  })),
+  { key: BALLOT_MILESTONE, sets: null, name: 'Ballot submitted', label: 'Ballot submitted', level: null },
 ];
 
 // The next interim mark ahead of a count, and how far through the stretch to it the Fellow
@@ -78,15 +114,17 @@ export const ALL_MILESTONES = [
 // the small increments rather than waiting out a whole named level.
 export function nextMilestoneFor(setsCompleted) {
   const done = Math.max(0, Number(setsCompleted) || 0);
-  const ahead = SET_MILESTONES.find((n) => n > done);
+  const ahead = LADDER_MARKS.find((mark) => mark.sets > done);
   if (!ahead) return null;
   const behind = [...SET_MILESTONES].reverse().find((n) => n <= done) || 0;
   return {
-    sets: ahead,
-    key: `sets_${ahead}`,
-    label: `${ahead} set${ahead === 1 ? '' : 's'}`,
-    to_next: ahead - done,
-    progress: ahead > behind ? (done - behind) / (ahead - behind) : 0,
+    sets: ahead.sets,
+    key: `sets_${ahead.sets}`,
+    name: ahead.name,
+    label: ahead.name,
+    level: ahead.level || null,
+    to_next: ahead.sets - done,
+    progress: ahead.sets > behind ? (done - behind) / (ahead.sets - behind) : 0,
   };
 }
 

@@ -6,7 +6,6 @@ import AnchorVoting from '@/components/voting/AnchorVoting';
 import VotingProgressPanel from '@/components/voting/VotingProgressPanel';
 import LiveBallotFeed from '@/components/voting/LiveBallotFeed';
 import FellowQuickEdit from '@/components/voting/FellowQuickEdit';
-import { useToast } from '@/components/ui/use-toast';
 
 const fmtDate = (value) => {
   if (!value) return null;
@@ -49,7 +48,6 @@ async function resolveOpenCohort() {
 // where its window stands, and the ladder already climbed — and the weighing itself
 // is the anchor surface, unchanged.
 export default function VoteSurface({ user, readOnly = false }) {
-  const { toast } = useToast();
   const [context, setContext] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -115,18 +113,10 @@ export default function VoteSurface({ user, readOnly = false }) {
           if (res?.data?.success) setContext(res.data);
         })
         .catch(() => {});
-      if (receipt.leveled_up) {
-        toast({
-          title: `${result.is_test ? 'Test · ' : ''}Level ${moved.level}`,
-          description: moved.name,
-        });
-      }
-      const fresh = receipt.new_milestones || [];
-      if (fresh.length) {
-        toast({ title: 'Milestone', description: fresh.map((m) => m.label).join(' · ') });
-      }
+      // A rung that turns over is not announced here: the ballot itself gives the glass to
+      // it (see LadderCelebration), so a toast would say the same thing twice and smaller.
     },
-    [toast]
+    []
   );
 
   if (loading) {

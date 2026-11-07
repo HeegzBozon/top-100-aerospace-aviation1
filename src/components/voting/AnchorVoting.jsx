@@ -14,6 +14,7 @@ import JudgeCard from '@/components/voting/JudgeCard';
 import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import RecordContributionSheet from '@/components/voting/RecordContributionSheet';
+import LadderCelebration from '@/components/voting/LadderCelebration';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
@@ -87,6 +88,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // so the same review can be taken up again. `heldId` is the one standing on the glass.
   const [holds, setHolds] = useState([]);
   const [heldId, setHeldId] = useState(null);
+  // The beat the ladder is given when a rung turns over: the mark that was reached, the
+  // figure it stands for, and the name of what is next.
+  const [moment, setMoment] = useState(null);
 
   // The record, not the session: what the Fellow has already weighed is read back from the
   // ladder the house keeps, so closing the tab no longer loses the count. The session's own
@@ -110,7 +114,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     : Infinity;
   const mileFirst = Boolean(mile) && mile.to_next <= levelSetsTo;
   const nextRung = mileFirst
-    ? `${mile.to_next} ${mile.to_next === 1 ? 'set' : 'sets'} to ${mile.sets}`
+    ? `${mile.to_next} ${mile.to_next === 1 ? 'set' : 'sets'} to ${mile.name}`
     : lane?.next_name
       ? `${levelSetsTo} ${levelSetsTo === 1 ? 'set' : 'sets'} to ${lane.next_name}`
       : null;
@@ -311,6 +315,22 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       // The whole receipt, not just its rung: the surface needs `recorded`, the level-up
       // and any fresh milestone as well as the progress itself.
       onRecorded?.(res.data);
+
+      // What the ladder answers with, if this set turned a rung over. An office outranks a
+      // mark reached on the same set, so the plate carries the promotion and the rail keeps
+      // the mark. The mark ahead is read from the ladder the context already handed in.
+      const receipt = res.data?.progress;
+      const movedSets = receipt?.progress?.sets_completed || 0;
+      const freshMark = (receipt?.new_milestones || []).slice(-1)[0] || null;
+      if (receipt?.leveled_up || freshMark) {
+        const ahead = (lane?.ladder || []).find((m) => m.sets && m.sets > movedSets) || null;
+        setMoment({
+          kind: receipt.leveled_up ? 'level' : 'mark',
+          name: receipt.leveled_up ? receipt.progress?.name : freshMark.label,
+          sets: movedSets,
+          next: ahead ? { name: ahead.name, sets: ahead.sets } : null,
+        });
+      }
 
       setPhase('success');
       setTimeout(() => advance({ set: currentSet, order: ordered }), 700);
@@ -701,6 +721,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           />
         )}
       </AnimatePresence>
+
+      {/* The rung turning over: the one moment on the ballot that is the Fellow's own. */}
+      <LadderCelebration moment={moment} onClose={() => setMoment(null)} />
 
       {/* The card's other door: a correction or a note, filed without leaving the set. */}
       {noteNominee && (

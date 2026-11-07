@@ -1,0 +1,180 @@
+/* ===== THE MARK TURNS OVER — THE LADDER'S OWN MOMENT =====
+   When a rung of the Analyst ladder is reached the ballot gives the glass up for one beat:
+   a navy plate struck in copper, the mark named in the display serif, the figure it stands
+   for behind it. It is the only full-panel moment on the ballot, and it is deliberately
+   generous — recognition that arrives silently teaches nobody that the work was seen. On a
+   phone it is cut to the glass (strip to chin) rather than to the viewport, so the hardware
+   stays in view and the moment reads as something printed on the picture. */
+.ladder-moment {
+  position: fixed;
+  inset: 0;
+  z-index: 78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 15, 25, 0.66);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: ladder-veil 260ms ease both;
+}
+@keyframes ladder-veil {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .ladder-moment {
+    top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    left: var(--hh-glass-inset);
+    right: var(--hh-glass-inset);
+    border-radius: 10px;
+    padding: 14px;
+  }
+}
+
+.ladder-plate {
+  position: relative;
+  isolation: isolate;
+  width: min(430px, 100%);
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 30px 26px 22px;
+  text-align: center;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(201, 168, 124, 0.20) 0%, rgba(30, 58, 90, 0) 62%),
+    linear-gradient(168deg, #24456A 0%, #1E3A5A 52%, #122740 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 30px 60px -24px rgba(3, 8, 15, 0.9);
+}
+
+/* Two rings struck out from the mark, once, then still. */
+.ladder-ring {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: -1;
+  width: 210px;
+  height: 210px;
+  margin: -105px 0 0 -105px;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--editorial-gold-rgb) / 0.5);
+  animation: ladder-ring 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.ladder-ring-2 {
+  animation-delay: 220ms;
+  border-color: rgb(var(--editorial-copper-rgb) / 0.45);
+}
+@keyframes ladder-ring {
+  0% { transform: scale(0.5); opacity: 0; }
+  22% { opacity: 0.9; }
+  100% { transform: scale(1.65); opacity: 0; }
+}
+
+.ladder-eyebrow {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--editorial-gold);
+}
+
+.ladder-name {
+  margin-top: 10px;
+  font-family: var(--font-heading);
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--editorial-cream);
+}
+@media (min-width: 768px) {
+  .ladder-name {
+    font-size: 38px;
+  }
+}
+
+.ladder-rule {
+  display: block;
+  height: 1px;
+  width: 64px;
+  margin: 14px auto 12px;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--editorial-copper-rgb) / 0) 0%,
+    var(--editorial-gold) 50%,
+    rgb(var(--editorial-copper-rgb) / 0) 100%
+  );
+}
+
+.ladder-figure {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 7px;
+  color: rgba(250, 248, 245, 0.72);
+}
+.ladder-figure-n {
+  font-family: var(--font-heading);
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+  color: var(--editorial-cream);
+}
+.ladder-figure-l {
+  font-family: var(--font-body);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ladder-next {
+  margin-top: 12px;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: rgba(250, 248, 245, 0.74);
+}
+
+.ladder-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 9px 18px;
+  border-radius: 6px;
+  border: 1px solid rgb(var(--editorial-gold-rgb) / 0.55);
+  background: linear-gradient(180deg, #A4682F 0%, #8F5C2C 100%);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #FDF8F0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 6px -2px rgba(3, 8, 15, 0.7);
+}
+.ladder-key:hover {
+  background: linear-gradient(180deg, #B0702F 0%, #9A632E 100%);
+}
+.ladder-key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--editorial-gold-rgb) / 0.8);
+}
+
+.ladder-foot {
+  margin-top: 14px;
+  font-family: var(--font-body);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(250, 248, 245, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ladder-moment { animation: none; }
+  .ladder-ring { animation: none; opacity: 0; }
+}
