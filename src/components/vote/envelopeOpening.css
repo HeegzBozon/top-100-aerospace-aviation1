@@ -11,7 +11,7 @@
    opened it lifts away — fading and easing back a hair — and the letter underneath is
    already coming up to meet it. Two movements on one clock, so nothing ever cuts. */
 .env-curtain[data-leaving="true"] {
-  animation: env-curtain-out 520ms cubic-bezier(.4,0,.2,1) both;
+  animation: env-curtain-out 420ms cubic-bezier(.4,0,.2,1) both;
   pointer-events: none;
 }
 @keyframes env-curtain-in {
@@ -69,7 +69,7 @@
   width: 52px;
   height: 1px;
   background: #B87333;
-  animation: env-rule .88s cubic-bezier(.22,1,.36,1) both;
+  animation: env-rule .7s cubic-bezier(.22,1,.36,1) both;
 }
 .env-stage .env-letter p:last-child {
   margin: 0;
@@ -91,7 +91,7 @@
   margin-right: 4px;
   perspective: 900px;
   filter: drop-shadow(0 14px 15px rgba(30,58,90,.16));
-  animation: env-settle 1.05s cubic-bezier(.22,1,.36,1) both;
+  animation: env-settle .85s cubic-bezier(.22,1,.36,1) both;
 }
 .env-stage .env-back {
   position: absolute;
@@ -147,7 +147,7 @@
   background: linear-gradient(180deg,#FAF8F5 0%,#e6d8c5 100%);
   backface-visibility: hidden;
   box-shadow: 0 9px 16px -14px rgba(30,58,90,.6);
-  animation: env-open 1.2s cubic-bezier(.34,.02,.24,1) both;
+  animation: env-open .95s cubic-bezier(.34,.02,.24,1) both;
 }
 /* ===== THE SEAL — ONE STRUCK DISC OF WAX =====
    Whole, the way a seal is: a single round of gold wax, matte at the surface and lit

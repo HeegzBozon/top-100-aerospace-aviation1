@@ -9,7 +9,7 @@ import GateFaq from '@/components/vote/GateFaq';
 import { CROSSCHECK, ANALYSIS, ANALYST, ANALYST_STANDING } from '@/components/voting/ballotNaming';
 
 // How long the curtain takes to lift, and the letter to arrive behind it.
-const HANDOVER_MS = 520;
+const HANDOVER_MS = 420;
 
 // The invitation the ballot stands behind, read as a letter: the card that was sent, the
 // letter that answers why, then how it works and the questions a reader writes back with.

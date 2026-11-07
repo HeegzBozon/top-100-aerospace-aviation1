@@ -5,7 +5,7 @@
 .env-delivery[data-phase="flight"] .env-letter,
 .env-delivery[data-phase="flight"] .env-caption { visibility: hidden; }
 .env-delivery:not([data-phase="flight"]) .env-letter,
-.env-delivery:not([data-phase="flight"]) .env-caption { animation: env-invite-reveal .4s ease-out both; }
+.env-delivery:not([data-phase="flight"]) .env-caption { animation: env-invite-reveal .32s ease-out both; }
 .env-delivery[data-phase="flight"] { background: transparent; border-color: transparent; box-shadow: none; }
 @keyframes env-invite-reveal {
   from { opacity: 0; transform: translateY(12px); }
@@ -26,7 +26,7 @@
   transform-origin: 50% 52%;
   filter: drop-shadow(0 12px 15px rgb(var(--editorial-navy-rgb) / .18));
   will-change: transform, opacity;
-  animation: env-fold-flight var(--env-flight, 9400ms) linear both;
+  animation: env-fold-flight var(--env-flight, 6000ms) linear both;
 }
 .env-origami { display: block; width: 100%; height: 100%; overflow: visible; }
 .env-paper { fill: rgb(var(--editorial-cream-rgb)); }
@@ -45,7 +45,7 @@
   stroke: rgb(var(--editorial-copper-rgb) / .4);
   stroke-width: .65;
   stroke-linejoin: round;
-  animation-duration: var(--env-flight, 9400ms);
+  animation-duration: var(--env-flight, 6000ms);
   animation-timing-function: ease-in-out;
   animation-fill-mode: both;
 }
@@ -82,19 +82,19 @@
 .env-delivery[data-phase="flight"] .env-pocket,
 .env-delivery[data-phase="flight"] .env-flap,
 .env-delivery[data-phase="flight"] .env-seal {
-  animation: env-materialize var(--env-flight, 4400ms) ease both;
+  animation: env-materialize var(--env-flight, 6000ms) ease both;
 }
 .env-delivery:not([data-phase="flight"]) .env-fold { display: none; }
 /* The seal lets go first, then the flap turns back; the lining catches the light the
    lifting flap lets in. */
 .env-delivery[data-phase="opening"] .env-seal {
-  animation: env-wax-lift .76s cubic-bezier(.34,1.05,.5,1) both;
+  animation: env-wax-lift .6s cubic-bezier(.34,1.05,.5,1) both;
 }
 .env-delivery[data-phase="opening"] .env-flap {
-  animation: env-open 1.12s .3s cubic-bezier(.34,.02,.24,1) both;
+  animation: env-open .92s .24s cubic-bezier(.34,.02,.24,1) both;
 }
 .env-delivery[data-phase="opening"] .env-lining {
-  animation: env-lining-open 1.44s ease-out both;
+  animation: env-lining-open 1.16s ease-out both;
 }
 @keyframes env-lining-open {
   0% { filter: brightness(.9); }
