@@ -15,6 +15,7 @@ import useAdminSectionsMenu from '@/components/admin/useAdminSectionsMenu';
 
 // Admin content components — lazy-loaded per tab (only the active tab downloads its chunk)
 const AdminCommandCenter        = lazy(() => import('@/components/admin/AdminCommandCenter'));
+const JourneyMapping            = lazy(() => import('@/components/admin/journey-mapping/JourneyMapping'));
 const SeasonManager             = lazy(() => import('@/components/admin/SeasonManager'));
 const SeasonViewModal           = lazy(() => import('@/components/admin/SeasonViewModal'));
 const CohortWorkspace           = lazy(() => import('@/components/admin/cohort-workspace/CohortWorkspace'));
@@ -233,6 +234,8 @@ export default function Admin() {
       // ── Platform ──
       case 'dashboard':
         return <AdminCommandCenter onNavigate={setActiveTab} currentUser={currentUser} />;
+      case 'journey-mapping':
+        return <JourneyMapping currentUser={currentUser} />;
       case 'seasonal-planning':
         return <SeasonalPlanningDashboard />;
       // ── Nominations phase ──

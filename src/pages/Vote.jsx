@@ -76,7 +76,7 @@ export default function Vote() {
     <div className="imac-fit flex flex-1 flex-col overflow-hidden" data-tube-fill="">
       {state.user?.role === 'admin' && (
         <div className="shrink-0 bg-editorial-cream px-4 py-2">
-          <button type="button" className="desk-key desk-key-primary" onClick={() => setWalkthrough(true)}>Preview new Fellow journey</button>
+          <button type="button" className="desk-key desk-key-primary" onClick={() => setWalkthrough(true)}>Preview new Analyst Journey</button>
         </div>
       )}
       <VoteSurface user={state.user} />

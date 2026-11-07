@@ -11,6 +11,13 @@ export default function VoteWalkthrough({ user, onClose }) {
     <div className="flex min-h-0 flex-1 flex-col bg-editorial-cream text-editorial-navy">
       <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-editorial-copper/40 p-2 font-body">
         <span className="flex-1 text-xs">Read-only walkthrough · {['Signed-out landing', 'Account handoff', 'First Crosscheck'][step]}</span>
+        <button
+          className="desk-key disabled:opacity-40"
+          onClick={() => { setGuideOpen(true); setStep(0); }}
+          disabled={step === 0}
+        >
+          Restart
+        </button>
         {step > 0 && <button className="desk-key" onClick={() => setStep(step - 1)}>Back</button>}
         <button className="desk-key desk-key-primary" onClick={onClose}>Exit walkthrough</button>
       </div>
