@@ -7,16 +7,16 @@ import BoardingPass from '@/components/my-top100/BoardingPass';
 //
 // Two keys on one desk, read in the order the desk is worked. The Invitation is the letter
 // that convened the committee: it carries everything the office is — how the two ballots
-// work, who may serve, and the questions a reader writes back with. The Boarding Pass
-// follows it, because it is the answer: the record the Fellow is known by, handed over once
-// the letter has been accepted.
+// work, who may serve, and the questions a reader writes back with. Credentials follow it,
+// because they are the answer: the badge, the boarding pass and the business card the
+// Fellow is handed, all of them the same record printed three ways.
 //
 // The sub-key row sits under the committee's own tabs, smaller and quieter, so a reader can
 // see at a glance that Pre-Flight holds two things rather than three.
 
 const KEYS = [
   { key: 'invitation', label: 'Invitation', icon: Mail },
-  { key: 'boarding', label: 'Boarding Pass', icon: PlaneTakeoff },
+  { key: 'boarding', label: 'Credentials', icon: PlaneTakeoff },
 ];
 
 export default function PreFlightSurface({

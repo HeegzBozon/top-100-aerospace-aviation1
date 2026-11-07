@@ -595,7 +595,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
-    { key: 'start', label: 'Pre-Flight', hint: 'The letter, and your boarding pass', icon: Rocket, node: preflightNode },
+    { key: 'start', label: 'Pre-Flight', hint: 'The letter, and your credentials', icon: Rocket, node: preflightNode },
     { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
     { key: 'flight', label: 'Flight Plan', hint: 'The field you read the industry from', icon: Route, node: <div className="px-3 pb-28">{flightNode}</div> },
