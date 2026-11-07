@@ -17,6 +17,7 @@ import PreFlightSurface from '@/components/my-top100/PreFlightSurface';
 // separate acts now, so publishing this list can never cast or mirror a ranking.
 import { Loader2, Rocket, LogIn, Sparkles, ListOrdered, Route } from 'lucide-react';
 import FlightPlan from '@/components/flight-plan/FlightPlan';
+import useAnalystOffice from '@/components/voting/useAnalystOffice';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GateExportKey from '@/components/vote/GateExportKey';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
@@ -97,6 +98,10 @@ export default function MyTop100({ initialTab = null } = {}) {
   const [loadingPool, setLoadingPool] = useState(true);
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  // The office the Fellow holds. An Associate Analyst has not been graduated into the desk
+  // that reads the field from, so the Flight Plan stays shut — and off the keys — until the
+  // standing says otherwise.
+  const office = useAnalystOffice(user);
   // On the glass the hub is a console: its three surfaces are the menu, and one
   // is open at a time. Null is the menu itself.
   const glass = useGlass();
@@ -233,6 +238,15 @@ export default function MyTop100({ initialTab = null } = {}) {
     if (new URLSearchParams(window.location.search).get('tab')) return;
     try { sessionStorage.setItem(COMMITTEE_TAB_KEY, activeTab); } catch { /* ignore */ }
   }, [activeTab]);
+
+  // A deep link, or a tab remembered from an earlier session, may name a surface the Fellow
+  // has not been graduated into. Once the standing is read, an Associate Analyst is set down
+  // on the Manifest rather than left in front of a desk that is not theirs yet.
+  useEffect(() => {
+    if (office.status !== 'ready' || office.isAnalyst) return;
+    setActiveTab((tab) => (tab === 'flight' ? 'nominate' : tab));
+    setGlassOpen((open) => (open === 'flight' ? 'nominate' : open));
+  }, [office.status, office.isAnalyst]);
 
   // Mobile quick-add → opens the shared nomination sheet from anywhere.
   const openQuickAdd = () => setMobilePopoverOpen(true);
@@ -598,7 +612,9 @@ export default function MyTop100({ initialTab = null } = {}) {
     { key: 'start', label: 'Pre-Flight', hint: 'The letter, and your credentials', icon: Rocket, node: preflightNode },
     { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
-    { key: 'flight', label: 'Flight Plan', hint: 'The field you read the industry from', icon: Route, node: <div className="px-3 pb-28">{flightNode}</div> },
+    ...(office.isAnalyst
+      ? [{ key: 'flight', label: 'Flight Plan', hint: 'The field you read the industry from', icon: Route, node: <div className="px-3 pb-28">{flightNode}</div> }]
+      : []),
   ];
 
   const shownTab = glass ? glassOpen : activeTab;
@@ -633,6 +649,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         onTabChange={setActiveTab}
         nominationCount={totalNominations}
         listCount={rankings.length}
+        showFlightPlan={office.isAnalyst}
       />
 
       {/* ── PRE-FLIGHT — the letter that convened the committee, and the check-in ── */}
@@ -670,7 +687,7 @@ export default function MyTop100({ initialTab = null } = {}) {
       {activeTab === 'vote' && voteNode}
 
       {/* ── FLIGHT PLAN — the specialty an Analyst reads the field from ── */}
-      {activeTab === 'flight' && (
+      {activeTab === 'flight' && office.isAnalyst && (
         <div className="flex-1 overflow-y-auto bg-editorial-sand/45">{flightNode}</div>
       )}
         </>

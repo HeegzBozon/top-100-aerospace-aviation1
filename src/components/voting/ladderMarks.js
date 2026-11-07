@@ -7,10 +7,22 @@
 // the names below are the shared table's, in its order: change them in one place only.
 //
 // Nothing here is measurement. A mark is a recognition of service, never a weight.
+// The graduation, and the office it confers.
+//
+// A Fellow is seated as an Associate Analyst by the invitation; the office of Analyst is
+// graduated into at eight measured sets, and the Flight Plan — the desk an Analyst reads
+// the field from — opens with it. The threshold is the shared table's ANALYST_SETS: change
+// it there, and here.
+export const ANALYST_SETS = 8;
+
+export const isAnalystOffice = (setsCompleted) =>
+  Math.max(0, Number(setsCompleted) || 0) >= ANALYST_SETS;
+
 export const LADDER_MARKS = [
   { sets: 1, name: 'First Light' },
   { sets: 3, name: 'Flight Card' },
   { sets: 6, name: 'Clean Sweep' },
+  { sets: ANALYST_SETS, name: 'Analyst', level: 2 },
   { sets: 10, name: 'Steady Hand' },
   { sets: 16, name: 'Field Note' },
   { sets: 24, name: 'Silver Eye' },
@@ -19,16 +31,16 @@ export const LADDER_MARKS = [
   { sets: 60, name: 'Deep Read' },
   { sets: 78, name: 'Cool Head' },
   { sets: 100, name: 'Broad Sheet' },
-  { sets: 125, name: 'Senior Analyst', level: 2 },
+  { sets: 125, name: 'Senior Analyst', level: 3 },
   { sets: 150, name: 'Seasoned Read' },
   { sets: 180, name: 'Wide Ledger' },
   { sets: 215, name: 'Standing Watch' },
   { sets: 250, name: 'Full Survey' },
-  { sets: 300, name: 'Lead Analyst', level: 3 },
+  { sets: 300, name: 'Lead Analyst', level: 4 },
   { sets: 350, name: 'Long Record' },
   { sets: 400, name: 'Sounding' },
   { sets: 450, name: 'The Long Ledger' },
-  { sets: 500, name: 'Principal Analyst', level: 4 },
+  { sets: 500, name: 'Principal Analyst', level: 5 },
 ];
 
 // The mark a count of sets is working towards.

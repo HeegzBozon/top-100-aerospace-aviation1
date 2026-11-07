@@ -6,14 +6,14 @@ import useFlightPlan from '@/components/flight-plan/useFlightPlan';
 // ── The Flight Plan ──
 //
 // The committee's fourth surface, and the only one that is about the Analyst rather than
-// the field. An Associate Analyst is still on the ground: the office is taken up by the
-// first measured set, so the chart stays shut and names the one duty that opens it. An
-// Analyst chooses the specialty they read the industry from — a curated field, filed on
-// their own record, which steers what the platform puts in front of them.
+// the field. An Associate Analyst is still on the ground: the office of Analyst is graduated
+// into at eight measured sets, so until then the chart stays shut and names the duty that
+// opens it. An Analyst chooses the specialty they read the industry from — a curated field,
+// filed on their own record, which steers what the platform puts in front of them.
 //
 // Nothing here is measurement. The specialty never moves a name, a position or a score.
 export default function FlightPlan({ user, onOpenVote }) {
-  const { status, sets, specialty, draft, saving, notice, error, isAnalyst, setDraft, save } = useFlightPlan(user);
+  const { status, sets, toAnalyst, specialty, draft, saving, notice, error, isAnalyst, setDraft, save } = useFlightPlan(user);
   const filed = specialtyFor(specialty);
   const dirty = Boolean(draft) && draft !== specialty;
 
@@ -26,8 +26,9 @@ export default function FlightPlan({ user, onOpenVote }) {
         Where do you want to sit?
       </h2>
       <p className="mt-2 max-w-xl font-body text-[13px] leading-relaxed text-editorial-navy/70">
-        The Crosscheck makes an Analyst. The Flight Plan is where an Analyst says which field
-        they read it from — the one choice that shapes the desk you land on.
+        Eight measured sets graduate an Associate Analyst into the office. The Flight Plan is
+        where an Analyst says which field they read the industry from — the one choice that
+        shapes the desk you land on.
       </p>
 
       {/* The standing: the office held, the sets behind it, and the rung ahead. */}
@@ -42,6 +43,7 @@ export default function FlightPlan({ user, onOpenVote }) {
           {status === 'ready' && (
             <span className="font-body text-[11px] tabular-nums text-editorial-navy/55">
               {sets} {sets === 1 ? 'set' : 'sets'} measured
+              {!isAnalyst && ` · ${toAnalyst} to Analyst`}
             </span>
           )}
         </div>
@@ -63,12 +65,14 @@ export default function FlightPlan({ user, onOpenVote }) {
       {status === 'ready' && !isAnalyst && (
         <div className="mt-5 rounded-[10px] border border-editorial-copper/25 bg-editorial-cream px-4 py-4">
           <p className="flex items-center gap-1.5 font-body text-[9px] font-bold uppercase tracking-[0.2em] text-editorial-label">
-            <CircleDashed className="h-3 w-3" /> The chart opens with your first set
+            <CircleDashed className="h-3 w-3" /> The chart opens at graduation
           </p>
           <p className="mt-2 font-body text-[12.5px] leading-relaxed text-editorial-navy/70">
-            Weigh one set of four on the Crosscheck and the office of Analyst is yours. Your
-            specialty is chosen from this desk the moment it is — nothing is asked of you
-            before then.
+            Eight sets of four, measured on the Crosscheck, graduate an Associate Analyst into
+            the office of Analyst — and the office is what this desk belongs to. You have
+            {` ${sets} `}
+            {sets === 1 ? 'set' : 'sets'} behind you: {toAnalyst} more opens the chart, and
+            nothing is asked of you before then.
           </p>
           {onOpenVote && (
             <button

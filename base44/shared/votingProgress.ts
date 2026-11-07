@@ -15,10 +15,12 @@ export const XP_PER_SET = 10;
 // rung always falls on a whole number of sets and a Fellow can read their standing in the
 // currency they work in rather than in points.
 //
-// Taking the first review up confers the office: an Analyst is what the ballot makes of
-// whoever serves it, not something climbed into. The rungs above it name the experience
-// that accumulates behind the office, and the last of them — Principal Analyst — is the
-// full flight: five hundred sets measured.
+// The first review does not confer the office: it seats a Fellow as an Associate Analyst,
+// which is what the invitation makes of whoever takes it up. The office of Analyst is
+// graduated into — eight sets of four measured on the Crosscheck, which is the induction
+// the committee asks before a Fellow's own desk opens — and the rungs above it name the
+// experience that accumulates behind the office. The last of them, Principal Analyst, is
+// the full flight: five hundred sets measured.
 //
 // Five hundred is the floor the committee is holding the office to. It is not the size of
 // the whole ballot — a season is not carried by one Analyst — but it is what one pair of
@@ -26,11 +28,17 @@ export const XP_PER_SET = 10;
 // house would rather name a reachable office than an unapproachable one.
 export const PRINCIPAL_SETS = 500;
 
+// The graduation: the sets an Associate Analyst measures before the office of Analyst —
+// and with it the Flight Plan — is theirs. Eight sets of four is thirty-two professionals
+// read against each other, which is enough for the field to have a shape.
+export const ANALYST_SETS = 8;
+
 export const LEVELS = [
-  { level: 1, name: 'Analyst', sets: 0 },
-  { level: 2, name: 'Senior Analyst', sets: 125 },
-  { level: 3, name: 'Lead Analyst', sets: 300 },
-  { level: 4, name: 'Principal Analyst', sets: PRINCIPAL_SETS },
+  { level: 1, name: 'Associate Analyst', sets: 0 },
+  { level: 2, name: 'Analyst', sets: ANALYST_SETS },
+  { level: 3, name: 'Senior Analyst', sets: 125 },
+  { level: 4, name: 'Lead Analyst', sets: 300 },
+  { level: 5, name: 'Principal Analyst', sets: PRINCIPAL_SETS },
 ].map((step) => ({ ...step, at: step.sets * XP_PER_SET }));
 
 // The named marks on the ladder, in order. Four offices over a thousand sets would be a
@@ -43,6 +51,7 @@ export const LADDER_MARKS = [
   { sets: 1, name: 'First Light' },
   { sets: 3, name: 'Flight Card' },
   { sets: 6, name: 'Clean Sweep' },
+  { sets: ANALYST_SETS, name: 'Analyst', level: 2 },
   { sets: 10, name: 'Steady Hand' },
   { sets: 16, name: 'Field Note' },
   { sets: 24, name: 'Silver Eye' },
@@ -51,16 +60,16 @@ export const LADDER_MARKS = [
   { sets: 60, name: 'Deep Read' },
   { sets: 78, name: 'Cool Head' },
   { sets: 100, name: 'Broad Sheet' },
-  { sets: 125, name: 'Senior Analyst', level: 2 },
+  { sets: 125, name: 'Senior Analyst', level: 3 },
   { sets: 150, name: 'Seasoned Read' },
   { sets: 180, name: 'Wide Ledger' },
   { sets: 215, name: 'Standing Watch' },
   { sets: 250, name: 'Full Survey' },
-  { sets: 300, name: 'Lead Analyst', level: 3 },
+  { sets: 300, name: 'Lead Analyst', level: 4 },
   { sets: 350, name: 'Long Record' },
   { sets: 400, name: 'Sounding' },
   { sets: 450, name: 'The Long Ledger' },
-  { sets: PRINCIPAL_SETS, name: 'Principal Analyst', level: 4 },
+  { sets: PRINCIPAL_SETS, name: 'Principal Analyst', level: 5 },
 ];
 
 export const SET_MILESTONES = LADDER_MARKS.map((mark) => mark.sets);
