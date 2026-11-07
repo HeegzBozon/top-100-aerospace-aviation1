@@ -2,6 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
 import { assertVotingOpen, resolveRecordingSeason } from '../../shared/votingWindow.ts';
 import { recordContribution } from '../../shared/votingProgress.ts';
 
+// Records the Manifest ballot. A saved ballot is its own duty and moves no experience; the
+// ladder it reports is read from the same named table the Crosscheck is measured on.
 Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     

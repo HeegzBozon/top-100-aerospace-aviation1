@@ -14,6 +14,8 @@ import JudgeCard from '@/components/voting/JudgeCard';
 import CrosscheckDeal, { DealtCard } from '@/components/voting/CrosscheckDeal';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import RecordContributionSheet from '@/components/voting/RecordContributionSheet';
+import LadderCelebration from '@/components/voting/LadderCelebration';
+import { markAhead, markReached, marksClimbedBetween } from '@/components/voting/ladderMarks';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
@@ -34,8 +36,8 @@ const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
 const DESK_VOTE_KEYS = ['D', 'F', 'J', 'K'];
 const DESK_INFO_KEYS = ['E', 'R', 'Y', 'U'];
 
-// One review is ten XP on the ladder (see base44/shared/votingProgress.ts). Held here so
-// the tally can say how many reviews stand between a Fellow and the next rung.
+// One completed set is ten XP on the ladder (see base44/shared/votingProgress.ts). Held
+// here so the tally can turn the points still owed into the sets still owed.
 const XP_PER_REVIEW = 10;
 
 function shuffle(arr) {
@@ -87,6 +89,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // so the same review can be taken up again. `heldId` is the one standing on the glass.
   const [holds, setHolds] = useState([]);
   const [heldId, setHeldId] = useState(null);
+  // The beat the ladder is given when a rung turns over: the mark that was reached, the
+  // figure it stands for, and the name of what is next.
+  const [moment, setMoment] = useState(null);
 
   // The record, not the session: what the Fellow has already weighed is read back from the
   // ladder the house keeps, so closing the tab no longer loses the count. The session's own
@@ -100,9 +105,27 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const testing = progress?.lane === 'test';
   const lane = progress;
   const reviews = progress?.sets_completed ?? sessionCount;
-  const nextRung = lane?.next_name
-    ? `${Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)} to ${lane.next_name}`
-    : null;
+
+  // Two rungs stand ahead of a Fellow — the next named office, and the next named mark.
+  // Whichever is nearer is the one the measure carries them towards, so the bar moves on
+  // the small increments and not only when a whole office turns over. The marks are read
+  // from the surface's own table so a mark is named the moment it is reached.
+  const ahead = markAhead(reviews);
+  const mileTo = ahead ? ahead.sets - reviews : 0;
+  const behind = markReached(reviews);
+  const mileProgress = ahead
+    ? (reviews - (behind?.sets || 0)) / (ahead.sets - (behind?.sets || 0))
+    : 0;
+  const levelSetsTo = lane?.next_name
+    ? Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)
+    : Infinity;
+  const mileFirst = Boolean(ahead) && mileTo <= levelSetsTo;
+  const nextRung = mileFirst
+    ? `${mileTo} ${mileTo === 1 ? 'set' : 'sets'} to ${ahead.name}`
+    : lane?.next_name
+      ? `${levelSetsTo} ${levelSetsTo === 1 ? 'set' : 'sets'} to ${lane.next_name}`
+      : null;
+  const rungProgress = lane ? (mileFirst ? mileProgress : lane.progress) : 0;
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -299,6 +322,24 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       // The whole receipt, not just its rung: the surface needs `recorded`, the level-up
       // and any fresh milestone as well as the progress itself.
       onRecorded?.(res.data);
+
+      // What the ladder answers with, if this set turned a rung over. An office outranks a
+      // mark reached on the same set, so the plate carries the promotion and the rail keeps
+      // the mark. The mark ahead is read from the ladder the context already handed in.
+      const receipt = res.data?.progress;
+      const movedSets = receipt?.progress?.sets_completed ?? reviews + 1;
+      const climbed = marksClimbedBetween(reviews, movedSets);
+      const top = climbed[climbed.length - 1] || null;
+      if (receipt?.leveled_up || top) {
+        const onward = markAhead(movedSets);
+        const office = receipt?.leveled_up ? receipt.progress?.name : null;
+        setMoment({
+          kind: receipt?.leveled_up ? 'level' : 'mark',
+          name: office || top?.name || '',
+          sets: movedSets,
+          next: onward ? { name: onward.name, sets: onward.sets } : null,
+        });
+      }
 
       setPhase('success');
       setTimeout(() => advance({ set: currentSet, order: ordered }), 700);
@@ -528,7 +569,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             experience and the measure. Everything the ladder reports lives here. */}
         {lane && (
           <ReviewProgressStrip
-            progress={lane.progress}
+            progress={rungProgress}
             levelName={testing ? `Test · ${lane.name}` : lane.name}
             reviews={reviews}
             xp={lane.xp}
@@ -689,6 +730,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           />
         )}
       </AnimatePresence>
+
+      {/* The rung turning over: the one moment on the ballot that is the Fellow's own. */}
+      <LadderCelebration moment={moment} onClose={() => setMoment(null)} />
 
       {/* The card's other door: a correction or a note, filed without leaving the set. */}
       {noteNominee && (

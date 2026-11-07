@@ -3,7 +3,8 @@ import { resolveCohorts } from '../../shared/votingWindow.ts';
 import { LEVELS, ALL_MILESTONES } from '../../shared/votingProgress.ts';
 import { resolveSeededBallots } from '../../shared/ballotSeed.ts';
 
-// Selection analytics, across every cohort at once, read-only.
+// Selection analytics, across every cohort at once, read-only. The ladder it reports is the
+// named one from shared/votingProgress.ts, so the desk reads the same marks as the ballot.
 //
 // Admin only, and deliberately so: this is the ledger of who weighed whom, alongside
 // the tallies those weights produced. Detail at this grain never reaches a Fellow's
