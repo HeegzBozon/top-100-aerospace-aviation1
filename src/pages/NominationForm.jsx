@@ -22,6 +22,7 @@ import StageReview from '@/components/nominate/StageReview';
 import StageConfirmation from '@/components/nominate/StageConfirmation';
 import NominationSplash from '@/components/nominate/NominationSplash';
 import NominateBallotGate from '@/components/nominate/NominateBallotGate';
+import NominateChallenge from '@/components/nominate/NominateChallenge';
 import { isViewingAsVisitor } from '@/lib/viewerPreview';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import MyTop100 from '@/pages/MyTop100';
@@ -59,6 +60,12 @@ export default function NominationForm({ isPreview = false } = {}) {
   // briefed once on the hub: the record is shared, so nobody reads it twice.
   const briefing = useMissionBriefing('guest', isPreview || signedIn === false);
   const [draftRestored, setDraftRestored] = useState(false);
+  // The one question the desk can set before a filing is written, held here so the review
+  // page can carry it without the flow moving anywhere.
+  const [challenge, setChallenge] = useState(null);
+  // When the flow was opened on this device. A filing that arrives faster than a person
+  // reads the form is the desk's to weigh, so the clock starts here.
+  const openedAt = useRef(Date.now());
   // A deep link names the surface it wants — the start screen's Vote now asks for
   // the vote tab — and goes there directly, with no title card in the way.
   const deepTab = useRef(new URLSearchParams(window.location.search).get('tab')).current;
@@ -260,45 +267,72 @@ export default function NominationForm({ isPreview = false } = {}) {
     goTo(STAGES.REVIEW);
   };
 
-  const handleSubmit = async () => {
-    trackHubEvent('nomination_hub_submit_started', {
-      women_count: nominations.women.length,
-      men_count: nominations.men.length,
-      angels_count: nominations.angels.length,
-      local_legends_count: nominations.local_legends.length,
-    });
-    setSubmitting(true);
+  // Filing, and the two ways the desk may answer it: the record is written, or one question
+  // is set before it is. Either answer comes back to this function — a visitor is never
+  // handed an error for being asked to confirm they are a person.
+  const handleSubmit = async (reply = null) => {
+    if (submitting) return;
+    const answer = typeof reply === 'string' ? reply : null;
+
+    if (!answer) {
+      trackHubEvent('nomination_hub_submit_started', {
+        women_count: nominations.women.length,
+        men_count: nominations.men.length,
+        angels_count: nominations.angels.length,
+        local_legends_count: nominations.local_legends.length,
+      });
+    }
 
     if (isPreview) {
-      setSubmitting(false);
       setStage(STAGES.CONFIRMATION);
       return;
     }
 
-    try {
-      await fileNomination({ aboutYou, nominations });
-    } catch (error) {
-      // The service refused the filing: recorded, then handed straight on as before.
-      trackNomination('submitFailed', { stage: STAGES.REVIEW, reason: 'request' });
-      throw error;
-    }
+    setSubmitting(true);
 
-    trackHubEvent('nomination_hub_submit_completed', {
-      women_count: nominations.women.length,
-      men_count: nominations.men.length,
-      angels_count: nominations.angels.length,
-      local_legends_count: nominations.local_legends.length,
-    });
-    trackNomination('submitted', {
-      stage: STAGES.CONFIRMATION,
-      women_count: nominations.women.length,
-      men_count: nominations.men.length,
-      angels_count: nominations.angels.length,
-      local_legends_count: nominations.local_legends.length,
-    });
-    clearDraft();
-    setSubmitting(false);
-    setStage(STAGES.CONFIRMATION);
+    try {
+      await fileNomination({
+        aboutYou,
+        nominations,
+        challenge: answer ? { token: challenge?.token, answer } : null,
+        meta: {
+          elapsed_ms: Date.now() - openedAt.current,
+          website: aboutYou.website || '',
+        },
+      });
+
+      trackHubEvent('nomination_hub_submit_completed', {
+        women_count: nominations.women.length,
+        men_count: nominations.men.length,
+        angels_count: nominations.angels.length,
+        local_legends_count: nominations.local_legends.length,
+      });
+      trackNomination('submitted', {
+        stage: STAGES.CONFIRMATION,
+        women_count: nominations.women.length,
+        men_count: nominations.men.length,
+        angels_count: nominations.angels.length,
+        local_legends_count: nominations.local_legends.length,
+      });
+      clearDraft();
+      setChallenge(null);
+      setStage(STAGES.CONFIRMATION);
+    } catch (error) {
+      if (error?.code === 'challenge_required') {
+        setChallenge({ token: error.token, question: error.question });
+        return;
+      }
+      if (error?.code === 'challenge_failed') {
+        setChallenge((current) => ({
+          token: error.token || current?.token,
+          question: error.question || current?.question,
+        }));
+      }
+      trackNomination('submitFailed', { stage: STAGES.REVIEW, reason: error?.code || 'request' });
+      toast({ title: error?.message || 'The nomination could not be filed.', variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleExit = () => navigate('/');
@@ -417,12 +451,22 @@ export default function NominationForm({ isPreview = false } = {}) {
       )}
 
       {stage === STAGES.REVIEW && (
-        <StageReview
-          nominations={nominations}
-          onEdit={() => goTo(STAGES.WOMEN)}
-          onSubmit={handleSubmit}
-          submitting={submitting}
-        />
+        <>
+          {challenge && (
+            <NominateChallenge
+              question={challenge.question}
+              submitting={submitting}
+              onVerify={(answer) => handleSubmit(answer)}
+              onCancel={() => setChallenge(null)}
+            />
+          )}
+          <StageReview
+            nominations={nominations}
+            onEdit={() => goTo(STAGES.WOMEN)}
+            onSubmit={() => handleSubmit()}
+            submitting={submitting}
+          />
+        </>
       )}
 
       {stage === STAGES.CONFIRMATION && (

@@ -3,42 +3,25 @@ import { combineGuidedReason } from './NominateConfig';
 
 export const NOMINATION_SURVEY_ID = '69f45633daacf496cacd8666';
 
-// Filing what the guided hub has already accepted: the survey response first, then the
-// intake rows it carries, then the survey's own response counter. The flow, the fields and
-// the validation stay in the hub — this writes only what stood on the review page.
-export async function fileNomination({ aboutYou, nominations }) {
-  const answers = {
-    your_name: aboutYou.name,
-    your_email: aboutYou.email,
-    your_connection: aboutYou.connection,
-    women_nominations: nominations.women,
-    men_nominations: nominations.men,
-    angels_nominations: nominations.angels,
-    local_legends_nominations: nominations.local_legends,
-  };
+// A filing the desk would not take, carrying the reason it gave so the flow can answer it
+// — a name already filed, too much from one address, or a question before the record opens.
+export class NominationBlocked extends Error {
+  constructor(data) {
+    super(data?.message || 'The nomination could not be filed.');
+    this.name = 'NominationBlocked';
+    this.code = data?.code || 'error';
+    this.token = data?.token;
+    this.question = data?.question;
+  }
+}
 
-  const submission = await base44.entities.SurveyResponse.create({
-    survey_id: NOMINATION_SURVEY_ID,
-    respondent_email: aboutYou.email,
-    respondent_name: aboutYou.name,
-    answers,
-    completed: true,
-  });
-
-  const intakeBase = {
-    submission_id: submission.id,
-    survey_id: NOMINATION_SURVEY_ID,
-    nominator_name: aboutYou.name,
-    nominator_email: aboutYou.email,
-    nominator_connection: aboutYou.connection,
-    source: 'unified_nomination_hub',
-    status: 'new',
-  };
-
-  const peopleIntakes = [
+// Filing what the guided hub has already accepted. The entries are shaped here, where the
+// guided answers live; whether they may be filed at all is the desk's decision, never this
+// surface's.
+export async function fileNomination({ aboutYou, nominations, challenge = null, meta = {} }) {
+  const people = [
     ...nominations.women.filter(n => n.name?.trim()).map(n => ({
-      ...intakeBase,
-      nomination_type: 'women',
+      type: 'women',
       nominee_name: n.name,
       nominee_email: n.email,
       role_org: n.role_org,
@@ -48,8 +31,7 @@ export async function fileNomination({ aboutYou, nominations }) {
       share_name: n.share_name,
     })),
     ...nominations.men.filter(n => n.name?.trim()).map(n => ({
-      ...intakeBase,
-      nomination_type: 'men',
+      type: 'men',
       nominee_name: n.name,
       nominee_email: n.email,
       role_org: n.role_org,
@@ -59,8 +41,7 @@ export async function fileNomination({ aboutYou, nominations }) {
       share_name: n.share_name,
     })),
     ...nominations.angels.filter(n => n.name?.trim()).map(n => ({
-      ...intakeBase,
-      nomination_type: 'angels',
+      type: 'angels',
       nominee_name: n.name,
       firm: n.firm,
       link: n.link,
@@ -71,8 +52,7 @@ export async function fileNomination({ aboutYou, nominations }) {
     })),
   ];
 
-  const localLegendIntakes = nominations.local_legends.filter(n => n.business_name?.trim()).map(n => ({
-    ...intakeBase,
+  const localLegends = nominations.local_legends.filter(n => n.business_name?.trim()).map(n => ({
     business_name: n.business_name,
     business_type: n.business_type,
     city: n.city,
@@ -82,13 +62,14 @@ export async function fileNomination({ aboutYou, nominations }) {
     share_name: n.share_name,
   }));
 
-  if (peopleIntakes.length) await base44.entities.NominationIntake.bulkCreate(peopleIntakes);
-  if (localLegendIntakes.length) await base44.entities.LocalLegendNomination.bulkCreate(localLegendIntakes);
+  const response = await base44.functions.invoke('fileNomination', {
+    about: aboutYou,
+    people,
+    localLegends,
+    meta: { ...meta, challenge },
+  });
 
-  const surveys = await base44.entities.Survey.filter({ id: NOMINATION_SURVEY_ID });
-  if (surveys[0]) {
-    await base44.entities.Survey.update(NOMINATION_SURVEY_ID, {
-      response_count: (surveys[0].response_count || 0) + 1,
-    });
-  }
+  const data = response?.data || {};
+  if (!data.success) throw new NominationBlocked(data);
+  return data;
 }

@@ -19,6 +19,21 @@ export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogi
 
   return (
     <div className="space-y-7 py-4" onKeyDown={handleKey}>
+      {/* A field no person can see or reach. Left empty by every reader; a filing that
+          arrives with it filled was written by something reading the markup. */}
+      <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
+        <label htmlFor="nominate-website">Website</label>
+        <input
+          id="nominate-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={data.website || ''}
+          onChange={e => onUpdate('website', e.target.value)}
+        />
+      </div>
+
       <h1 className="text-2xl md:text-4xl font-bold leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
         First, tell us a little about you.
       </h1>
