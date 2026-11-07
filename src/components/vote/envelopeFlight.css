@@ -26,7 +26,7 @@
   transform-origin: 50% 52%;
   filter: drop-shadow(0 12px 15px rgb(var(--editorial-navy-rgb) / .18));
   will-change: transform, opacity;
-  animation: env-fold-flight var(--env-flight, 10400ms) linear both;
+  animation: env-fold-flight var(--env-flight, 9400ms) linear both;
 }
 .env-origami { display: block; width: 100%; height: 100%; overflow: visible; }
 .env-paper { fill: rgb(var(--editorial-cream-rgb)); }
@@ -45,7 +45,7 @@
   stroke: rgb(var(--editorial-copper-rgb) / .4);
   stroke-width: .65;
   stroke-linejoin: round;
-  animation-duration: var(--env-flight, 10400ms);
+  animation-duration: var(--env-flight, 9400ms);
   animation-timing-function: ease-in-out;
   animation-fill-mode: both;
 }
@@ -101,23 +101,29 @@
   45% { filter: brightness(1.16); }
   100% { filter: brightness(1); }
 }
-/* A broad, constant-speed loop with matching forward momentum on exit.
-   The last glide travels along the loop's tangent and loses speed only at landing. */
+/* Momentum carries the sheet uphill, slows at the crest, then gathers on descent.
+   Matched endpoint slopes join approach, both half-loops and the landing glide:
+   speed stays continuous at every join, then decays to zero at touchdown. */
 @keyframes env-fold-flight {
   0% {
     opacity: 0;
-    transform: translate3d(-70vw,calc(0px - var(--env-loop-radius) - 30px),0) rotate(-8deg) translateY(var(--env-loop-radius)) scale(.28);
-    animation-timing-function: cubic-bezier(.2,.35,.7,.85);
+    transform: translate3d(calc(var(--env-loop-lead) - var(--env-loop-radius) * 5),calc(0px - var(--env-loop-radius)),0) rotate(0deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
+    animation-timing-function: cubic-bezier(.24,.32,.7,.8355);
   }
   8% {
     opacity: 1;
     transform: translate3d(var(--env-loop-lead),calc(0px - var(--env-loop-radius)),0) rotate(0deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
-    animation-timing-function: linear;
+    animation-timing-function: cubic-bezier(.3,.36,.7,.805);
+  }
+  19% {
+    opacity: 1;
+    transform: translate3d(var(--env-loop-lead),calc(0px - var(--env-loop-radius)),0) rotate(-180deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
+    animation-timing-function: cubic-bezier(.3,.195,.7,.64);
   }
   30% {
     opacity: 1;
     transform: translate3d(var(--env-loop-lead),calc(0px - var(--env-loop-radius)),0) rotate(-360deg) translateY(var(--env-loop-radius)) scale(var(--env-air-scale));
-    animation-timing-function: cubic-bezier(.25,.72,.5,1);
+    animation-timing-function: cubic-bezier(.22,.754,.55,1);
   }
   36%, 96% {
     opacity: 1;
