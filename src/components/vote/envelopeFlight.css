@@ -15,70 +15,110 @@
 .env-delivery .env-seal { animation: none; }
 .env-delivery .env-skip { font-family: var(--font-body); min-height: 40px; }
 .env-delivery .env-skip:disabled { opacity: .55; cursor: default; }
-.env-delivery .env-plane {
+/* ===== THE SHEET, FOLDED THROUGH THE CLASSIC SHAPES =====
+   One sheet of stock crosses the picture and is folded, in order, into the shapes a
+   hand learns first: the plane it arrives as, then the crane, the boat and the star,
+   before it squares itself up and becomes the envelope. Every shape is written on the
+   same sixteen points, so the browser folds one silhouette into the next rather than
+   cutting between them, and a copper crease flashes on the beat of each fold. The
+   duration is read from --env-flight, which the component sets, so the shape sequence,
+   the turn of the paper and the envelope's arrival can never drift apart. */
+.env-delivery .env-fold {
   position: absolute;
   inset: 0;
   z-index: 6;
-  background: rgb(var(--editorial-cream-rgb));
-  clip-path: polygon(0% 0%,50% 22.5%,100% 45%,35% 58%,22% 100%,11% 50%);
-  transform-origin: center;
+  transform-origin: 50% 52%;
   transform-style: preserve-3d;
-  animation: env-arrival 3.2s cubic-bezier(.22,1,.36,1) both;
+  background:
+    linear-gradient(148deg, rgb(255 255 255 / .92) 0%, rgb(var(--editorial-cream-rgb)) 44%, rgb(var(--editorial-sand-rgb)) 100%);
+  filter: drop-shadow(0 12px 15px rgb(var(--editorial-navy-rgb) / .18));
+  will-change: clip-path, transform, opacity;
+  animation:
+    env-fold-flight var(--env-flight, 4400ms) cubic-bezier(.22,1,.36,1) both,
+    env-fold-shape var(--env-flight, 4400ms) cubic-bezier(.4,0,.2,1) both;
 }
-.env-delivery .env-plane span {
+/* The crease: two folds struck across the sheet, lit only while the paper is turning. */
+.env-delivery .env-fold::after {
+  content: "";
   position: absolute;
   inset: 0;
-  background: rgb(var(--editorial-gold-rgb) / .42);
-  clip-path: polygon(0% 0%,100% 45%,35% 58%);
-  transform-origin: 35% 58%;
-  animation: env-wing 3.2s ease-in-out both;
-}
-.env-delivery .env-plane span:last-child {
-  background: rgb(var(--editorial-navy-rgb) / .18);
-  clip-path: polygon(0% 0%,35% 58%,22% 100%);
-  animation-name: env-wing-return;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom right, transparent calc(50% - .5px), rgb(var(--editorial-copper-rgb) / .55) calc(50% - .5px), rgb(var(--editorial-copper-rgb) / .55) calc(50% + .5px), transparent calc(50% + .5px)),
+    linear-gradient(to bottom left, transparent calc(50% - .5px), rgb(var(--editorial-copper-rgb) / .38) calc(50% - .5px), rgb(var(--editorial-copper-rgb) / .38) calc(50% + .5px), transparent calc(50% + .5px));
+  opacity: 0;
+  animation: env-fold-crease var(--env-flight, 4400ms) linear both;
 }
 .env-delivery[data-phase="flight"] .env-back,
 .env-delivery[data-phase="flight"] .env-lining,
 .env-delivery[data-phase="flight"] .env-pocket,
 .env-delivery[data-phase="flight"] .env-flap,
 .env-delivery[data-phase="flight"] .env-seal {
-  animation: env-materialize 3.2s ease both;
+  animation: env-materialize var(--env-flight, 4400ms) ease both;
 }
-.env-delivery:not([data-phase="flight"]) .env-plane { display: none; }
+.env-delivery:not([data-phase="flight"]) .env-fold { display: none; }
 .env-delivery[data-phase="opening"] .env-flap {
   animation: env-open 1.05s cubic-bezier(.36,0,.24,1) both;
 }
 .env-delivery[data-phase="opening"] .env-seal {
   animation: env-break .7s .25s ease-out both;
 }
-@keyframes env-arrival {
-  0% { opacity: 0; transform: translate(-95vw, -22vh) rotate(-28deg) scale(.12); }
-  12% { opacity: 1; }
-  36% { transform: translate(10%, -15%) rotate(12deg) scale(1.15); clip-path: polygon(0% 0%,50% 22.5%,100% 45%,35% 58%,22% 100%,11% 50%); }
-  48% { transform: translate(0,0) rotate(-8deg) scale(.95); clip-path: polygon(0% 20%,50% 0%,100% 20%,80% 80%,50% 100%,20% 80%); }
-  62% { transform: perspective(900px) rotateY(32deg) rotate(-4deg) scale(.95); clip-path: polygon(0% 0%,50% 0%,100% 0%,100% 100%,50% 100%,0% 100%); }
-  76% { transform: perspective(900px) rotateY(-18deg) rotate(0deg) scale(1); clip-path: polygon(0% 0%,50% 35%,100% 0%,100% 100%,50% 85%,0% 100%); }
-  90% { opacity: 1; transform: perspective(900px) rotateY(0deg) scale(1); clip-path: polygon(0% 0%,50% 0%,100% 0%,100% 100%,50% 100%,0% 100%); }
-  100% { opacity: 0; transform: perspective(900px) rotateY(0deg) scale(1); clip-path: polygon(0% 0%,50% 0%,100% 0%,100% 100%,50% 100%,0% 100%); }
+/* The paper in the air: it flies in, then is turned over at each fold — a quarter turn
+   of the wrist between one shape and the next. Every frame names the same functions in
+   the same order, so the turns interpolate as one continuous movement. */
+@keyframes env-fold-flight {
+  0% { opacity: 0; transform: perspective(900px) translate3d(-90vw,-18vh,0) rotate(-26deg) rotateY(0deg) rotateX(0deg) scale(.14); }
+  6% { opacity: 1; transform: perspective(900px) translate3d(-58vw,-12vh,0) rotate(-18deg) rotateY(0deg) rotateX(0deg) scale(.62); }
+  13% { opacity: 1; transform: perspective(900px) translate3d(-7%,-5%,0) rotate(9deg) rotateY(10deg) rotateX(0deg) scale(1.07); }
+  18% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  22% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(-2deg) rotateY(-26deg) rotateX(0deg) scale(1); }
+  27% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  31% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(2deg) rotateY(24deg) rotateX(0deg) scale(1); }
+  35% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  39% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(16deg) scale(1); }
+  43% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  47% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(-2deg) rotateY(-20deg) rotateX(0deg) scale(1); }
+  51% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  56% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(2.5deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  59% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  67% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(.99); }
+  88% { opacity: 1; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1); }
+  100% { opacity: 0; transform: perspective(900px) translate3d(0,0,0) rotate(0deg) rotateY(0deg) rotateX(0deg) scale(1.03); }
 }
-@keyframes env-wing {
-  0%,36% { opacity: 1; transform: perspective(600px) rotateY(0deg); }
-  50% { transform: perspective(600px) rotateY(-145deg); }
-  66% { opacity: 1; transform: perspective(600px) rotateY(0deg); clip-path: polygon(0% 0%,50% 50%,0% 100%); }
-  82% { opacity: 1; transform: perspective(600px) rotateY(120deg); }
-  94%,100% { opacity: 0; }
+/* The folds themselves: plane, crane, boat, star, then the sheet squared up to the
+   envelope's own footprint. Sixteen points in every shape, in the same order. */
+@keyframes env-fold-shape {
+  0%, 11% {
+    clip-path: polygon(0% 0%, 12.5% 5.5%, 25% 11%, 50% 22.5%, 75% 34%, 100% 45%, 67% 52%, 35% 58%, 30% 70%, 28% 79%, 22% 100%, 19% 88%, 16% 75%, 11% 50%, 5.5% 25%, 2% 12%);
+  }
+  19%, 27% {
+    clip-path: polygon(10% 8%, 15% 14%, 20% 20%, 26% 28%, 32% 36%, 45% 39%, 58% 42%, 92% 10%, 79% 31%, 66% 52%, 56% 58%, 50% 92%, 40% 58%, 30% 50%, 22% 40%, 16% 24%);
+  }
+  35%, 43% {
+    clip-path: polygon(20% 96%, 50% 96%, 80% 96%, 90% 83%, 100% 70%, 80% 70%, 60% 70%, 55% 39%, 50% 8%, 45% 39%, 40% 70%, 20% 70%, 0% 70%, 7% 79%, 13% 88%, 17% 92%);
+  }
+  51%, 59% {
+    clip-path: polygon(50% 2%, 56% 17.9%, 61.8% 33.8%, 78.4% 45%, 95.7% 35.2%, 69% 56.2%, 73.6% 72.5%, 78.2% 88.8%, 50% 79.4%, 21.8% 88.8%, 26.4% 72.5%, 31% 56.2%, 18.4% 45.7%, 4.3% 35.2%, 28.1% 18.9%, 38.2% 33.8%);
+  }
+  67%, 100% {
+    clip-path: polygon(0% 0%, 33% 0%, 66% 0%, 100% 0%, 100% 33%, 100% 66%, 100% 100%, 66% 100%, 33% 100%, 0% 100%, 0% 66%, 0% 33%, 0% 22%, 0% 11%, 0% 5%, 0% 2%);
+  }
 }
-@keyframes env-wing-return {
-  0%,40% { opacity: 1; transform: perspective(600px) rotateX(0deg); }
-  56% { transform: perspective(600px) rotateX(145deg); }
-  70% { opacity: 1; transform: perspective(600px) rotateX(0deg); clip-path: polygon(100% 0%,50% 50%,100% 100%); }
-  86% { opacity: 1; transform: perspective(600px) rotateX(-120deg); }
-  94%,100% { opacity: 0; }
+/* The crease, struck on the beat of each fold and gone again before the paper settles. */
+@keyframes env-fold-crease {
+  0%, 10% { opacity: 0; }
+  14% { opacity: .55; }
+  17%, 26% { opacity: 0; }
+  30% { opacity: .5; }
+  33%, 42% { opacity: 0; }
+  46% { opacity: .5; }
+  49%, 58% { opacity: 0; }
+  62% { opacity: .45; }
+  65%, 100% { opacity: 0; }
 }
-@keyframes env-materialize { 0%,90% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes env-materialize { 0%, 86% { opacity: 0; } 100% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .env-delivery .env-plane { display: none; }
+  .env-delivery .env-fold { display: none; }
   .env-delivery[data-phase] .env-back,
   .env-delivery[data-phase] .env-lining,
   .env-delivery[data-phase] .env-pocket,
