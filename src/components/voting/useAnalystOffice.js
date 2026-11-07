@@ -13,7 +13,7 @@ const pageItems = (page) => (Array.isArray(page) ? page : page?.items || []);
 //
 // Recognition only. Nothing here is read by discovery, ordering, measurement or scoring, and
 // it never moves how a record is shown to anyone else.
-export default function useAnalystOffice(user) {
+export default function useAnalystOffice(user, revision = 0) {
   const email = user?.email;
   const [state, setState] = useState({
     status: email ? 'loading' : 'ready',
@@ -62,7 +62,10 @@ export default function useAnalystOffice(user) {
     })();
 
     return () => { active = false; };
-  }, [email]);
+    // `revision` is the ballot's own count of recorded sets: when a review lands the standing
+    // is read again, so the office and its desk arrive on the set that earns them rather than
+    // on the next visit.
+  }, [email, revision]);
 
   return state;
 }

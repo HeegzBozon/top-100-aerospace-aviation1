@@ -47,7 +47,7 @@ async function resolveOpenCohort() {
 // The ballot, open to every Fellow. One call opens it — which cohort is counting,
 // where its window stands, and the ladder already climbed — and the weighing itself
 // is the anchor surface, unchanged.
-export default function VoteSurface({ user, readOnly = false }) {
+export default function VoteSurface({ user, readOnly = false, onSetRecorded = null }) {
   const [context, setContext] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -115,8 +115,11 @@ export default function VoteSurface({ user, readOnly = false }) {
         .catch(() => {});
       // A rung that turns over is not announced here: the ballot itself gives the glass to
       // it (see LadderCelebration), so a toast would say the same thing twice and smaller.
+      // The desk above is told all the same, so the office — and the key it unlocks — can
+      // arrive on the set that earned it.
+      onSetRecorded?.(receipt);
     },
-    []
+    [onSetRecorded]
   );
 
   if (loading) {

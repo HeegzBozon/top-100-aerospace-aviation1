@@ -103,7 +103,8 @@ export default function MyTop100({ initialTab = null } = {}) {
   // The office the Fellow holds. An Associate Analyst has not been graduated into the desk
   // that reads the field from, so the Flight Plan stays shut — and off the keys — until the
   // standing says otherwise.
-  const office = useAnalystOffice(user);
+  const [officeRevision, setOfficeRevision] = useState(0);
+  const office = useAnalystOffice(user, officeRevision);
   // The desk the office unlocks is struck until it has been opened once.
   const unveiling = useFlightUnveiling({
     email: user?.email,
@@ -567,7 +568,7 @@ export default function MyTop100({ initialTab = null } = {}) {
 
   // The ballot is open to the whole committee now, not to admins alone: the surface
   // resolves the counting cohort and carries the ladder beside the weighing.
-  const chamberNode = <VoteSurface user={user} />;
+  const chamberNode = <VoteSurface user={user} onSetRecorded={() => setOfficeRevision((n) => n + 1)} />;
 
   const voteNode = <div className="flex-1 min-h-0 flex flex-col overflow-hidden">{chamberNode}</div>;
 
@@ -627,7 +628,15 @@ export default function MyTop100({ initialTab = null } = {}) {
     { key: 'nominate', label: 'Manifest', hint: `${rankings.length}/100 on the Manifest`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Crosscheck', hint: votingOpen ? 'Open — begin your analysis' : 'The analysis, when the window opens', icon: ListOrdered, node: glassVoteNode },
     ...(office.isAnalyst
-      ? [{ key: 'flight', label: 'Flight Plan', hint: 'The field you read the industry from', icon: Route, node: <div className="px-3 pb-28">{flightNode}</div> }]
+      ? [{
+          key: 'flight',
+          label: 'Flight Plan',
+          hint: unveiling.glowing
+            ? 'Newly unlocked — the field you read the industry from'
+            : 'The field you read the industry from',
+          icon: Route,
+          node: <div className="px-3 pb-28">{flightNode}</div>,
+        }]
       : []),
   ];
 
@@ -708,11 +717,14 @@ export default function MyTop100({ initialTab = null } = {}) {
         </>
       )}
 
-      {/* The graduation, announced once: the thirtieth set opens the desk. */}
+      {/* The graduation, announced once: the thirtieth set opens the desk. It waits while the
+          ballot holds the glass — the ballot names the office on the set that earns it, and the
+          desk hands over the key when the Fellow is back at it. */}
       <AnalystPromotion
         office={office}
         email={user?.email}
         name={user?.full_name}
+        hold={activeTab === 'vote' || glassOpen === 'vote'}
         onOpenFlight={() => openTab('flight')}
       />
 

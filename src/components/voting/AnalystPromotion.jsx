@@ -15,11 +15,12 @@ import { ANALYST_SETS, LADDER_MARKS } from '@/components/voting/ladderMarks';
 // mark only keeps the celebration from replaying on every visit.
 const seenKey = (email) => (email ? `top100.analyst-promoted.${email}` : null);
 
-export default function AnalystPromotion({ office, email, name, onOpenFlight }) {
+export default function AnalystPromotion({ office, email, name, hold = false, onOpenFlight }) {
   const key = seenKey(email);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (hold) return;
     if (office.status !== 'ready' || !office.isAnalyst || !key) return;
     let seen = false;
     try {
@@ -28,7 +29,7 @@ export default function AnalystPromotion({ office, email, name, onOpenFlight }) 
       seen = false;
     }
     setOpen(!seen);
-  }, [office.status, office.isAnalyst, key]);
+  }, [office.status, office.isAnalyst, key, hold]);
 
   useEffect(() => {
     if (!open) return;
