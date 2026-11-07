@@ -5,7 +5,7 @@ const BALLOTS = [
   {
     name: MANIFEST,
     kind: 'Ranked choice',
-    steps: ['Choose the professionals you back.', 'Put them in order, strongest first.', 'Save it. It stays editable while the window is open.'],
+    steps: ['Nominate the professionals you back.', 'Put them in order, strongest first.', 'Save it. It stays editable while the window is open.'],
   },
   {
     name: CROSSCHECK,
