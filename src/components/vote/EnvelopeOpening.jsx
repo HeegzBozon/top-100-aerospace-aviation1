@@ -7,6 +7,9 @@ import '@/components/vote/envelopeFlight.css';
 // runs longer than one fold. The duration is published to the stylesheet as --env-flight
 // so the shape sequence, the turn of the paper and the envelope's arrival share one clock.
 const FLIGHT_MS = 4400;
+// The wax gives, the halves fall and the flap turns back — the card is handed over once
+// that unsealing has finished rather than in the middle of it.
+const OPEN_MS = 1600;
 
 export default function EnvelopeOpening({ onDone }) {
   const [phase, setPhase] = useState('flight');
@@ -19,7 +22,7 @@ export default function EnvelopeOpening({ onDone }) {
     // The three-second hold starts only after the plane has become an envelope.
     const next = phase === 'flight' ? () => setPhase('holding')
       : phase === 'holding' ? () => setPhase('opening') : onDone;
-    const timer = setTimeout(next, phase === 'flight' ? FLIGHT_MS : phase === 'holding' ? 3000 : 1350);
+    const timer = setTimeout(next, phase === 'flight' ? FLIGHT_MS : phase === 'holding' ? 3000 : OPEN_MS);
     return () => clearTimeout(timer);
   }, [phase, onDone]);
 
@@ -37,7 +40,12 @@ export default function EnvelopeOpening({ onDone }) {
           <div className="env-lining" aria-hidden="true" />
           <div className="env-pocket" aria-hidden="true" />
           <div className="env-flap" aria-hidden="true" />
-          <div className="env-seal" aria-hidden="true" />
+          {/* Sealing wax, struck in two halves: they meet on the seam it breaks along. */}
+          <div className="env-seal" aria-hidden="true">
+            <span className="env-seal-half env-seal-half--left" />
+            <span className="env-seal-half env-seal-half--right" />
+            <span className="env-seal-crest" />
+          </div>
         </div>
         <p className="env-caption">A letter from the Selection Committee</p>
         <div className="flex flex-wrap justify-center gap-3">

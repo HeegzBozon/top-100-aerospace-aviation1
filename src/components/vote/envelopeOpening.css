@@ -124,20 +124,48 @@
   background: linear-gradient(180deg,#FAF8F5 0%,#e6d8c5 100%);
   backface-visibility: hidden;
   box-shadow: 0 9px 16px -14px rgba(30,58,90,.6);
-  animation: env-open 1.05s cubic-bezier(.36,0,.24,1) both;
+  animation: env-open 1.5s cubic-bezier(.34,.02,.24,1) both;
 }
+/* ===== THE SEAL — WAX, STRUCK BY HAND =====
+   Not a disc: two blobs of wax pressed together, each a little different from the
+   other so the outline reads as pressed rather than drawn, meeting on a jagged seam.
+   The seam is invisible at rest because both halves carry the same wax — it is the
+   line the seal breaks on. The crest is sunk into the surface, lit along its upper
+   left and in shade along its lower right, the way a stamp reads in the hand. */
 .env-stage .env-seal {
   position: absolute;
   z-index: 5;
   left: 50%;
-  top: 48%;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  top: 58%;
+  width: 46px;
+  height: 46px;
   transform: translate(-50%,-50%);
-  background: radial-gradient(circle at 34% 25%,#d7a06c 0%,#B87333 65%,#824a23 100%);
-  box-shadow: inset 0 2px 3px rgba(250,248,245,.5),inset 0 -5px 8px rgba(30,58,90,.3),0 7px 12px -8px rgba(30,58,90,.7);
-  animation: env-break .7s .25s ease-out both;
+  pointer-events: none;
+}
+.env-stage .env-seal-half {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 32% 22%,rgb(var(--editorial-gold-rgb) / .95) 0%,rgb(var(--editorial-copper-rgb)) 48%,rgb(var(--editorial-copper-rgb) / .8) 100%);
+  box-shadow: inset 0 2px 2px rgb(250 248 245 / .42),inset 0 -5px 7px rgb(var(--editorial-navy-rgb) / .34),0 6px 10px -5px rgb(var(--editorial-navy-rgb) / .65);
+}
+.env-stage .env-seal-half--left {
+  border-radius: 48% 40% 44% 54% / 46% 54% 44% 50%;
+  clip-path: polygon(0% 12%,15% 0%,42% 6%,50% 20%,43% 36%,53% 50%,44% 66%,51% 82%,36% 100%,0% 90%);
+}
+.env-stage .env-seal-half--right {
+  border-radius: 40% 50% 54% 44% / 54% 46% 50% 44%;
+  clip-path: polygon(100% 12%,85% 0%,58% 6%,50% 20%,57% 36%,47% 50%,56% 66%,49% 82%,64% 100%,100% 90%);
+}
+.env-stage .env-seal-crest {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 19px;
+  height: 19px;
+  transform: translate(-50%,-50%);
+  background: radial-gradient(circle at 34% 26%,rgb(var(--editorial-gold-rgb) / .92),rgb(var(--editorial-copper-rgb) / .96));
+  clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  filter: drop-shadow(0 1px 0 rgb(250 248 245 / .34)) drop-shadow(0 -1px 1px rgb(var(--editorial-navy-rgb) / .5));
 }
 .env-stage .env-caption {
   margin: 0;
@@ -171,11 +199,30 @@
 .env-stage .env-skip:active { transform: translateY(1px); }
 .env-stage .env-skip:focus-visible { outline: 2px solid #B87333; outline-offset: 3px; }
 @keyframes env-rule { 0% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes env-open { 0% { transform: rotateX(0deg); } 100% { transform: rotateX(-178deg); } }
-@keyframes env-break {
-  0% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(0); }
-  55% { opacity: 1; transform: translate(-50%,-50%) scale(1.12) rotate(-8deg); }
-  100% { opacity: 0; transform: translate(-50%,-50%) scale(1.3) rotate(-14deg); }
+/* The flap is not merely hinged: the wax takes the strain (so the paper springs and
+   settles back for a beat) before it turns all the way back on itself. */
+@keyframes env-open {
+  0% { transform: rotateX(0deg); }
+  12% { transform: rotateX(-10deg); }
+  20% { transform: rotateX(-5deg); }
+  100% { transform: rotateX(-178deg); }
+}
+/* Unsealing: the crest takes the break, then the two halves part along their seam and
+   drop clear of the envelope — one falling a little faster than the other. */
+@keyframes env-wax-left {
+  0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+  16% { transform: translate(-1px,-2px) rotate(-4deg) scale(1.04); opacity: 1; }
+  100% { transform: translate(-30px,42px) rotate(-42deg) scale(.9); opacity: 0; }
+}
+@keyframes env-wax-right {
+  0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+  16% { transform: translate(1px,-2px) rotate(4deg) scale(1.04); opacity: 1; }
+  100% { transform: translate(28px,46px) rotate(38deg) scale(.9); opacity: 0; }
+}
+@keyframes env-crest-break {
+  0% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  35% { opacity: .85; transform: translate(-50%,-50%) scale(1.22); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(1.6); }
 }
 @keyframes env-settle {
   0% { opacity: 0; transform: translateY(12px) rotate(-1deg); }
