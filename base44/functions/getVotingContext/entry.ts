@@ -4,7 +4,8 @@ import { levelFor, milestonesFor, nextMilestoneFor, ALL_MILESTONES, XP_PER_SET }
 
 // Everything the ballot needs to open, in one call: which cohorts are counting, and where
 // the window stands, the Fellow's saved ballot, and the contribution ladder they have
-// already climbed.
+// already climbed. The ladder arrives by name — every mark on it is one the house calls
+// something (see shared/votingProgress.ts) — so the ballot never has to say "the 25-set mark".
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);

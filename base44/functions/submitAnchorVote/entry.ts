@@ -2,6 +2,9 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { assertVotingOpen } from '../../shared/votingWindow.ts';
 import { recordContribution } from '../../shared/votingProgress.ts';
 
+// The receipt carries the marks just climbed, by name (see shared/votingProgress.ts), so
+// the ballot can name the rung it just turned over rather than only its count.
+//
 // Standard ELO expected score (zero-sum per comparison).
 function expectedScore(ra, rb) {
   return 1 / (1 + Math.pow(10, (rb - ra) / 400));
