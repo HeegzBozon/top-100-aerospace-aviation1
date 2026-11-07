@@ -7,37 +7,41 @@ import { loadPlaylist } from '@/components/handheld/consoleMusic';
 // Same masters as the console — what makes a room sound like itself is which records
 // it is dealt and in what order, never a separate set of noises.
 export const ROOM_PLAYLISTS = {
-  lobby: [L.downForYou, L.deepHouse, L.haussperling, L.hotToIce],
-  hall: [L.ankleInjuries, L.deepHouse, L.haussperling, L.hotToIce],
-  'innovation-expo': [L.deepHouse, L.electroFunk, L.haussperling],
-  'space-pavilion': [L.ambientVoyager, L.ambientFlight, L.downForYou],
-  'leadership-summit': [L.haussperling, L.hotToIce, L.deepHouse],
-  'media-hub': [L.electroFunk, L.hotToIce, L.ankleInjuries],
-  'career-center': [L.downForYou, L.deepHouse, L.electroFunk],
-  'networking-lounge': [L.ambientFlight, L.ambientVoyager, L.downForYou],
-  // The east wing's cabinets: the funk and the drive, kept loud.
-  arcade: [L.electroFunk, L.ankleInjuries, L.deepHouse],
+  // Arrivals: slow-funk and lo-fi, the sound of a hall with people crossing it.
+  lobby: [L.toTheMoon, L.distantPlanet, L.starGuide],
+  // The working floor: a house record under everything that gets built.
+  hall: [L.houseInSpace, L.distantPlanet, L.planetZero],
+  'innovation-expo': [L.houseInSpace, L.planetZero, L.distantPlanet],
+  // The pavilion is the sky: ambient, and the orchestra that sounds like orbit.
+  'space-pavilion': [L.risingGalaxies, L.staringIntoSpace, L.moonWaltz],
+  // The summit keeps the reading rooms' music: composed, quiet, unhurried.
+  'leadership-summit': [L.nocturne, L.gymnopedie, L.moonWaltz],
+  'media-hub': [L.planetZero, L.houseInSpace, L.starGuide],
+  'career-center': [L.toTheMoon, L.starGuide, L.gymnopedie],
+  'networking-lounge': [L.risingGalaxies, L.toTheMoon, L.nocturne],
+  // The east wing's cabinets: the drive, kept loud.
+  arcade: [L.planetZero, L.houseInSpace, L.starGuide],
 };
 
 const NPC_THEMES = {
-  founder: L.downForYou,
-  atlas: L.deepHouse,
-  quinn: L.deepHouse,
-  vera: L.haussperling,
-  nova: L.electroFunk,
-  orion: L.ambientVoyager,
-  athena: L.haussperling,
-  echo: L.electroFunk,
-  scout: L.downForYou,
-  skye: L.ambientFlight,
-  sterling: L.hotToIce,
-  aurora: L.ambientVoyager,
+  founder: L.toTheMoon,
+  atlas: L.distantPlanet,
+  quinn: L.starGuide,
+  vera: L.nocturne,
+  nova: L.houseInSpace,
+  orion: L.risingGalaxies,
+  athena: L.gymnopedie,
+  echo: L.planetZero,
+  scout: L.toTheMoon,
+  skye: L.staringIntoSpace,
+  sterling: L.moonWaltz,
+  aurora: L.risingGalaxies,
 };
 
 // While a character is on screen their theme plays; otherwise the room's deck does.
 export function useColonyMusic(room, npcId) {
   useEffect(() => {
-    const theme = npcId && (NPC_THEMES[npcId] || L.downForYou);
+    const theme = npcId && (NPC_THEMES[npcId] || L.toTheMoon);
     if (theme) loadPlaylist(`npc:${npcId}`, [theme]);
     else loadPlaylist(`room:${room}`, ROOM_PLAYLISTS[room] || HOUSE_DECK);
   }, [room, npcId]);
