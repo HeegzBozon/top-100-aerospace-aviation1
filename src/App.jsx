@@ -1,5 +1,5 @@
 import './App.css'
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import ColonyBoot, { bootSeen } from '@/components/colony/ColonyBoot';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -7,7 +7,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import VisualEditAgent from '@/lib/VisualEditAgent'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -429,13 +429,28 @@ const AuthenticatedApp = () => {
 // A promoted link is the exception: /vote carries its own door, so the opening is retired
 // before it is drawn and the ballot answers the address directly.
 function BootSequence() {
+  const location = useLocation();
+  const arrivalKey = useRef(location.key);
+  const [dismissed, setDismissed] = useState(false);
+  const navigated = location.key !== arrivalKey.current;
+
+  // A hardware destination is an explicit choice, just like a key on the plate.
+  // Unmount the entire opening immediately, including its modal picker and timers,
+  // before the destination changes the device geometry beneath it.
+  useEffect(() => {
+    if (!navigated) return;
+    retireOpening();
+    document.getElementById('boot-shell')?.remove();
+    setDismissed(true);
+  }, [navigated]);
+
   const [skipped] = useState(() => {
     if (!takesOwnDoor()) return false;
     retireOpening();
     return true;
   });
   const [booted, setBooted] = useState(() => bootSeen());
-  if (skipped) return null;
+  if (skipped || dismissed || navigated) return null;
   return booted ? <AppSplash /> : <ColonyBoot onDone={() => setBooted(true)} />;
 }
 
