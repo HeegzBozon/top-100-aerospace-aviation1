@@ -7,6 +7,7 @@ import {
   nextTrack,
   playPlaylist,
   stopPlaylist,
+  trackCredit,
 } from "@/components/handheld/consoleMusic";
 
 // The machine's own record, on the desk. The left speaker of the chin's pair is the
@@ -83,7 +84,7 @@ export default function ImacMusicControl() {
             ? `Speaker on, playing ${track.title} by ${track.artist}. Mute the music`
             : "Speaker off. Play the machine's music"
         }
-        title="Tap to play or mute · hold to shuffle on"
+        title={playing ? trackCredit(track) : "Tap to play or mute · hold to shuffle on"}
         className="imac-speaker imac-speaker-key"
       >
         {playing ? (

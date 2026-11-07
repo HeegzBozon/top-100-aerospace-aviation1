@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { blip, buzz } from "./handheldSound";
-import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying, onTrackChange } from "./consoleMusic";
+import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying, onTrackChange, trackCredit } from "./consoleMusic";
 
 // The case speaker, and the machine's own record.
 //
@@ -88,7 +88,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           ? `Speaker on, playing ${track.title} by ${track.artist}. Mute the music`
           : "Speaker off. Play the console's music"
       }
-      title="Tap to play or mute · hold to shuffle on"
+      title={playing ? trackCredit(track) : "Tap to play or mute · hold to shuffle on"}
       className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.97]"
     >
       {/* The well itself: plastic, punched through, under its resin lens. */}

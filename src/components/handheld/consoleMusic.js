@@ -169,8 +169,11 @@ export function nextTrack() {
   return queue[index];
 }
 
-// What the record is, in one line, for a surface that has to print the credit.
+// What the record is, in one line, for a surface that has to print the credit: the work,
+// who made it, the licence it travels under, and the page it came from. A Creative Commons
+// attribution is only complete with all four, so a surface that shows the title hands the
+// reader this.
 export function trackCredit(track) {
   if (!track) return '';
-  return `${track.title} — ${track.artist} (${track.licence})`;
+  return [track.title, track.artist, track.licence, track.credit].filter(Boolean).join(' · ');
 }
