@@ -106,7 +106,19 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0, scope = 'c
           is_test: stamped,
           created_date: { $gte: since },
         }),
-        base44.entities.Nominee.count({ pairwise_appearance_count: { $gt: 0 } }),
+        isTestScope
+          ? Promise.all([
+              base44.entities.PairwiseVote.aggregate({
+                query: { season_id: seasonId, is_test: true }, groupBy: 'winner_nominee_id',
+              }),
+              base44.entities.PairwiseVote.aggregate({
+                query: { season_id: seasonId, is_test: true }, groupBy: 'loser_nominee_id',
+              }),
+            ]).then(([wins, losses]) => new Set([
+              ...(wins?.rows || []).map((row) => row.winner_nominee_id),
+              ...(losses?.rows || []).map((row) => row.loser_nominee_id),
+            ].filter(Boolean)).size)
+          : base44.entities.Nominee.count({ pairwise_appearance_count: { $gt: 0 } }),
         base44.entities.PairwiseVote.count({ season_id: seasonId, is_test: true }),
       ]);
 

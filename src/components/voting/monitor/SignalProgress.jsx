@@ -50,106 +50,8 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
   const rungs = data?.rungs || [];
   const waiting = loading && !data;
 
-  // The test reading is the full instrument, held to its own scale. A test run has no marks
-  // to be measured against — it moves no rating, no ladder and no report — so the panel
-  // prints what a walkthrough actually produces: how many runs, how many comparisons, who
-  // walked them, how fast they are landing, and how deep each tester has gone on the
-  // ballot's own milestone ladder.
-  if (readingTests) {
-    const testers = Number(data?.voters) || 0;
-    const pace = Number(data?.recentComparisons) || 0;
-    const figures = [
-      { label: 'Test runs', value: ballots },
-      { label: 'Comparisons', value: comparisons },
-      { label: 'Testers', value: testers },
-    ];
-    return (
-      <div>
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-[8px] font-bold uppercase tracking-[0.24em]" style={{ color: ink.label }}>
-            Test runs recorded
-          </p>
-          <span
-            className="rounded-full px-1.5 py-[2px] text-[6px] font-bold uppercase tracking-[0.12em]"
-            style={{
-              background: 'rgb(var(--editorial-copper-rgb))',
-              color: 'rgb(var(--editorial-cream-rgb))',
-            }}
-          >
-            {waiting ? 'Reading' : 'Not measured'}
-          </span>
-        </div>
-
-        <div className="mt-2.5 grid grid-cols-3">
-          {figures.map((figure, index) => (
-            <div
-              key={figure.label}
-              className={index === 0 ? 'pr-2' : index === 1 ? 'px-2' : 'pl-2'}
-              style={index ? { borderLeft: RULE } : undefined}
-            >
-              <p className={MARK_LABEL} style={{ color: ink.soft }}>
-                {figure.label}
-              </p>
-              <p className="mt-0.5 font-heading text-[17px] leading-none" style={{ color: brand.navy }}>
-                {waiting ? '—' : commas(figure.value)}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-1.5 text-[7px] tabular-nums" style={{ color: ink.soft }}>
-          <span style={{ color: brand.navy }}>{commas(pace)}</span> comparisons in the last 15 minutes
-        </p>
-
-        {/* The same milestone ladder the Fellows are read on, counted across the testers
-            instead: how far each walkthrough has taken the ballot. */}
-        <div className="mt-2.5" style={{ borderTop: RULE, paddingTop: 8 }}>
-          <div className="flex items-baseline justify-between gap-2">
-            <p className={MARK_LABEL} style={{ color: ink.soft }}>
-              Testers past each rung
-            </p>
-            <p className="text-[6.5px] tabular-nums" style={{ color: ink.soft }}>
-              {commas(comparisons)} comparisons
-            </p>
-          </div>
-          {waiting ? (
-            <div className="mt-1 flex gap-1">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-6 flex-1 animate-pulse rounded" style={{ background: 'rgba(30,58,90,0.05)' }} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-1 flex gap-1">
-              {rungs.map((rung) => (
-                <div
-                  key={rung.sets}
-                  className="flex-1 rounded px-1 py-1 text-center"
-                  style={{ background: rung.reached ? 'rgba(184,115,51,0.10)' : 'rgba(30,58,90,0.04)' }}
-                >
-                  <p
-                    className="text-[9px] font-bold tabular-nums leading-none"
-                    style={{ color: rung.reached ? brand.navy : ink.soft }}
-                  >
-                    {rung.reached}
-                  </p>
-                  <p className="mt-0.5 text-[6px] font-bold uppercase tracking-[0.06em]" style={{ color: ink.soft }}>
-                    {rung.sets}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <p className="mt-2 text-[7.5px] leading-relaxed" style={{ color: ink.soft }}>
-          Walkthroughs, shuffled and weighed exactly as a Fellow weighs them. A test run
-          writes its seven comparisons and moves nothing: no rating, no ladder, no report. The Fellows&rsquo;
-          figures never include a test set.
-        </p>
-      </div>
-    );
-  }
-
+  // Both readings use the same instrument and pool-scaled reference marks.
+  // Test progress is a simulation only and remains outside community measurement.
   const marks = MARKS.map((mark) => ({
     ...mark,
     ballots: pool ? Math.ceil((pool * mark.appearances) / APPEARANCES_PER_BALLOT) : 0,
@@ -180,8 +82,10 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
   const fill = Math.min(1, ballots / ceiling);
 
   const footer = pool
-    ? `${commas(weighedOnce)} of ${commas(pool)} nominees weighed at least once — ${share(weighedOnce, pool)} of the pool. Four cards to the mini ballot and seven comparisons written from it; the marks are set from the pool of ${commas(pool)}, so they move with the field.` +
-      (testComparisons ? ` ${commas(testComparisons)} test comparisons are held apart from these figures.` : '')
+    ? `${commas(weighedOnce)} of ${commas(pool)} nominees weighed at least once${readingTests ? ' in test runs' : ''} — ${share(weighedOnce, pool)} of the pool. Four cards to the mini ballot and seven comparisons written from it; the marks are set from the pool of ${commas(pool)}, so they move with the field.` +
+      (readingTests
+        ? ' These are simulated reference marks only. Test runs change no rating, community milestone or report.'
+        : testComparisons ? ` ${commas(testComparisons)} test comparisons are held apart from these figures.` : '')
     : 'The pool standing in this cohort has not been read yet, so no marks can be set.';
 
   const columns = [
@@ -202,11 +106,11 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
       {/* The head: what is being cast, the cohort it is read across, and where it stands. */}
       <div className="flex items-center justify-between gap-2">
         <p className="text-[8px] font-bold uppercase tracking-[0.24em]" style={{ color: ink.label }}>
-          Mini ballots cast
+          {readingTests ? 'Test mini ballots cast' : 'Mini ballots cast'}
         </p>
         <div className="flex shrink-0 items-center gap-1.5">
           <p className="text-[6px] font-bold uppercase tracking-[0.12em]" style={{ color: ink.soft }}>
-            Every open cohort
+            {readingTests ? 'Test reference' : 'Every open cohort'}
           </p>
           <span
             className="rounded-full px-1.5 py-[2px] text-[6px] font-bold uppercase tracking-[0.12em]"
@@ -262,6 +166,12 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
         </p>
       </div>
 
+      {readingTests && (
+        <p className="mt-1.5 text-[7px] tabular-nums text-editorial-navy/75">
+          {commas(data?.voters)} testers · {commas(data?.recentComparisons)} comparisons in the last 15 minutes
+        </p>
+      )}
+
       {/* Two readings that say whether the volume is being spent evenly. */}
       <div className="mt-2.5 grid grid-cols-2" style={{ borderTop: RULE }}>
         {columns.map((column, index) => (
@@ -310,7 +220,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
       <div className="mt-2.5" style={{ borderTop: RULE, paddingTop: 8 }}>
         <div className="flex items-baseline justify-between gap-2">
           <p className={MARK_LABEL} style={{ color: ink.soft }}>
-            Fellows past each rung
+            {readingTests ? 'Testers past each rung' : 'Fellows past each rung'}
           </p>
           <p className="text-[6.5px] tabular-nums" style={{ color: ink.soft }}>
             {commas(comparisons)} comparisons
