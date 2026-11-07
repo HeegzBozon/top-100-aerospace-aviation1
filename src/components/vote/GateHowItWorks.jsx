@@ -20,9 +20,9 @@ export default function GateHowItWorks() {
       <p className="pd-label">How it works</p>
       <h2 id="gate-how" className="mt-2 font-heading text-2xl text-editorial-navy sm:text-3xl">A Community Nominated Ranked Choice Ballot</h2>
       <p className="mb-6 mt-3 max-w-2xl font-body text-sm leading-relaxed text-editorial-navy/85">
-        The community names the field: every professional on the ballot was nominated by peers who know their
-        work. Fellows then set that field in order by ranked choice, strongest first, so the result reflects
-        considered preference rather than a single tick. It is cast two ways.
+        Analysts set the field. The community nominates, and the community analyzes: it puts the names
+        forward, and it selects among them by ranked choice. There is no hidden formula deciding who stands.
+        The community is the algorithm. It is cast two ways.
       </p>
       <div className="grid gap-8 md:grid-cols-2">
         {BALLOTS.map((ballot) => (

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import AcceptInvitation from '@/components/vote/AcceptInvitation';
 import { base44 } from '@/api/base44Client';
 import InvitationPlate from '@/components/vote/InvitationPlate';
 import GateHowItWorks from '@/components/vote/GateHowItWorks';
@@ -47,6 +48,7 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
               </p>
               <p className="font-heading text-base italic">With gratitude,</p>
               <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] text-editorial-label">The Selection Committee</p>
+              <AcceptInvitation onAccept={toDoor} className="mt-7 max-w-sm" />
             </div>
           </div>
 
@@ -54,23 +56,13 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
           <GateFaq />
 
           <div className="mx-auto mt-12 max-w-md text-center sm:mt-16">
-            <button
-              type="button"
-              onClick={toDoor}
-              className="group flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-editorial-navy px-8 py-3.5 font-body font-bold text-editorial-cream shadow-xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-copper focus-visible:ring-offset-2 active:scale-[0.99]"
-            >
-              Accept the invitation
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-            <p className="mt-3 font-body text-[11px] leading-relaxed text-editorial-navy/70">
-              Sign in, or open an account. Either way you return straight to the ballot.
-            </p>
-            <a
-              href="/Top100Women2025"
+            <AcceptInvitation onAccept={toDoor} />
+            <Link
+              to="/media-hub"
               className="mt-6 inline-flex min-h-10 items-center font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-editorial-navy/70 underline underline-offset-4"
             >
-              Not ready yet? Read the season
-            </a>
+              Not ready? Learn more
+            </Link>
           </div>
         </article>
       </div>
