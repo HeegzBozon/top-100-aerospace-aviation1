@@ -10,6 +10,7 @@ import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopove
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import BallotBuilderPanel from '@/components/my-top100/BallotBuilderPanel';
+import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
@@ -75,20 +76,10 @@ export default function MyTop100({ initialTab = null } = {}) {
       const held = sessionStorage.getItem(COMMITTEE_TAB_KEY);
       if (COMMITTEE_TABS.includes(held)) return held;
     } catch { /* nothing held */ }
-    try {
-      const priorVisits = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
-      // Engaged = already submitted at least one nomination on this device.
-      const draft = JSON.parse(localStorage.getItem('hub_nominations_draft') || '{}');
-      const hasSubmitted = Object.values(draft).some(
-        (v) => Array.isArray(v) && v.length > 0
-      );
-      // Graduate to Nominate once they've completed their first session
-      // (returning) or have already nominated — the orientation copy is only
-      // for true first-timers.
-      return priorVisits >= 1 || hasSubmitted ? 'nominate' : 'start';
-    } catch {
-      return 'start';
-    }
+    // Everyone opens on the Manifest, however new they are: the order is where ranked
+    // choice is learned, and the Crosscheck only means anything once there is an order to
+    // weigh. Pre-Flight is one key away, and so is the letter.
+    return 'nominate';
   });
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
@@ -154,6 +145,16 @@ export default function MyTop100({ initialTab = null } = {}) {
           setShareCode(existing.share_code || generateShareCode());
         } else {
           setShareCode(generateShareCode());
+        }
+
+        // A door that promises the Crosscheck still opens on the Manifest for an Analyst who
+        // has not built one: the order is the concept the weighing is learned on, so a new
+        // Analyst is set down where they can build it rather than in front of a ballot they
+        // have nothing to weigh yet.
+        const built = (lists[0]?.rankings || []).length;
+        if (initialTab === 'vote' && built === 0) {
+          setActiveTab('nominate');
+          setGlassOpen((open) => (open === 'vote' ? 'nominate' : open));
         }
 
         // Resolve the active voting season (the window the list stays editable in) + the Fellow's public profile id.
@@ -226,16 +227,6 @@ export default function MyTop100({ initialTab = null } = {}) {
     if (new URLSearchParams(window.location.search).get('tab')) return;
     try { sessionStorage.setItem(COMMITTEE_TAB_KEY, activeTab); } catch { /* ignore */ }
   }, [activeTab]);
-
-  // Count hub sessions per device. After a Fellow has opened the hub a few
-  // times, the Nominate tab becomes the default landing — they've graduated
-  // past the Pre-Flight orientation.
-  useEffect(() => {
-    try {
-      const c = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
-      localStorage.setItem('hub_visit_count', String(c + 1));
-    } catch { /* ignore */ }
-  }, []);
 
   // Mobile quick-add → opens the shared nomination sheet from anywhere.
   const openQuickAdd = () => setMobilePopoverOpen(true);
@@ -653,6 +644,11 @@ export default function MyTop100({ initialTab = null } = {}) {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
               <aside className="border-t-2 border-editorial-copper pt-4 lg:sticky lg:top-[64px] lg:w-[330px] lg:shrink-0">
                 {builderPanel}
+                {/* Once there is an order to weigh, the next step is stated here, beside the
+                    guide that taught it — and the window being shut closes it too. */}
+                {!votingClosed && (
+                  <ManifestToCrosscheck count={rankings.length} onOpenVote={() => openTab('vote')} />
+                )}
               </aside>
               <div className="min-w-0 flex-1 border border-editorial-copper/25 bg-editorial-cream px-5 py-6 lg:max-w-2xl lg:px-8 lg:py-7">
                 {listBlock}
