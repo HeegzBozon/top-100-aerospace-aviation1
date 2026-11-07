@@ -3,7 +3,7 @@ import { useFollow } from '@/components/fellow-home/useFollows';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // One-way follow toggle — no acceptance, distinct from a mutual Connection.
-export default function FollowButton({ viewer, targetEmail, targetName, targetAvatar, accent }) {
+export default function FollowButton({ viewer, targetEmail, targetName, targetAvatar, accent, inline = false }) {
   const { following, busy, toggle } = useFollow(
     viewer,
     { email: targetEmail, name: targetName, avatar: targetAvatar }
@@ -12,11 +12,15 @@ export default function FollowButton({ viewer, targetEmail, targetName, targetAv
   if (!viewer?.email || !targetEmail || viewer.email === targetEmail) return null;
 
   return (
-    <div className="flex items-center justify-center mt-2">
+    <div className={inline ? 'inline-flex' : 'flex items-center justify-center mt-2'}>
       <button
         onClick={toggle}
         disabled={busy}
-        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-70 disabled:opacity-60"
+        className={
+          inline
+            ? 'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold transition-opacity hover:opacity-70 disabled:opacity-60'
+            : 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-70 disabled:opacity-60'
+        }
         style={{
           color: following ? B.muted : B.navy,
           background: following ? `${B.navy}08` : 'transparent',

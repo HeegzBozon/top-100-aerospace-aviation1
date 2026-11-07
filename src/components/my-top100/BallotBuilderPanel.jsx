@@ -1,4 +1,5 @@
-import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
+import { useEffect } from 'react';
+import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Shuffle, Sparkles, UserPlus } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import { MANIFEST } from '@/components/voting/ballotNaming';
 import BallotSuggestionCard from '@/components/my-top100/BallotSuggestionCard';
@@ -31,9 +32,19 @@ export default function BallotBuilderPanel({
   onOpenVote,
   onOpenBriefing,
 }) {
-  const { loading, suggestions, basis, judged, error, refresh } = useBallotSuggestions({ user, pool });
+  const { loading, suggestions, basis, judged, error, refresh, shuffle } = useBallotSuggestions({
+    user,
+    pool,
+    excludeIds: addedIds,
+  });
 
   const open = suggestions.filter((person) => !addedIds.has(person.id));
+
+  // A name added to the ballot makes room for another face: the column redraws itself
+  // rather than thinning out one card at a time.
+  useEffect(() => {
+    shuffle();
+  }, [addedIds.size, shuffle]);
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
 
   return (
@@ -74,10 +85,15 @@ export default function BallotBuilderPanel({
       {/* The suggestions. */}
       <div className="mt-4 flex items-baseline justify-between gap-2">
         <SectionLabel>Suggested for you</SectionLabel>
-        {judged > 0 && (
-          <span className="text-[9.5px]" style={{ color: `${brand.navy}45` }}>
-            from {judged} advanced
-          </span>
+        {open.length > 0 && (
+          <button
+            type="button"
+            onClick={shuffle}
+            className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+            style={{ color: `${brand.navy}60` }}
+          >
+            <Shuffle className="h-3 w-3" /> Shuffle
+          </button>
         )}
       </div>
 

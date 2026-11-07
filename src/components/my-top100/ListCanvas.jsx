@@ -56,7 +56,7 @@ export default function ListCanvas({
           <span className="flex items-center gap-2">
             <Plus className="h-3.5 w-3.5 text-editorial-copper" aria-hidden="true" />
             <span className="font-body text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-navy">
-              Add a record
+              Nominate
             </span>
           </span>
           <span className="font-body text-[10px] uppercase tracking-[0.14em] text-editorial-navy/45 tabular-nums">

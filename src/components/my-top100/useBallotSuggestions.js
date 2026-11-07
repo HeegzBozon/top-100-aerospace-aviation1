@@ -41,12 +41,37 @@ function reasonFor(row, topDiscipline) {
   return 'Close to the profiles you have advanced';
 }
 
-export default function useBallotSuggestions({ user, pool }) {
+// One draw from the eligible field. Every draw is shuffled, so reading the column a second
+// time shows more of who is out there rather than the same eight; the cap per discipline is
+// what keeps it a short list instead of eight faces from one corner of the industry.
+function draw(candidates, exclude) {
+  const pool = candidates.filter((row) => !exclude?.has(row.person.id));
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const used = new Map();
+  const out = [];
+  for (const row of pool) {
+    const discipline = key(row.person.discipline);
+    if ((used.get(discipline) || 0) >= PER_DISCIPLINE) continue;
+    used.set(discipline, (used.get(discipline) || 0) + 1);
+    out.push({ ...row.person, reason: row.reason });
+    if (out.length >= SUGGESTION_LIMIT) break;
+  }
+  return out;
+}
+
+export default function useBallotSuggestions({ user, pool, excludeIds }) {
   const [state, setState] = useState({ loading: true, suggestions: [], basis: [], judged: 0, error: null });
   const poolRef = useRef(pool);
   poolRef.current = pool;
   const poolSize = pool?.length || 0;
   const email = user?.email;
+  // Every profile the record points at, kept so a fresh draw costs nothing to read.
+  const candidatesRef = useRef([]);
+  const excludeRef = useRef(excludeIds);
+  excludeRef.current = excludeIds;
 
   const load = useCallback(async () => {
     if (!email) {
@@ -86,6 +111,7 @@ export default function useBallotSuggestions({ user, pool }) {
     }
 
     if (!advanced.size) {
+      candidatesRef.current = [];
       setState({ loading: false, suggestions: [], basis: [], judged: 0, error: null });
       return;
     }
@@ -103,20 +129,12 @@ export default function useBallotSuggestions({ user, pool }) {
       const i = byIndustry.get(key(person.industry)) || 0;
       const score = d * 3 + c * 2 + i;
       if (!score) continue;
-      scored.push({ person, score, d, c, i });
+      scored.push({ person, score, d, c, i, reason: reasonFor({ person, d, c }, topDiscipline) });
     }
     scored.sort((a, b) => b.score - a.score || (a.person.name || '').localeCompare(b.person.name || ''));
 
-    // A short list reads as a recommendation; eight of one field reads as a filter.
-    const used = new Map();
-    const suggestions = [];
-    for (const row of scored) {
-      const discipline = key(row.person.discipline);
-      if ((used.get(discipline) || 0) >= PER_DISCIPLINE) continue;
-      used.set(discipline, (used.get(discipline) || 0) + 1);
-      suggestions.push({ ...row.person, reason: reasonFor(row, topDiscipline) });
-      if (suggestions.length >= SUGGESTION_LIMIT) break;
-    }
+    candidatesRef.current = scored;
+    const suggestions = draw(scored, excludeRef.current);
 
     setState({
       loading: false,
@@ -136,5 +154,11 @@ export default function useBallotSuggestions({ user, pool }) {
     return () => { alive = false; };
   }, [load, poolSize]);
 
-  return { ...state, refresh: load };
+  // Another draw from the field already in hand — no query, no waiting.
+  const shuffle = useCallback(() => {
+    if (!candidatesRef.current.length) return;
+    setState((prev) => ({ ...prev, suggestions: draw(candidatesRef.current, excludeRef.current) }));
+  }, []);
+
+  return { ...state, refresh: load, shuffle };
 }

@@ -73,11 +73,6 @@ export default function BallotStatusBanner({
         </div>
       </div>
 
-      <p className="mt-1 font-body text-[9px] leading-relaxed text-editorial-navy/40">
-        Your ballot stays private and is cast on the Crosscheck. This list is a publication,
-        never a record of your vote.
-      </p>
-
       {errorMessage && (
         <p className="mt-1.5 flex items-start gap-1.5 border-l-2 border-editorial-copper pl-2 font-body text-[10.5px] leading-relaxed text-editorial-navy/75">
           <AlertTriangle className="mt-[2px] h-3 w-3 shrink-0 text-editorial-copper" aria-hidden="true" />

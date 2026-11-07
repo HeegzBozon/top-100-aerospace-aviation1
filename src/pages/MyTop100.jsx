@@ -457,7 +457,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         }}
         saving={saving}
         count={rankings.length}
-        note="In your own order, strongest first — yours to edit until you submit."
+        note="A hundred places, one hand on the order. Set it as you would defend it — the vote itself is cast later, in private."
       />
       <BallotStatusBanner
         rankings={rankings}
@@ -479,7 +479,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         addedIds={addedIds}
         onViewProfile={openProfileFromList}
         emptyTitle={listCategory === 'men' ? 'No men listed yet' : 'No women listed yet'}
-        emptyNote="This is a view of your TOP 100. Add records on All; this view follows the same order."
+        emptyNote="This is a view of your TOP 100. Nominate from All; this view follows the same order."
       />
     </>
   );
