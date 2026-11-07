@@ -41,7 +41,11 @@ const COMMITTEE_TAB_KEY = 'top100_committee_tab';
 // it, Pre-Flight, the Manifest, then the Crosscheck.
 const COMMITTEE_TABS = ['invitation', 'start', 'nominate', 'vote'];
 
-export default function MyTop100() {
+// `initialTab` is for a door that already knows which surface it opens: /vote is sent to a
+// Fellow in a post or a message and promises the ballot, so it mounts the committee on the
+// Crosscheck rather than drawing a second frame around the same ballot. A `?tab=` in the
+// address still outranks it, and so does the session's own note.
+export default function MyTop100({ initialTab = null } = {}) {
   const [user, setUser] = useState(null);
   const [myList, setMyList] = useState(null);
   const [rankings, setRankings] = useState([]);
@@ -62,6 +66,8 @@ export default function MyTop100() {
     // on the ballot, not on the orientation copy in front of it.
     const requested = new URLSearchParams(window.location.search).get('tab');
     if (COMMITTEE_TABS.includes(requested)) return requested;
+    // The door that knows where it goes stands next in line.
+    if (COMMITTEE_TABS.includes(initialTab)) return initialTab;
     // Where the session was left, this morning or an hour ago: a Fellow working the
     // committee comes back to the surface they were on rather than being walked back to
     // the Manifest every time. The session's own note, so tomorrow opens afresh.
@@ -99,7 +105,8 @@ export default function MyTop100() {
   const glass = useGlass();
   const [glassOpen, setGlassOpen] = useState(() => {
     const requested = new URLSearchParams(window.location.search).get('tab');
-    return COMMITTEE_TABS.includes(requested) ? requested : null;
+    if (COMMITTEE_TABS.includes(requested)) return requested;
+    return COMMITTEE_TABS.includes(initialTab) ? initialTab : null;
   });
   // The briefing is read once, and it belongs to nominating: it opens the first time a
   // Fellow stands on the Nominate surface, and never again after that — not on a reload,
