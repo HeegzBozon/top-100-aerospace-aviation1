@@ -6,7 +6,8 @@ import { base44 } from '@/api/base44Client';
 import InvitationPlate from '@/components/vote/InvitationPlate';
 import GateHowItWorks from '@/components/vote/GateHowItWorks';
 import GateFaq from '@/components/vote/GateFaq';
-import { CROSSCHECK, ANALYSIS, ANALYST, ANALYST_STANDING } from '@/components/voting/ballotNaming';
+import { invitation } from '@/components/vote/voteGateCopy';
+import { CROSSCHECK, ANALYSIS } from '@/components/voting/ballotNaming';
 
 // How long the curtain takes to lift, and the letter to arrive behind it.
 const HANDOVER_MS = 420;
@@ -53,7 +54,7 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
       >
         <article className="pb-page border border-editorial-copper/40 px-5 py-8 shadow-xl sm:px-12 sm:py-14">
           <header className="text-center">
-            <p className="pd-label">TOP 100 Aerospace &amp; Aviation · Selection Committee</p>
+            <p className="pd-label">{invitation.label}</p>
             <div className="pd-rule mx-auto mt-4 w-16" />
           </header>
 
@@ -61,21 +62,22 @@ export default function VoteGate({ source, onPreviewContinue = null }) {
             <InvitationPlate variant="hero" className="mx-auto w-full max-w-md lg:max-w-none" />
 
             <div className="font-body text-editorial-navy">
-              <p className="mb-4 font-heading text-lg italic">Dear colleague,</p>
+              <p className="mb-4 font-heading text-lg italic">{invitation.greeting}</p>
               <h1 className="mb-5 font-heading text-[2rem] leading-[1.1] sm:text-[2.5rem]">
-                You have been invited to serve as an {ANALYST}.
+                {invitation.headline}
               </h1>
-              <p className="mb-4 text-sm leading-relaxed text-editorial-navy/85">
-                Recognition in our industry has too often gone to whoever is most visible. This
-                committee exists to change that. When professionals who know the work set the field
-                in order, the record that results is one the industry can trust, and every name in
-                it is earned.
-              </p>
-              <p className="mb-6 text-sm leading-relaxed text-editorial-navy/85">
-                Your judgement becomes part of that record. {ANALYST_STANDING}
-              </p>
-              <p className="font-heading text-base italic">With gratitude,</p>
-              <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] text-editorial-label">The Selection Committee</p>
+              {invitation.paragraphs.map((paragraph, i) => (
+                <p
+                  key={paragraph}
+                  className={`text-sm leading-relaxed text-editorial-navy/85 ${
+                    i === invitation.paragraphs.length - 1 ? 'mb-6' : 'mb-4'
+                  }`}
+                >
+                  {paragraph}
+                </p>
+              ))}
+              <p className="font-heading text-base italic">{invitation.signoff}</p>
+              <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] text-editorial-label">{invitation.signature}</p>
               <AcceptInvitation onAccept={toDoor} className="mt-7 max-w-sm" />
             </div>
           </div>

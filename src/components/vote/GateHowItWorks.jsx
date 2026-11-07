@@ -1,31 +1,17 @@
-import { CROSSCHECK, MANIFEST } from '@/components/voting/ballotNaming';
+import { howItWorks } from './voteGateCopy';
 
-// The how-to, kept apart from the letter: two ballots, three steps each.
-const BALLOTS = [
-  {
-    name: MANIFEST,
-    kind: 'Ranked choice',
-    steps: ['Nominate the professionals you back.', 'Put them in order, strongest first.', 'Save it. It stays editable while the window is open.'],
-  },
-  {
-    name: CROSSCHECK,
-    kind: 'Mini ranked choice',
-    steps: ['Four professionals are shuffled for you.', 'Tap your Commander, then Pilot, then Engineer.', 'The fourth takes the last seat. The set is recorded.'],
-  },
-];
-
+// The how-to, kept apart from the letter: two ballots, three steps each. The copy lives in
+// voteGateCopy so the page and the printable invitation are written from the same words.
 export default function GateHowItWorks() {
   return (
     <section aria-labelledby="gate-how" className="mt-12 sm:mt-16">
-      <p className="pd-label">How it works</p>
-      <h2 id="gate-how" className="mt-2 font-heading text-2xl text-editorial-navy sm:text-3xl">A Community Nominated Ranked Choice Ballot</h2>
+      <p className="pd-label">{howItWorks.label}</p>
+      <h2 id="gate-how" className="mt-2 font-heading text-2xl text-editorial-navy sm:text-3xl">{howItWorks.heading}</h2>
       <p className="mb-6 mt-3 max-w-2xl font-body text-sm leading-relaxed text-editorial-navy/85">
-        Analysts set the field. The community nominates, and the community analyzes: it puts the names
-        forward, and it selects among them by ranked choice. There is no hidden formula deciding who stands.
-        The community is the algorithm. It is cast two ways.
+        {howItWorks.intro}
       </p>
       <div className="grid gap-8 md:grid-cols-2">
-        {BALLOTS.map((ballot) => (
+        {howItWorks.ballots.map((ballot) => (
           <div key={ballot.name} className="border-t-2 border-editorial-copper pt-4">
             <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
               <h3 className="font-heading text-lg text-editorial-navy">{ballot.name}</h3>

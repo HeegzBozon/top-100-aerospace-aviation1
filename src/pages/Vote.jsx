@@ -4,6 +4,7 @@ import ConsoleLoading from '@/components/core/ConsoleLoading';
 import VoteGate from '@/components/voting/VoteGate';
 import VoteSurface from '@/components/voting/VoteSurface';
 import VoteWalkthrough from '@/components/voting/VoteWalkthrough';
+import GateExportKey from '@/components/vote/GateExportKey';
 import { isViewingAsVisitor } from '@/lib/viewerPreview';
 
 // One address for the ballot, and the two people who open it.
@@ -36,6 +37,19 @@ export default function Vote() {
   const [source] = useState(readSource);
   const [walkthrough, setWalkthrough] = useState(false);
 
+  // Reading the ballot as a visitor is a reading, not a second session: the office behind it
+  // is still the operator's, so it is read from the intact session and used for one thing —
+  // letting them take the letter away as a file.
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!isViewingAsVisitor()) return undefined;
+    let active = true;
+    base44.auth.me()
+      .then((me) => { if (active) setIsAdmin(me?.role === 'admin'); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   // Recorded once, and only for a tagged arrival: an untagged ballot is already
   // counted by the page view, and a channel is only worth reporting when it was named.
   useEffect(() => {
@@ -65,7 +79,20 @@ export default function Vote() {
 
   if (state.status === 'checking') return <ConsoleLoading label="Opening the ballot" />;
 
-  if (state.status === 'visitor') return <VoteGate source={source} />;
+  if (state.status === 'visitor') {
+    return (
+      <div className="flex min-h-full flex-col">
+        {isAdmin && (
+          <div className="shrink-0 bg-editorial-cream px-4 py-2">
+            <GateExportKey />
+          </div>
+        )}
+        <div className="min-h-0 flex-1">
+          <VoteGate source={source} />
+        </div>
+      </div>
+    );
+  }
   if (walkthrough && state.user?.role === 'admin') {
     return <div className="imac-fit flex min-h-0 flex-1 flex-col overflow-hidden" data-tube-fill=""><VoteWalkthrough user={state.user} onClose={() => setWalkthrough(false)} /></div>;
   }

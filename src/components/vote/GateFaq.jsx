@@ -1,34 +1,10 @@
 import { useId, useState } from 'react';
+import { faq } from './voteGateCopy';
 
 // The questions a letter's reader writes back with, answered under the letter. One row
-// opens at a time; the first is open so the section never reads as a closed list.
-const QUESTIONS = [
-  {
-    q: 'Why do I need an account?',
-    a: 'So that every ballot belongs to one Fellow and is counted once. Sign in, or open an account, and you return to this ballot directly.',
-    note: 'Sign-in is handled by the platform',
-  },
-  {
-    q: 'How are the two ballots different?',
-    a: 'The Manifest is your own list: you choose the professionals and set their order. The Crosscheck shuffles four professionals for you, and you put that set in order.',
-    note: 'Both are ranked choice',
-  },
-  {
-    q: 'Can I change my order later?',
-    a: 'Your Manifest stays editable while the window is open. A Crosscheck set is final once recorded, so skip it or save it for later if you are unsure.',
-    note: 'Edits close with the cycle',
-  },
-  {
-    q: 'How long does it take?',
-    a: 'A Crosscheck set takes about a minute. Complete as many as you like, and return whenever you have a moment.',
-    note: 'Every set is a complete ballot',
-  },
-  {
-    q: 'Can placement be bought?',
-    a: 'Never. Placement is measured from the orders Fellows leave. Patronage, sponsorship and availability carry no weight in selection.',
-    note: 'Governance, not commerce',
-  },
-];
+// opens at a time; the first is open so the section never reads as a closed list. The copy
+// lives in voteGateCopy, so the printable invitation answers the same questions in full.
+const QUESTIONS = faq.questions;
 
 function Mark({ open }) {
   return (
@@ -45,8 +21,8 @@ export default function GateFaq() {
 
   return (
     <section aria-labelledby={`${uid}-title`} className="mt-12 sm:mt-16">
-      <p className="pd-label">Questions</p>
-      <h2 id={`${uid}-title`} className="mb-5 mt-2 font-heading text-2xl text-editorial-navy">Before you begin</h2>
+      <p className="pd-label">{faq.label}</p>
+      <h2 id={`${uid}-title`} className="mb-5 mt-2 font-heading text-2xl text-editorial-navy">{faq.heading}</h2>
       <div className="bg-editorial-cream">
         {QUESTIONS.map((item, i) => {
           const open = openIndex === i;
