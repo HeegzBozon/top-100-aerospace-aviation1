@@ -60,9 +60,9 @@ export const LIBRARY = {
     'rising-galaxies', 'Rising Galaxies', 'Ostenvegr', 'fe49aeb71_rising-galaxies.mp3',
     'CC BY-SA 3.0', jamendo(943814),
   ),
-  staringIntoSpace: record(
-    'staring-into-space', 'Staring into Space', 'The Monster Brothers', '40845e8fb_staring-into-space.mp3',
-    'CC BY-SA 3.0', jamendo(856138),
+  cosmosThreshold: record(
+    'cosmos-threshold', 'Crossing the Threshold of Cosmos', 'Ostenvegr', '3feb3065b_threshold-of-cosmos.mp3',
+    'CC BY 3.0', jamendo(1129342),
   ),
 
   // ── Classical: the summit, the reading rooms, the quiet hours ──

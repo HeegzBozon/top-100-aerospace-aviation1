@@ -13,7 +13,7 @@ export const ROOM_PLAYLISTS = {
   hall: [L.houseInSpace, L.distantPlanet, L.planetZero],
   'innovation-expo': [L.houseInSpace, L.planetZero, L.distantPlanet],
   // The pavilion is the sky: ambient, and the orchestra that sounds like orbit.
-  'space-pavilion': [L.risingGalaxies, L.staringIntoSpace, L.moonWaltz],
+  'space-pavilion': [L.risingGalaxies, L.cosmosThreshold, L.moonWaltz],
   // The summit keeps the reading rooms' music: composed, quiet, unhurried.
   'leadership-summit': [L.nocturne, L.gymnopedie, L.moonWaltz],
   'media-hub': [L.planetZero, L.houseInSpace, L.starGuide],
@@ -33,7 +33,7 @@ const NPC_THEMES = {
   athena: L.gymnopedie,
   echo: L.planetZero,
   scout: L.toTheMoon,
-  skye: L.staringIntoSpace,
+  skye: L.cosmosThreshold,
   sterling: L.moonWaltz,
   aurora: L.risingGalaxies,
 };
