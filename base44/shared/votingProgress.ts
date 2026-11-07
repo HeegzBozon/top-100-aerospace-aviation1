@@ -17,7 +17,7 @@ export const XP_PER_SET = 10;
 //
 // The first review does not confer the office: it seats a Fellow as an Associate Analyst,
 // which is what the invitation makes of whoever takes it up. The office of Analyst is
-// graduated into — eight sets of four measured on the Crosscheck, which is the induction
+// graduated into — thirty sets of four measured on the Crosscheck, which is the induction
 // the committee asks before a Fellow's own desk opens — and the rungs above it name the
 // experience that accumulates behind the office. The last of them, Principal Analyst, is
 // the full flight: five hundred sets measured.
@@ -29,9 +29,9 @@ export const XP_PER_SET = 10;
 export const PRINCIPAL_SETS = 500;
 
 // The graduation: the sets an Associate Analyst measures before the office of Analyst —
-// and with it the Flight Plan — is theirs. Eight sets of four is thirty-two professionals
-// read against each other, which is enough for the field to have a shape.
-export const ANALYST_SETS = 8;
+// and with it the Flight Plan — is theirs. Thirty sets of four is a hundred and twenty
+// professionals read against each other, which is enough for the field to have a shape.
+export const ANALYST_SETS = 30;
 
 export const LEVELS = [
   { level: 1, name: 'Associate Analyst', sets: 0 },

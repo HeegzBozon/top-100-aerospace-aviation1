@@ -10,10 +10,10 @@
 // The graduation, and the office it confers.
 //
 // A Fellow is seated as an Associate Analyst by the invitation; the office of Analyst is
-// graduated into at eight measured sets, and the Flight Plan — the desk an Analyst reads
+// graduated into at thirty measured sets, and the Flight Plan — the desk an Analyst reads
 // the field from — opens with it. The threshold is the shared table's ANALYST_SETS: change
 // it there, and here.
-export const ANALYST_SETS = 8;
+export const ANALYST_SETS = 30;
 
 export const isAnalystOffice = (setsCompleted) =>
   Math.max(0, Number(setsCompleted) || 0) >= ANALYST_SETS;

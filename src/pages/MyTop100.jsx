@@ -18,6 +18,8 @@ import PreFlightSurface from '@/components/my-top100/PreFlightSurface';
 import { Loader2, Rocket, LogIn, Sparkles, ListOrdered, Route } from 'lucide-react';
 import FlightPlan from '@/components/flight-plan/FlightPlan';
 import useAnalystOffice from '@/components/voting/useAnalystOffice';
+import useFlightUnveiling from '@/components/flight-plan/useFlightUnveiling';
+import AnalystPromotion from '@/components/voting/AnalystPromotion';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GateExportKey from '@/components/vote/GateExportKey';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
@@ -102,6 +104,12 @@ export default function MyTop100({ initialTab = null } = {}) {
   // that reads the field from, so the Flight Plan stays shut — and off the keys — until the
   // standing says otherwise.
   const office = useAnalystOffice(user);
+  // The desk the office unlocks is struck until it has been opened once.
+  const unveiling = useFlightUnveiling({
+    email: user?.email,
+    status: office.status,
+    isAnalyst: office.isAnalyst,
+  });
   // On the glass the hub is a console: its three surfaces are the menu, and one
   // is open at a time. Null is the menu itself.
   const glass = useGlass();
@@ -247,6 +255,12 @@ export default function MyTop100({ initialTab = null } = {}) {
     setActiveTab((tab) => (tab === 'flight' ? 'nominate' : tab));
     setGlassOpen((open) => (open === 'flight' ? 'nominate' : open));
   }, [office.status, office.isAnalyst]);
+
+  // The key stops glowing the moment the desk is opened: the halo always means one thing —
+  // a surface that has not been read yet.
+  useEffect(() => {
+    if (activeTab === 'flight' || glassOpen === 'flight') unveiling.markSeen();
+  }, [activeTab, glassOpen, unveiling.markSeen]);
 
   // Mobile quick-add → opens the shared nomination sheet from anywhere.
   const openQuickAdd = () => setMobilePopoverOpen(true);
@@ -650,6 +664,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         nominationCount={totalNominations}
         listCount={rankings.length}
         showFlightPlan={office.isAnalyst}
+        glowTab={unveiling.glowing ? 'flight' : null}
       />
 
       {/* ── PRE-FLIGHT — the letter that convened the committee, and the check-in ── */}
@@ -692,6 +707,14 @@ export default function MyTop100({ initialTab = null } = {}) {
       )}
         </>
       )}
+
+      {/* The graduation, announced once: the thirtieth set opens the desk. */}
+      <AnalystPromotion
+        office={office}
+        email={user?.email}
+        name={user?.full_name}
+        onOpenFlight={() => openTab('flight')}
+      />
 
       <NomineeExplorerPopover
         isOpen={explorerOpen}

@@ -68,7 +68,7 @@ export default function FlightPlan({ user, onOpenVote }) {
             <CircleDashed className="h-3 w-3" /> The chart opens at graduation
           </p>
           <p className="mt-2 font-body text-[12.5px] leading-relaxed text-editorial-navy/70">
-            Eight sets of four, measured on the Crosscheck, graduate an Associate Analyst into
+            Thirty sets of four, measured on the Crosscheck, graduate an Associate Analyst into
             the office of Analyst — and the office is what this desk belongs to. You have
             {` ${sets} `}
             {sets === 1 ? 'set' : 'sets'} behind you: {toAnalyst} more opens the chart, and

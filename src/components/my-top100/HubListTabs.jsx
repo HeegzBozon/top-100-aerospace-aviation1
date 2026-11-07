@@ -10,7 +10,7 @@ import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
 const PREFLIGHT = 'Pre-Flight';
 const FLIGHT_PLAN = 'Flight Plan';
 
-export default function HubListTabs({ activeTab, onTabChange, nominationCount = 0, listCount = 0, showFlightPlan = false }) {
+export default function HubListTabs({ activeTab, onTabChange, nominationCount = 0, listCount = 0, showFlightPlan = false, glowTab = null }) {
   const tabs = [
     { key: 'start', label: PREFLIGHT },
     { key: 'nominate', label: MANIFEST, count: listCount, of: 100 },
@@ -27,19 +27,28 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount = 
         <div className="flex min-w-0 items-end gap-6 overflow-x-auto overflow-y-hidden scrollbar-hide">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.key;
+            // A key that has just been unlocked is struck until it is walked through: the
+            // glow is the house saying there is a desk here you have not sat at yet.
+            const isGlowing = glowTab === tab.key && !isActive;
             return (
               <button
                 key={tab.key}
                 type="button"
                 onClick={() => onTabChange(tab.key)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative shrink-0 pb-2.5 pt-3 font-body text-[10.5px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                className={`relative shrink-0 px-1 pb-2.5 pt-3 font-body text-[10.5px] font-bold uppercase tracking-[0.18em] transition-colors ${
                   isActive
                     ? 'text-editorial-navy'
                     : 'text-editorial-navy/45 hover:text-editorial-navy/80'
-                }`}
+                } ${isGlowing ? 'tab-glow' : ''}`}
               >
                 {tab.label}
+                {isGlowing && (
+                  <span
+                    aria-hidden="true"
+                    className="ml-1.5 inline-block h-1 w-1 animate-pulse rounded-full bg-editorial-gold align-middle"
+                  />
+                )}
                 {tab.count > 0 && (
                   <span className="ml-1.5 text-[10px] tabular-nums opacity-60">
                     {tab.count}

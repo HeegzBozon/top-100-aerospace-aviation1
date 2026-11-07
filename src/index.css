@@ -1370,6 +1370,34 @@ body.hh-landscape .hh-viewer-foot {
   }
 }
 
+/* ===== A KEY THAT HAS JUST BEEN UNLOCKED =====
+   The Flight Plan arrives with the office of Analyst, and its key is struck until it has been
+   walked through: the copper ink of the held key, and a halo of rose gold breathing out from
+   it. The halo is switched off the moment the surface opens, so the glow always means one
+   thing — there is something here you have not read yet. */
+.tab-glow {
+  border-radius: 3px;
+  color: rgb(var(--editorial-copper-rgb));
+  animation: tab-glow 2.6s ease-in-out infinite;
+}
+@keyframes tab-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.22), 0 0 10px -3px rgb(var(--editorial-gold-rgb) / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.55), 0 0 20px 0 rgb(var(--editorial-gold-rgb) / 0.72);
+  }
+}
+.tab-glow:hover {
+  color: rgb(var(--editorial-copper-rgb));
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-glow {
+    animation: none;
+    box-shadow: 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.5);
+  }
+}
+
 /* The panel the Flight Deck's instruments sit on, inside the tube. */
 .fd-panel {
   background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);
