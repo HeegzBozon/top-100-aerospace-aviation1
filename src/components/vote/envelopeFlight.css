@@ -1,0 +1,57 @@
+/* One sheet arrives folded as a plane, then spreads into the envelope footprint. */
+.env-delivery .env-shell { animation: none; }
+.env-delivery .env-flap { animation: none; transform: rotateX(0deg); }
+.env-delivery .env-seal { animation: none; }
+.env-delivery .env-skip { font-family: var(--font-body); min-height: 40px; }
+.env-delivery .env-skip:disabled { opacity: .55; cursor: default; }
+.env-delivery .env-plane {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: rgb(var(--editorial-cream-rgb));
+  clip-path: polygon(0% 0%,100% 45%,35% 58%,22% 100%);
+  transform-origin: center;
+  animation: env-arrival 1.8s cubic-bezier(.22,1,.36,1) both;
+}
+.env-delivery .env-plane span {
+  position: absolute;
+  inset: 0;
+  background: rgb(var(--editorial-gold-rgb) / .42);
+  clip-path: polygon(0% 0%,100% 45%,35% 58%);
+  animation: env-wing 1.8s ease both;
+}
+.env-delivery .env-plane span:last-child {
+  background: rgb(var(--editorial-navy-rgb) / .18);
+  clip-path: polygon(0% 0%,35% 58%,22% 100%);
+}
+.env-delivery[data-phase="flight"] .env-back,
+.env-delivery[data-phase="flight"] .env-lining,
+.env-delivery[data-phase="flight"] .env-pocket,
+.env-delivery[data-phase="flight"] .env-flap,
+.env-delivery[data-phase="flight"] .env-seal {
+  animation: env-materialize 1.8s ease both;
+}
+.env-delivery:not([data-phase="flight"]) .env-plane { display: none; }
+.env-delivery[data-phase="opening"] .env-flap {
+  animation: env-open 1.05s cubic-bezier(.36,0,.24,1) both;
+}
+.env-delivery[data-phase="opening"] .env-seal {
+  animation: env-break .7s .25s ease-out both;
+}
+@keyframes env-arrival {
+  0% { opacity: 0; transform: translate(-95vw, -20vh) rotate(-24deg) scale(.38); clip-path: polygon(0% 0%,100% 45%,35% 58%,22% 100%); }
+  12% { opacity: 1; }
+  52% { transform: translate(12%, -16%) rotate(12deg) scale(.75); clip-path: polygon(0% 0%,100% 45%,35% 58%,22% 100%); }
+  68% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); clip-path: polygon(0% 0%,100% 0%,100% 100%,0% 100%); }
+  88%,100% { opacity: 0; transform: translate(0,0) rotate(0deg) scale(1); clip-path: polygon(0% 0%,100% 0%,100% 100%,0% 100%); }
+}
+@keyframes env-wing { 0%,52% { opacity: 1; } 75%,100% { opacity: 0; } }
+@keyframes env-materialize { 0%,65% { opacity: 0; } 88%,100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .env-delivery .env-plane { display: none; }
+  .env-delivery[data-phase] .env-back,
+  .env-delivery[data-phase] .env-lining,
+  .env-delivery[data-phase] .env-pocket,
+  .env-delivery[data-phase] .env-flap,
+  .env-delivery[data-phase] .env-seal { animation: none; }
+}

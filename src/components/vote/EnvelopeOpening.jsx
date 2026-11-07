@@ -1,34 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '@/components/vote/envelopeOpening.css';
-
-// The letter being opened.
-//
-// A visitor who follows a promoted link is not dropped onto a page: a plate is set on
-// the desk, the wax is pressed open, and the invitation rises out of the pocket before
-// the desk hands the glass back. The whole theatre is a curtain over the gate — it holds
-// nothing and asks nothing — so it is dismissed on a tap, gone in 2.9s, and skipped
-// outright for a reader whose device asks for reduced motion.
-const TIMELINE_MS = 2900;
+import '@/components/vote/envelopeFlight.css';
 
 export default function EnvelopeOpening({ onDone }) {
+  const [phase, setPhase] = useState('flight');
+  const navigate = useNavigate();
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
       onDone();
       return undefined;
     }
-    const timer = setTimeout(onDone, TIMELINE_MS);
+    // The three-second hold starts only after the plane has become an envelope.
+    const next = phase === 'flight' ? () => setPhase('holding')
+      : phase === 'holding' ? () => setPhase('opening') : onDone;
+    const timer = setTimeout(next, phase === 'flight' ? 1800 : phase === 'holding' ? 3000 : 1350);
     return () => clearTimeout(timer);
-  }, [onDone]);
+  }, [phase, onDone]);
 
   return (
-    <div className="as-frame env-curtain" role="presentation" onClick={onDone}>
-      <div className="env-stage" role="presentation">
+    <div className="as-frame env-curtain" role="presentation">
+      <div className="env-stage env-delivery" data-phase={phase}>
         <div className="env-letter">
           <p className="pd-label">TOP 100 Aerospace &amp; Aviation</p>
           <div className="pd-rule" />
           <p>You are invited</p>
         </div>
         <div className="env-shell">
+          <div className="env-plane" aria-hidden="true"><span /><span /></div>
           <div className="env-back" aria-hidden="true" />
           <div className="env-lining" aria-hidden="true" />
           <div className="env-pocket" aria-hidden="true" />
@@ -36,7 +35,10 @@ export default function EnvelopeOpening({ onDone }) {
           <div className="env-seal" aria-hidden="true" />
         </div>
         <p className="env-caption">A letter from the Selection Committee</p>
-        <button type="button" onClick={onDone} className="env-skip">Skip</button>
+        <div className="flex flex-wrap justify-center gap-3">
+          <button type="button" onClick={() => setPhase('opening')} disabled={phase === 'opening'} className="env-skip">Open invitation</button>
+          <button type="button" onClick={() => { onDone(); navigate('/media-hub'); }} className="env-skip">Learn more</button>
+        </div>
       </div>
     </div>
   );
