@@ -82,4 +82,4 @@ export const CROSSCHECK_HOLD_LABEL = 'Save for later';
 // Commander, then the Pilot, then the Flight Engineer, and the fourth record takes the seat
 // left standing. The card prints the seat rather than the ordinal so the framing holds where
 // the choosing actually happens; the briefing names the third seat in full.
-export const PLACE_LABELS = ['Commander', 'Pilot', 'Engineer', 'Fourth seat'];
+export const PLACE_LABELS = ['Commander', 'Pilot', 'Engineer', 'Mission Specialist'];
