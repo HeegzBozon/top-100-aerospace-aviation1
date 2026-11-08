@@ -12,7 +12,7 @@ import useExplorerCursor from '@/components/my-top100/explore/useExplorerCursor'
 import useAutoLoad from '@/components/my-top100/explore/useAutoLoad';
 import '@/components/my-top100/explore/exploreSheet.css';
 import useModalPicker from '@/components/handheld/useModalPicker';
-import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
+import { stableShuffle } from '@/components/my-top100/disciplineMatch';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 
 // The directory, opened on the machine.
@@ -22,36 +22,21 @@ import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomi
 // on the glass it takes the picture between the strip and the chin (see the
 // hh-glass-panel geometry in index.css), so the hardware never stands over the reading.
 //
-// One instrument narrows it. The search, the standing tags (the cohorts among them) and
-// the order are one band, seated above the roll so the tool is always in reach; the roll
-// reads on by itself as the window is walked down; and a name opens as a card laid over
-// the roll rather than as a screen that takes the directory away. Nothing about the band
-// re-cuts itself as the reading narrows — the pills keep their size, their order and their
-// place, which is what keeps a hand from chasing a control that moved under it.
+// One instrument narrows it. The search, the order and the vocabulary are one band, seated
+// above the roll so the tool is always in reach; the roll reads on by itself as the window
+// is walked down; and a name opens as a card laid over the roll rather than as a screen that
+// takes the directory away. The field and the tag family are not menus: the words carry how
+// much of the reading each one holds, so the cloud itself is the way into the field.
 //
 // It is driven by the hand that is there: the ring walks the roll and the confirm key
 // opens the record; the arrow keys and Enter do the same on the desk, and Escape or B
 // hands the surface back.
 const PAGE_SIZE = 40;
 
-// The families the vocabulary is read by, in the order the band offers them. Places sit
-// last because geography is the heaviest family in the records and would otherwise be the
-// only one anybody saw.
-const FAMILIES = [
-  { key: 'skill', label: 'Skills' },
-  { key: 'technology', label: 'Technology' },
-  { key: 'industry', label: 'Fields' },
-  { key: 'achievement', label: 'Achievements' },
-  { key: 'attribute', label: 'Attributes' },
-  { key: 'geography', label: 'Places' },
-];
-
 export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd, initialNominee, nominator }) {
   const [query, setQuery] = useState('');
-  const [discipline, setDiscipline] = useState('all');
   const [cohort, setCohort] = useState('all');
   const [sort, setSort] = useState('random');
-  const [family, setFamily] = useState('all');
   const [seasonCategory, setSeasonCategory] = useState({});
   const [nominees, setNominees] = useState([]);
   const [randomOrder, setRandomOrder] = useState([]);
@@ -109,11 +94,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
             nominee.organization?.toLowerCase().includes(q);
           if (!matches) return false;
         }
-        if (!matchDiscipline(nominee, discipline)) return false;
         if (cohort !== 'all' && getNomineeCategory(nominee, seasonCategory) !== cohort) return false;
         return true;
       }),
-    [nominees, query, discipline, cohort, seasonCategory]
+    [nominees, query, cohort, seasonCategory]
   );
 
   const reading = useMemo(() => {
@@ -144,19 +128,28 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     return keys;
   }, [reading, tagSetFor]);
 
-  // The vocabulary is the directory's, not the reading's: the same words in the same order
-  // whatever has been narrowed, which is what keeps the band's shape still.
-  const cloudTags = useMemo(() => {
-    if (family === 'all') return tags;
-    return tags.filter(
-      (tag) => tag.category === family || selectedTags.some((picked) => picked.key === tag.key)
-    );
-  }, [tags, family, selectedTags]);
+  // What each word is worth in the reading the search and the cohort have left. Counted
+  // against the reading *before* the words themselves, so pressing a word never re-sizes or
+  // re-sorts the row under the hand that pressed it — the cloud answers the search, not the
+  // press.
+  const weights = useMemo(() => {
+    const counts = new Map();
+    baseReading.forEach((nominee) => {
+      tagSetFor(nominee).forEach((key) => counts.set(key, (counts.get(key) || 0) + 1));
+    });
+    return counts;
+  }, [baseReading, tagSetFor]);
 
-  const families = useMemo(() => {
-    const present = new Set(tags.map((tag) => tag.category).filter(Boolean));
-    return FAMILIES.filter((entry) => present.has(entry.key));
-  }, [tags]);
+  // The cloud as a density picture of the field: heaviest first, and a word nobody in this
+  // reading holds falls out of the row entirely rather than standing as dead furniture.
+  const cloudTags = useMemo(
+    () =>
+      tags
+        .map((tag) => ({ ...tag, weight: weights.get(tag.key) || 0 }))
+        .filter((tag) => tag.weight > 0 || selectedTags.some((picked) => picked.key === tag.key))
+        .sort((a, b) => b.weight - a.weight || a.label.localeCompare(b.label)),
+    [tags, weights, selectedTags]
+  );
 
   // A row is opened on the card inside the sheet; the roll's cursor is held while it is up,
   // and the sheet's own keys belong to that card (see the modal picker below).
@@ -191,7 +184,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   useEffect(() => {
     reset();
     setVisibleCount(PAGE_SIZE);
-  }, [query, discipline, sort, cohort, view, family, selectedTags, reset]);
+  }, [query, sort, cohort, view, selectedTags, reset]);
 
   // The record read on the card is a read: a turn of the ring takes it down, and the
   // confirm key or the way back hands the sheet to the roll again.
@@ -271,15 +264,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         <ExplorerControls
           query={query}
           onQuery={setQuery}
-          field={discipline}
-          onField={setDiscipline}
           sort={sort}
           onSort={setSort}
           view={view}
           onView={setView}
-          families={families}
-          family={family}
-          onFamily={setFamily}
           autoFocus={deskOpened}
         >
           {!loading && (

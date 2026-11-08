@@ -2,25 +2,11 @@ import { Search, X, Rows3, LayoutGrid } from 'lucide-react';
 
 // One tool for reading the field.
 //
-// The field the names are read through, the narrowings and the order all ride one line, so
-// a reading is set up in one place rather than hunted for down a stack of bands. The tags
-// the popover passes in hang directly under it: the cohorts first, since Women and Men are
-// families of the record rather than words filed against it, then the directory's own
-// vocabulary.
-//
-// Nothing here is "all": a pill that is not pressed is the whole field, which is why the
-// family select simply reads Every family.
-const FIELDS = [
-  { key: 'all', label: 'All fields' },
-  { key: 'space_rd', label: 'Space R&D' },
-  { key: 'commercial_aviation', label: 'Aviation' },
-  { key: 'defense', label: 'Defense' },
-  { key: 'manufacturing', label: 'Manufacturing' },
-  { key: 'operations', label: 'Operations' },
-  { key: 'engineering', label: 'Engineering' },
-  { key: 'policy', label: 'Policy' },
-  { key: 'entrepreneurship', label: 'Founders' },
-];
+// The search, the order and the hanging of the reading ride one line, with the tags the
+// popover passes in hanging directly under it. The field and the tag family are not offered
+// here any more: both narrowings are served better by the words themselves, which carry how
+// much of the reading each one holds — so a reading is set up by typing a name and pressing
+// a word, not by setting two menus before anything can be seen.
 
 const ORDERS = [
   { key: 'random', label: 'Random' },
@@ -39,23 +25,15 @@ const select =
 export default function ExplorerControls({
   query,
   onQuery,
-  field,
-  onField,
   sort,
   onSort,
   view,
   onView,
-  families = [],
-  family,
-  onFamily,
   autoFocus = false,
   children,
 }) {
   return (
     <div className="border-t border-editorial-copper/40 bg-editorial-cream px-4 pb-2 pt-2">
-      {/* One line: the field, the narrowings, the order, and the hanging of the reading.
-          They wrap only when the picture is too narrow to hold them, never within one
-          reading, so the controls keep their places. */}
       <div className="flex flex-wrap items-center gap-1.5">
         <div className="flex min-w-[140px] flex-1 items-center gap-2 border-b border-editorial-navy/25 pb-1 focus-within:border-editorial-copper">
           <Search className="h-3.5 w-3.5 shrink-0 text-editorial-navy/45" aria-hidden="true" />
@@ -78,35 +56,6 @@ export default function ExplorerControls({
             </button>
           )}
         </div>
-
-        <select
-          value={field}
-          onChange={(event) => onField(event.target.value)}
-          aria-label="Field"
-          className={`${select} ${field !== 'all' ? 'bg-editorial-gold/25' : ''}`}
-        >
-          {FIELDS.map((option) => (
-            <option key={option.key} value={option.key}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        {families.length > 0 && (
-          <select
-            value={family}
-            onChange={(event) => onFamily(event.target.value)}
-            aria-label="Tag family"
-            className={`${select} ${family !== 'all' ? 'bg-editorial-gold/25' : ''}`}
-          >
-            <option value="all">Every family</option>
-            {families.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        )}
 
         <select
           value={sort}
