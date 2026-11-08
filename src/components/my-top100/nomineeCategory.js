@@ -13,12 +13,23 @@ export function buildSeasonCategoryMap(seasons) {
   return map;
 }
 
-// Resolve a nominee's category from its season, with a light text fallback
-// for records missing a season_id.
+// Resolve a nominee's category from the seasons they are a member of, with a light text
+// fallback for records carrying no season at all.
+//
+// A person is a member of every season in season_ids; the flat season_id is only the
+// pointer kept for older reads. Reading the pointer alone dropped everyone whose membership
+// was written by a rollover or a backfill — they stood in the pool but in neither cohort, so
+// a Women or Men press took them out of the reading, and a tag press made with it emptied
+// the sheet. The membership is therefore read first, in the order the record carries it.
 export function getNomineeCategory(n, seasonCategoryMap = {}) {
   if (!n) return null;
-  const sc = seasonCategoryMap[n.season_id];
-  if (sc) return sc;
+  const memberships = Array.isArray(n.season_ids) && n.season_ids.length
+    ? n.season_ids
+    : [n.season_id];
+  for (const seasonId of memberships) {
+    const sc = seasonCategoryMap[seasonId];
+    if (sc) return sc;
+  }
   const t = `${n.description || ''} ${n.industry || ''} ${n.category || ''}`.toLowerCase();
   if (t.includes('woman') || t.includes('female')) return 'women';
   if (t.includes('angel') || t.includes('investor')) return 'angels';

@@ -192,9 +192,11 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   // and the sheet's own keys belong to that card (see the modal picker below).
   const panelOpen = !!viewingProfile || !!nominating || inlineNominate;
 
+  // One cursor for both views: the plates answer to their own index as the lines do, so
+  // switching between the roll and the gallery never takes the hand off the reading.
   const { cursor, setCursor, reset } = useExplorerCursor({
     rows: visible,
-    enabled: isOpen && !panelOpen && view === 'list',
+    enabled: isOpen && !panelOpen,
     onOpen: (row) => setViewingProfile(row),
     onClose,
     bodyRef,
@@ -212,9 +214,8 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   });
 
   useEffect(() => {
-    if (view !== 'list') return;
     if (cursor >= visible.length - 3 && hasMore) loadMore();
-  }, [cursor, visible.length, hasMore, view, loadMore]);
+  }, [cursor, visible.length, hasMore, loadMore]);
 
   // A new reading starts at its head: the first name the filters leave is the one the
   // cursor stands on.
@@ -232,6 +233,11 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   });
 
   const openRow = (row) => setViewingProfile(row);
+
+  // Why a name came back, said in the reader's terms in both views — a plate explains itself
+  // the way a line does, so the cloud's reach is never a mystery in either face.
+  const matchNoteFor = (nominee) =>
+    plan ? explainMatch(plan, haystacks.get(nominee.id), tagSetFor(nominee)) : null;
 
   // One word narrows the pool; several narrow it to the names carrying all of them — the
   // same reading the old cloud gave, and the same one this directory gives by any other
@@ -384,8 +390,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                 <ExplorerGallery
                   nominees={visible}
                   addedIds={addedIds}
+                  focusedIndex={cursor}
+                  matchNoteFor={matchNoteFor}
                   onOpen={openRow}
-                  onNominate={(nominee) => setNominating(nominee)}
+                  onNominate={(nominee, index) => { setCursor(index); setNominating(nominee); }}
                 />
               ) : (
                 <ul className="border-t border-editorial-copper">
@@ -396,9 +404,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                       index={index}
                       focused={index === cursor}
                       isAdded={addedIds.has(nominee.id)}
-                      matchNote={
-                        plan ? explainMatch(plan, haystacks.get(nominee.id), tagSetFor(nominee)) : null
-                      }
+                      matchNote={matchNoteFor(nominee)}
                       onOpen={() => openRow(nominee)}
                       onNominate={() => { setCursor(index); setNominating(nominee); }}
                     />
@@ -430,12 +436,8 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         {/* The foot: how the machine is driven, and where the reading has got to. */}
         <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-editorial-copper/30 px-5 py-2">
           <p className="font-body text-[8.5px] uppercase tracking-[0.16em] text-editorial-navy/45">
-            <span className="md:hidden">
-              {view === 'gallery' ? 'A opens · B back' : 'Wheel walks · A opens · B back'}
-            </span>
-            <span className="hidden md:inline">
-              {view === 'gallery' ? 'Every plate opens its record' : '↑↓ walk · Enter opens · Esc back'}
-            </span>
+            <span className="md:hidden">Wheel walks · A opens · B back</span>
+            <span className="hidden md:inline">↑↓ walk · Enter opens · Esc back</span>
           </p>
           <p className="font-body text-[8.5px] uppercase tracking-[0.16em] tabular-nums text-editorial-navy/45">
             {loading ? '' : `${visible.length} / ${reading.length}`}
