@@ -38,7 +38,7 @@ export default function useNomineeTags(enabled) {
     (async () => {
       const page = await base44.entities.NomineeTag.filter(
         { status: 'approved' },
-        { sort: '-upvotes', limit: 2000, fields: ['nominee_id', 'tag_name', 'category', 'upvotes'] }
+        { sort: '-upvotes', limit: 6000, fields: ['nominee_id', 'tag_name', 'category', 'upvotes'] }
       );
       const rows = page.items || [];
       if (!active) return;
@@ -47,9 +47,9 @@ export default function useNomineeTags(enabled) {
       // record the directory actually draws.
       const ids = [...new Set(rows.map((row) => row.nominee_id).filter(Boolean))];
       const recordNames = new Map();
-      if (ids.length > 0) {
+      for (let index = 0; index < ids.length; index += 500) {
         const records = await base44.entities.Nominee.filter(
-          { id: { $in: ids.slice(0, 500) } },
+          { id: { $in: ids.slice(index, index + 500) } },
           { limit: 500, fields: ['id', 'name'] }
         );
         (records.items || []).forEach((record) => {
