@@ -272,7 +272,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         role="dialog"
         aria-modal="true"
         aria-label="All nominees"
-        className="machine-sheet explore-sheet hh-glass-panel-card relative flex w-full flex-col overflow-hidden border border-editorial-copper/40 md:max-h-full md:max-w-[720px] md:rounded-[14px]"
+        className="machine-sheet explore-sheet hh-glass-panel-card relative flex w-full flex-col overflow-hidden border border-editorial-copper/40 md:h-[min(720px,100%)] md:max-w-[720px] md:rounded-[14px]"
       >
         {/* The plate: the maker's overline, the reading's name, and the way out. */}
         <header className="shrink-0 bg-editorial-navy px-5 pb-2.5 pt-3">
@@ -334,7 +334,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
           {loadError ? (
             /* The one read this sheet cannot work without. Nothing is lost, and the way
                back is a press rather than a guess. */
-            <div className="px-6 py-12 text-center">
+            <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 text-center">
               <div className="pd-rule mx-auto w-10" />
               <h3 className="mt-4 font-heading text-[17px] leading-tight text-editorial-navy">
                 The directory could not be read
@@ -351,14 +351,14 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               </button>
             </div>
           ) : loading ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-16">
+            <div className="flex min-h-full flex-col items-center justify-center gap-3 py-16">
               <Loader2 className="h-5 w-5 animate-spin text-editorial-copper" aria-hidden="true" />
               <p className="font-body text-[10px] uppercase tracking-[0.18em] text-editorial-navy/45">
                 Reading the directory
               </p>
             </div>
           ) : reading.length === 0 ? (
-            <div className="px-6 py-12 text-center">
+            <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 text-center">
               <div className="pd-rule mx-auto w-10" />
               <h3 className="mt-4 font-heading text-[17px] leading-tight text-editorial-navy">
                 No name in this reading
