@@ -1,34 +1,20 @@
 import { brand, ink } from '@/components/nominate/NominateConfig';
+import { measureBallot, share, CARDS_PER_SITTING, MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
-// ── THE SCALE THE COUNTING COHORT IS MEASURED AGAINST ─────────────────────────
-// A mini ballot sets four cards in front of a Fellow and writes seven comparisons, so a
-// nominee's standing is read off how many times it has been set down in front of someone.
-// The marks are held in card appearances rather than in ballots, because appearances are
-// what the measurement actually spends: twelve for the floor, sixteen realistic, twenty
-// at the ideal, thirty-two at the ambitious end. Each is turned into a ballot target
-// against the pool that is standing, so the scale moves with the field instead of being
-// a figure typed into the panel.
-const APPEARANCES_PER_BALLOT = 4;
-const COMPARISONS_PER_BALLOT = 7;
-
-const MARKS = [
-  { key: 'floor', label: 'Floor', appearances: 12 },
-  { key: 'realistic', label: 'Realistic', appearances: 16 },
-  { key: 'ideal', label: 'Ideal', appearances: 20 },
-  { key: 'ambitious', label: 'Ambitious', appearances: 32 },
-];
-
+// ── SIGNAL PROGRESS ────────────────────────────────────────────────────────
+// How far the cohort's analysis has got, read against the marks its own pool sets for it.
+// Every figure comes from src/lib/ballotMeasurement.js — the same module the selection desk
+// reads — so the committee and the admin portal can never hold two definitions of a sitting,
+// a pool, coverage or a target. This surface only decides how the reading is printed.
 const commas = (value) => Math.round(Number(value) || 0).toLocaleString('en-US');
 const tenths = (value) => (Math.round((Number(value) || 0) * 10) / 10).toFixed(1);
 
 // A share never reads as nothing while it is merely small: a cohort four ballots in is
 // not at 0% of the floor, it is under a percent of it.
-function share(value, target) {
-  if (!target) return '—';
-  const pct = ((Number(value) || 0) / target) * 100;
-  if (pct <= 0) return '0%';
-  if (pct < 1) return '<1%';
-  return `${Math.round(pct)}%`;
+function pct(value) {
+  if (!Number.isFinite(value) || value <= 0) return '0%';
+  if (value < 1) return '<1%';
+  return `${Math.round(value)}%`;
 }
 
 const MARK_LABEL = 'text-[6.5px] font-bold uppercase tracking-[0.14em]';
@@ -38,66 +24,52 @@ const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
 // pool sets for it. Printed as an instrument rather than a chart — one figure in the
 // largest hand on the plate, one measure under it, and the scale the figure is standing
 // on printed along the foot. Nothing here is a forecast: every number is a count.
-export default function SignalProgress({ data, loading, pool: poolSize = 0, scope = 'community' }) {
-  // The pool is reported by the ballot itself — the field the cards are actually dealt
-  // from — so the marks and the Crosscheck can never be reading different fields.
+export default function SignalProgress({ data, loading, scope = 'community' }) {
   const readingTests = scope === 'test';
-  const pool = Number(poolSize) || 0;
-  const ballots = Number(data?.reviews) || 0;
-  const comparisons = Number(data?.comparisons) || 0;
-  const weighedOnce = Number(data?.weighedOnce) || 0;
-  const testComparisons = Number(data?.testComparisons) || 0;
-  const rungs = data?.rungs || [];
   const waiting = loading && !data;
 
-  // Both readings use the same instrument and pool-scaled reference marks.
-  // Test progress is a simulation only and remains outside community measurement.
-  const marks = MARKS.map((mark) => ({
-    ...mark,
-    ballots: pool ? Math.ceil((pool * mark.appearances) / APPEARANCES_PER_BALLOT) : 0,
-  }));
-  const floor = marks[0].ballots;
-  const ideal = marks[2].ballots;
-  const ceiling = marks[3].ballots || 1;
+  // The lane on the glass, and the pool both lanes are scaled against.
+  const measurement = data?.measurement || null;
+  const marks = Number(
+    readingTests ? measurement?.comparisons_test : measurement?.comparisons_live
+  ) || 0;
+  const covered = Number(
+    readingTests ? measurement?.covered_test : measurement?.covered_live
+  ) || 0;
+  const heldApart = Number(
+    readingTests ? measurement?.comparisons_live : measurement?.comparisons_test
+  ) || 0;
 
-  // Per nominee, and the two marks each is read against.
-  const perNominee = {
-    comparisons: pool ? comparisons / pool : 0,
-    appearances: pool ? (ballots * APPEARANCES_PER_BALLOT) / pool : 0,
-  };
-  const perNomineeMarks = {
-    comparisons: {
-      floor: (floor * COMPARISONS_PER_BALLOT) / (pool || 1),
-      ideal: (ideal * COMPARISONS_PER_BALLOT) / (pool || 1),
-    },
-    appearances: {
-      floor: (floor * APPEARANCES_PER_BALLOT) / (pool || 1),
-      ideal: (ideal * APPEARANCES_PER_BALLOT) / (pool || 1),
-    },
-  };
+  const reading = measureBallot({ pool: measurement?.pool || 0, marks, covered });
+  const rungs = data?.rungs || [];
 
-  const reached = floor > 0 && ballots >= floor;
-  const atIdeal = ideal > 0 && ballots >= ideal;
+  const reached = reading.floor.sittings > 0 && reading.sittings >= reading.floor.sittings;
+  const atIdeal = reading.ideal.sittings > 0 && reading.sittings >= reading.ideal.sittings;
   const pill = atIdeal ? 'At the ideal' : reached ? 'Floor reached' : 'Below floor';
-  const fill = Math.min(1, ballots / ceiling);
 
-  const footer = pool
-    ? `${commas(weighedOnce)} of ${commas(pool)} nominees weighed at least once${readingTests ? ' in test runs' : ''} — ${share(weighedOnce, pool)} of the pool. Four cards to the mini ballot and seven comparisons written from it; the marks are set from the pool of ${commas(pool)}, so they move with the field.` +
-      (readingTests
-        ? ' These are simulated reference marks only. Test runs change no rating, community milestone or report.'
-        : testComparisons ? ` ${commas(testComparisons)} test comparisons are held apart from these figures.` : '')
-    : 'The pool standing in this cohort has not been read yet, so no marks can be set.';
+  const footer = !measurement
+    ? 'This cohort’s pool could not be read, so no marks can be set. The reading returns with the next poll.'
+    : reading.ready
+      ? `${commas(reading.covered)} of ${commas(reading.pool)} nominees weighed at least once${readingTests ? ' in test runs' : ''} — ${pct(reading.coverage)} of the pool. ${CARDS_PER_SITTING} cards to the mini ballot and ${MARKS_PER_SITTING} marks written from it; the marks are set from the pool of ${commas(reading.pool)}, so they move with the field.` +
+        (readingTests
+          ? ' These are simulated reference marks only. Test runs change no rating, community milestone or report.'
+          : heldApart
+            ? ` ${commas(heldApart)} test comparisons are held apart from these figures.`
+            : '')
+      : 'The pool standing in this cohort has not been read yet, so no marks can be set.';
 
   const columns = [
     {
       label: 'Comparisons per nominee',
-      value: tenths(perNominee.comparisons),
-      marks: perNomineeMarks.comparisons,
+      value: tenths(reading.comparisonsPerNominee),
+      floor: reading.floor.comparisons,
+      ideal: reading.ideal.comparisons,
     },
     {
       label: 'Appearances per nominee',
-      value: tenths(perNominee.appearances),
-      marks: perNomineeMarks.appearances,
+      value: tenths(reading.appearancesPerNominee),
+      floor: reading.floor.appearances,
+      ideal: reading.ideal.appearances,
     },
   ];
 
@@ -110,7 +82,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
         </p>
         <div className="flex shrink-0 items-center gap-1.5">
           <p className="text-[6px] font-bold uppercase tracking-[0.12em]" style={{ color: ink.soft }}>
-            {readingTests ? 'Test reference' : 'Every open cohort'}
+            {readingTests ? 'Test reference' : 'This cohort’s pool'}
           </p>
           <span
             className="rounded-full px-1.5 py-[2px] text-[6px] font-bold uppercase tracking-[0.12em]"
@@ -126,13 +98,14 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
 
       {/* The figure itself, and the two shares it is standing on. */}
       <p className="mt-1 flex items-baseline gap-1 font-heading leading-none" style={{ color: brand.navy }}>
-        <span className="text-[27px]">{waiting ? '—' : commas(ballots)}</span>
+        <span className="text-[27px]">{waiting ? '—' : commas(reading.sittings)}</span>
         <span className="text-[11px]" style={{ color: ink.soft }}>
-          / {commas(floor)} floor
+          / {commas(reading.floor.sittings)} floor
         </span>
       </p>
       <p className="mt-1 text-[7.5px] font-bold uppercase tracking-[0.1em]" style={{ color: ink.label }}>
-        {share(ballots, floor)} of floor · {share(ballots, ideal)} of ideal
+        {pct(share(reading.sittings, reading.floor.sittings))} of floor ·{' '}
+        {pct(share(reading.sittings, reading.ideal.sittings))} of ideal
       </p>
 
       {/* The measure: the whole scale to the ambitious end, the fill to where the cohort
@@ -141,7 +114,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
         <span
           className="absolute inset-y-0 left-0 rounded-full"
           style={{
-            width: `${fill * 100}%`,
+            width: `${reading.fill * 100}%`,
             background:
               'linear-gradient(90deg, rgb(var(--editorial-label-rgb)) 0%, rgb(var(--editorial-copper-rgb)) 64%, rgb(var(--editorial-gold-rgb)) 100%)',
           }}
@@ -149,7 +122,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
         <span
           className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
-            left: `${Math.max(fill * 100, 1.5)}%`,
+            left: `${Math.max(reading.fill * 100, 1.5)}%`,
             background: 'rgb(var(--editorial-copper-rgb))',
             boxShadow: '0 0 0 2px rgb(var(--editorial-cream-rgb)), 0 1px 3px rgba(30,58,90,0.35)',
           }}
@@ -159,10 +132,10 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
       {/* What is left between where the cohort stands and the two marks that matter. */}
       <div className="mt-1.5 flex justify-end gap-3">
         <p className="text-[7px] tabular-nums" style={{ color: ink.soft }}>
-          <span style={{ color: brand.navy }}>{commas(Math.max(0, floor - ballots))}</span> to the floor
+          <span style={{ color: brand.navy }}>{commas(reading.toFloor)}</span> to the floor
         </p>
         <p className="text-[7px] tabular-nums" style={{ color: ink.soft }}>
-          <span style={{ color: brand.navy }}>{commas(Math.max(0, ideal - ballots))}</span> at the ideal
+          <span style={{ color: brand.navy }}>{commas(reading.toIdeal)}</span> at the ideal
         </p>
       </div>
 
@@ -187,8 +160,8 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
               {waiting ? '—' : column.value}
             </p>
             <p className="mt-0.5 text-[6.5px] font-bold uppercase tracking-[0.08em]" style={{ color: ink.label }}>
-              {share(perNominee[index ? 'appearances' : 'comparisons'], column.marks.floor)} floor ·{' '}
-              {share(perNominee[index ? 'appearances' : 'comparisons'], column.marks.ideal)} ideal
+              {pct(share(Number(column.value), column.floor))} floor ·{' '}
+              {pct(share(Number(column.value), column.ideal))} ideal
             </p>
           </div>
         ))}
@@ -196,7 +169,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
 
       {/* The scale itself, printed along the foot the way an instrument prints its range. */}
       <div className="mt-2.5 grid grid-cols-4">
-        {marks.map((mark) => (
+        {reading.ladder.map((mark) => (
           <div
             key={mark.key}
             className="px-1 pt-1"
@@ -206,10 +179,10 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
               {mark.label}
             </p>
             <p className="text-[9px] font-bold tabular-nums leading-tight" style={{ color: brand.navy }}>
-              {commas(mark.ballots)}
+              {commas(mark.sittings)}
             </p>
             <p className="text-[6px] tabular-nums" style={{ color: ink.label }}>
-              {share(ballots, mark.ballots)}
+              {pct(share(reading.sittings, mark.sittings))}
             </p>
           </div>
         ))}
@@ -223,7 +196,7 @@ export default function SignalProgress({ data, loading, pool: poolSize = 0, scop
             {readingTests ? 'Testers past each rung' : 'Fellows past each rung'}
           </p>
           <p className="text-[6.5px] tabular-nums" style={{ color: ink.soft }}>
-            {commas(comparisons)} comparisons
+            {commas(marks)} marks
           </p>
         </div>
         {waiting ? (

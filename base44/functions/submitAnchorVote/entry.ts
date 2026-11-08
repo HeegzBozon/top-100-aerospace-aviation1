@@ -50,7 +50,7 @@ export default async function(req) {
       if (!nominees[id]) return Response.json({ error: 'Nominee not found: ' + id }, { status: 404 });
     }
 
-    // In-memory ELO snapshot so all 7 comparisons apply to a consistent baseline.
+    // In-memory ELO snapshot so all 5 comparisons apply to a consistent baseline.
     const elo = {};
     const wins = {};
     const losses = {};
@@ -76,7 +76,7 @@ export default async function(req) {
       comparisons.push([winnerId, loserId]);
     }
 
-    // top > each neutral (3), top > bottom (1), each neutral > bottom (3) = 7
+    // top > each neutral (2), top > bottom (1), each neutral > bottom (2) = 5
     neutrals.forEach((nid) => apply(top_nominee_id, nid));
     apply(top_nominee_id, bottom_nominee_id);
     neutrals.forEach((nid) => apply(nid, bottom_nominee_id));

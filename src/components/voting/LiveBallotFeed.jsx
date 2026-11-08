@@ -27,7 +27,7 @@ const SCOPES = [
 
 const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
 
-export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 }) {
+export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
   const [scope, setScope] = useState('community');
   const { data, loading, error, updatedAt, refresh } = useLiveBallotFeed(seasonId, refreshToken, scope);
   const [tab, setTab] = useState('progress');
@@ -134,7 +134,7 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 })
             </button>
           </div>
         ) : tab === 'progress' ? (
-          <SignalProgress data={data} loading={loading} pool={pool} scope={scope} />
+          <SignalProgress data={data} loading={loading} scope={scope} />
         ) : (
           <LatestReviews data={data} loading={loading} updatedAt={updatedAt} scope={scope} />
         )}

@@ -136,12 +136,7 @@ export default function SelectionMonitor({ onOpenMenu }) {
       {/* How far the pool has been reached, and how many mini ballots the reading still
           needs before it holds still. Counted from the live ledger alone. */}
       <div className="order-1 md:order-none">
-        <SignalProgress
-          totals={totals}
-          scopeLabel={scopeLabel}
-          standings={data?.standings || []}
-          mode={mode}
-        />
+        <SignalProgress totals={totals} scopeLabel={scopeLabel} mode={mode} />
       </div>
 
       {/* Who is on the wire this minute: the site's live readers, and the campus floor.

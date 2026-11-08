@@ -8,6 +8,8 @@
 // ranking, or scoring — the record exists so a Fellow can see the work they have put
 // in, not so the institution can weigh them differently for it.
 
+import { MARKS_PER_SITTING } from './ballotMeasurement.ts';
+
 export const XP_PER_SET = 10;
 
 // The ladder is stated in completed sets, because a set is the unit an Analyst actually
@@ -174,13 +176,13 @@ export async function recordContribution(service, opts) {
   const priorXp = record?.xp || 0;
   const sets = (record?.sets_completed || 0) + (!test && isSet ? 1 : 0);
   const ballots = (record?.ballots_saved || 0) + (!test && !isSet ? 1 : 0);
-  const comparisons = (record?.comparisons_recorded || 0) + (!test && isSet ? 7 : 0);
+  const comparisons = (record?.comparisons_recorded || 0) + (!test && isSet ? MARKS_PER_SITTING : 0);
   const xp = priorXp + (test ? 0 : xpGain);
 
   const priorTestXp = record?.test_xp || 0;
   const testXp = priorTestXp + (test ? xpGain : 0);
   const testSets = (record?.test_sets_completed || 0) + (test && isSet ? 1 : 0);
-  const testComparisons = (record?.test_comparisons_recorded || 0) + (test && isSet ? 7 : 0);
+  const testComparisons = (record?.test_comparisons_recorded || 0) + (test && isSet ? MARKS_PER_SITTING : 0);
 
   const cohortKeys = new Set(record?.cohort_keys || []);
   if (cohort_key) cohortKeys.add(cohort_key);

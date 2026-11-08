@@ -1,6 +1,6 @@
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 import useSiteTraffic from './useSiteTraffic';
-import { COMPARISONS_PER_SET } from './signalConfig';
+import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
 // The monitor's head strip: the counts the ledger is producing, then the audience it is
 // producing them for. Everything else on the surface is the dive under these figures.
@@ -22,9 +22,12 @@ const FIGURES = [
 // A phone carries only the three levels of the vote itself; the audience behind them is a
 // desk reading, and hiding it here leaves the signal instrument the head of the glass.
 
-// A mini ballot is the set as the record writes it: five marks to the sitting.
+// A mini ballot is the set as the record writes it: five marks to the sitting, and a
+// sitting is whole or it is not cast.
 const valueFor = (total, totals) =>
-  total.key === 'mini' ? Math.round((Number(totals?.comparisons) || 0) / COMPARISONS_PER_SET) : totals?.[total.key];
+  total.key === 'mini'
+    ? Math.floor((Number(totals?.comparisons) || 0) / MARKS_PER_SITTING)
+    : totals?.[total.key];
 
 const TRAFFIC = [
   { key: 'users', label: 'Users' },
