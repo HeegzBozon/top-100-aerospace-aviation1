@@ -29,7 +29,7 @@ function reasonFor(place, person) {
   return word ? `${word} in your own Crosscheck` : 'Carried through your Crosscheck';
 }
 
-export default function usePersonalStandings({ user, pool, excludeIds }) {
+export default function usePersonalStandings({ user, pool, excludeIds, scope = 'community' }) {
   const [state, setState] = useState({
     loading: true,
     standings: [],
@@ -54,9 +54,12 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     // One tally, taken server-side: the ballots this Fellow cast, counted by the name each
-    // comparison carried. Test ballots walked by an administrator are held out.
+    // comparison carried. The lane is the surface's to choose. A ballot cast by an
+    // administrator is stamped as a test (see submitAnchorVote), so an operator's own
+    // weighing stands in the test lane and nowhere else — read there, and still held out
+    // of the community's.
     const tally = await base44.entities.PairwiseVote.aggregate({
-      query: { voter_email: email, is_test: { $ne: true } },
+      query: { voter_email: email, is_test: scope === 'test' ? true : { $ne: true } },
       groupBy: 'winner_nominee_id',
     });
 
@@ -92,7 +95,7 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
       carried: carriedNames.length,
       error: null,
     });
-  }, [email]);
+  }, [email, scope]);
 
   useEffect(() => {
     let alive = true;

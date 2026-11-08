@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import { MANIFEST } from '@/components/voting/ballotNaming';
@@ -32,10 +33,17 @@ export default function BallotBuilderPanel({
   onOpenVote,
   onOpenBriefing,
 }) {
+  // Every ballot an administrator casts is stamped as a test, so an operator's own weighing
+  // lives in the test lane and never in the community's. The column opens on the lane their
+  // marks are actually in, and offers the other one the way the live monitor does.
+  const isAdmin = user?.role === 'admin';
+  const [scope, setScope] = useState(isAdmin ? 'test' : 'community');
+
   const { loading, standings, standingCount, carried, error, refresh } = usePersonalStandings({
     user,
     pool,
     excludeIds: addedIds,
+    scope,
   });
 
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
@@ -75,14 +83,44 @@ export default function BallotBuilderPanel({
         </button>
       </div>
 
-      {/* The Fellow's own standings, read back to them. */}
-      <div className="mt-4">
+      {/* The Fellow's own standings, read back to them. An operator reads their test lane
+          here: a rehearsal is theirs to inspect, and it is still never the community's. */}
+      <div className="mt-4 flex items-center justify-between gap-2">
         <SectionLabel>Your Crosscheck standings</SectionLabel>
+        {isAdmin && (
+          <span className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Which ballot to read">
+            {[
+              ['community', 'Community'],
+              ['test', 'Test'],
+            ].map(([key, name]) => {
+              const active = scope === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setScope(key)}
+                  className="rounded px-1.5 py-[2px] text-[6.5px] font-bold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+                  style={
+                    active
+                      ? key === 'test'
+                        ? { background: 'rgb(var(--editorial-copper-rgb))', color: 'rgb(var(--editorial-cream-rgb))' }
+                        : { background: `${brand.navy}14`, border: `1px solid ${brand.navy}22`, color: brand.navy }
+                      : { background: 'transparent', border: `1px solid ${brand.navy}0D`, color: ink.soft }
+                  }
+                >
+                  {name}
+                </button>
+              );
+            })}
+          </span>
+        )}
       </div>
 
       <p className="mt-0.5 text-[10px] leading-relaxed" style={{ color: ink.soft }}>
-        The names your own comparisons have carried, best first. No platform score, and no
-        one else&apos;s ballot.
+        {scope === 'test'
+          ? 'Your own test ballots, read back as you cast them. An internal lane: held out of the community’s measure, and out of nothing you add here.'
+          : 'The names your own comparisons have carried, best first. No platform score, and no one else’s ballot.'}
       </p>
 
       <div className="mt-2 space-y-2">
