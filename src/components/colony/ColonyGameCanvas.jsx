@@ -17,7 +17,7 @@ const PERSPECTIVE = ['lobby', 'station'];
 
 // A standing figure is measured in map cells, not in pixels, so it keeps its proportions
 // at every depth and on every screen.
-const SPRITE_CELLS = 2.45;
+const SPRITE_CELLS = 3;
 
 // Depth of field. Every floor is walked with its back wall furthest away, so a figure at
 // the foot of the plate reads larger than one at the head of it, and the whole cast sits
@@ -140,7 +140,9 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   const sway = walk === null ? 0 : Math.sin(walk) * 0.02;
   // Standing still, the cast breathes; mid-step, each footfall squashes the figure a touch.
   const t = meta.now || 0;
-  const squash = walk !== null ? 1 - Math.abs(Math.cos(walk)) * 0.035 : meta.npc ? 1 + Math.sin(t / 520 + x) * 0.012 : 1;
+  // Standing still, everyone breathes — the cast and the visitor alike — so a quiet room
+  // is never a still frame. Barely a percent: felt, never seen.
+  const squash = walk !== null ? 1 - Math.abs(Math.cos(walk)) * 0.035 : 1 + Math.sin(t / 620 + x * 0.05) * 0.011;
   ctx.translate(x, y + cell * 0.5 + bob);
   ctx.rotate(sway);
   ctx.scale(1 / squash, tall * squash);
@@ -354,7 +356,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       if (sp < 1) drawBeam(ctx, sx, sy, CELL * sc * depth, 1 - sp * 0.6, now);
       s.last[p.id] = { x: sx, y: sy, cell: CELL * sc * depth };
       ctx.globalAlpha = sp;
-      drawSprite(ctx, sx, sy, p.avatar, p.facing, p.label, sc, depth, (PERSPECTIVE.includes(room) ? 1.3 : 1) * (0.25 + 0.75 * sp), walk,
+      drawSprite(ctx, sx, sy, p.avatar, p.facing, p.label, sc, depth, (PERSPECTIVE.includes(room) ? 1.1 : 1) * (0.25 + 0.75 * sp), walk,
         { sub: p.sub, id: p.id, me: p.id === 'me', plates, line: p.line, npc: p.npc, now, cache: s.plateY,
           prox: p.id === 'me' ? 0.6 : Math.max(0, 1 - Math.hypot(p.col - s.playerCol, p.row - s.playerRow) / 10) });
     });
@@ -362,6 +364,25 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     s.plates = plates;
     // Whoever just left collapses back into their column of light.
     Object.values(s.gone).forEach(g => drawBeam(ctx, g.x, g.y, g.cell, 1 - (now - g.at) / SPAWN_MS, now));
+
+    // Airborne dust in the room's light. A slow drift of pale motes that hangs exactly
+    // where it was when the wheel stands still, and slides a little with the floor when
+    // the camera moves — atmosphere, not decoration. Placed from the clock, so it holds no
+    // state and costs nothing: sixteen soft points a frame.
+    ctx.save();
+    for (let i = 0; i < 16; i++) {
+      const seed = i * 97.13;
+      const speed = 5 + (i % 5) * 2.5;
+      const spanX = W + 80, spanY = H + 80;
+      const mx = ((seed * 13.7 + (now / 1000) * speed * 0.55 - s.camX * 0.14) % spanX + spanX) % spanX - 40;
+      const my = ((seed * 31.1 - (now / 1000) * speed - s.camY * 0.14) % spanY + spanY) % spanY - 40;
+      const breathe = 0.5 + 0.5 * Math.sin(now / 1500 + i * 1.7);
+      ctx.beginPath();
+      ctx.arc(mx, my, 1 + (i % 3) * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(250,244,232,${0.05 + 0.05 * breathe})`;
+      ctx.fill();
+    }
+    ctx.restore();
 
     // Room transition: the new room opens out of a closing iris of dark.
     if (!s.born) s.born = performance.now();

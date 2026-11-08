@@ -13,7 +13,7 @@ export const COLONY_ROOMS = {
     zones: [
       // On the emitter itself: the lit column standing on the right of the deck, from the
       // foot of the glass down to the floor it rises from.
-      { key: 'teleporter', label: 'The Teleporter', blurb: 'The Main Entrance, or any room and door on the campus.', panel: 'transit', col: 43, row: 25, w: 9, h: 8 },
+      { key: 'teleporter', label: 'The Teleporter', blurb: 'The Main Entrance, or any room and door on the campus.', panel: 'transit', col: 47, row: 19, w: 8, h: 7 },
     ],
     // The deck's solid parts: the window wall across the head of the room, the lounge
     // furniture either side of it, the command console, and the foot of the deck. The
