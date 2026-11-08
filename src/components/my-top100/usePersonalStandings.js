@@ -14,7 +14,7 @@ import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 // Only the ballots this Fellow cast are read: no other member's weighing, no ranked-choice
 // weight, no platform score. Nothing here writes — not to the ballot, not to a score.
 
-const RETURN_LIMIT = 40;
+const RETURN_LIMIT = 100;
 
 const asCount = (value) => (typeof value === 'number' ? value : value?.count || 0);
 

@@ -178,7 +178,7 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && standingCount === 0 && carried === 0 && marks > 0 && (
+        {!loading && !error && standingCount === 0 && marks === 0 && otherLaneMarks === 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <Sparkles className="h-4 w-4" style={{ color: brand.gold }} />
             <p className="mt-1.5 text-[11.5px] font-bold" style={{ color: brand.navy }}>
