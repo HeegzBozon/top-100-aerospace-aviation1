@@ -54,9 +54,9 @@ export default function VoteSurface({ user, readOnly = false, onSetRecorded = nu
   // Bumped when a set is recorded here, so the monitor beside the ballot redraws at once
   // rather than waiting for its next poll.
   const [feedToken, setFeedToken] = useState(0);
-  // The field the ballot is drawing from, as the ballot itself counted it: the monitor
-  // sets its marks against this pool, so the scale and the cards can never disagree.
-  const [poolSize, setPoolSize] = useState(0);
+  // The field the monitor sets its marks against is the cohort's own pool, read server-side
+  // by getBallotMeasurement — the same reading the admin desk uses, so the scale and the
+  // cards can never disagree and the two monitors can never hold two fields.
   // What the column beside the set is showing: the operator's monitor, or the record they
   // also have to keep. An operator is a Fellow first, so the quick edit is never out of
   // reach — the monitor is simply what the column opens on.
@@ -230,7 +230,6 @@ export default function VoteSurface({ user, readOnly = false, onSetRecorded = nu
             onRecorded={onRecorded}
             progress={readOnly ? null : context.progress}
             readOnly={readOnly}
-            onPoolSize={setPoolSize}
           />
         </div>
 
@@ -267,7 +266,7 @@ export default function VoteSurface({ user, readOnly = false, onSetRecorded = nu
                 })}
               </div>
               {asideView === 'monitor' ? (
-                <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
+                <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} />
               ) : (
                 <FellowQuickEdit />
               )}

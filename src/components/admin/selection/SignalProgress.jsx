@@ -1,20 +1,9 @@
-import {
-  SCENARIOS,
-  COMPARISONS_PER_SET,
-  setsTarget,
-  comparisonsPerNominee,
-  appearancesPerNominee,
-  bandForSets,
-  share,
-} from './signalConfig';
+import { measureBallot, share, CARDS_PER_SITTING, MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
-// The monitor's progress instrument, read in the units the season's design math uses.
-//
-// The unit of turnout is the mini ballot: one sitting of a ballot — four cards, five marks.
-// Progress is therefore measured as mini ballots cast against the design's floor and ideal,
-// and as the depth those sittings have bought each nominee — comparisons and appearances
-// per nominee. A share of the pool that has merely been touched is not progress on its own,
-// so it is printed beside the depth rather than in place of it.
+// The monitor's progress instrument, read through the same module the committee's monitor
+// reads (src/lib/ballotMeasurement.js). One sitting is four cards and seven marks; the pool
+// is the cohort's own; coverage is clamped to it. Nothing here holds a target table or a
+// divisor of its own.
 //
 // Each reading counts only its own ledger: the community's sittings, or the operator's test
 // walk-through. Neither can move the other.
@@ -30,53 +19,20 @@ const dec = (value) =>
     maximumFractionDigits: 1,
   });
 
-// Progress read as a share of the goal it is measured against. Whole numbers: this is a
-// reading of how far along the run is, not a figure to be argued over to a decimal.
-const pct = (part, whole) => {
-  const w = Number(whole) || 0;
-  if (!w) return 0;
-  return Math.round((Math.max(0, Number(part) || 0) / w) * 100);
-};
+// Progress read as a share of the goal it is measured against.
+const pct = (part, whole) => Math.round(share(part, whole));
 
-export default function SignalProgress({ totals, scopeLabel, standings = [], mode = 'live' }) {
+export default function SignalProgress({ totals, scopeLabel, mode = 'live' }) {
   const live = mode === 'live';
 
-  const pool = Number(totals?.pool) || 0;
   // Each reading counts its own marks: the community's, or the walk-through's. Never mixed.
   const marks = Number(live ? totals?.comparisons_live : totals?.comparisons_test) || 0;
+  const covered = Number(live ? totals?.covered_live : totals?.covered_test) || 0;
   const heldApart = Number(live ? totals?.comparisons_test : totals?.comparisons_live) || 0;
 
-  // One sitting is five marks, so turnout is read straight off the ledger.
-  const miniBallots = marks / COMPARISONS_PER_SET;
+  const reading = measureBallot({ pool: totals?.pool, marks, covered });
 
-  // Who this reading's marks have reached. The ledger resolves the community's figure in one
-  // pass; until that reading is on the wire, the count comes from the board's own appearance
-  // tally, which is that same reading's standing.
-  const tallied = standings.filter((row) => (row.appearances || 0) > 0).length;
-  const stated = Number(totals?.evaluated);
-  const reached = live && Number.isFinite(stated) ? stated : tallied;
-
-  const ladder = SCENARIOS.map((scenario) => ({
-    ...scenario,
-    sets: setsTarget(scenario.setsFor550, pool),
-  }));
-  const floor = ladder[0];
-  const ideal = ladder[2];
-  const band = bandForSets(miniBallots, pool);
-
-  const depth = comparisonsPerNominee(miniBallots, pool);
-  const appearances = appearancesPerNominee(miniBallots, pool);
-  const toFloor = Math.max(0, floor.sets - miniBallots);
-
-  // The same three readings, each stated as the share of its own goal: turnout against the
-  // floor and the ideal, and the two depth readings against the depth those goals ask for.
-  const floorDepth = comparisonsPerNominee(floor.sets, pool);
-  const idealDepth = comparisonsPerNominee(ideal.sets, pool);
-  const floorAppearances = appearancesPerNominee(floor.sets, pool);
-  const idealAppearances = appearancesPerNominee(ideal.sets, pool);
-  const reachedShare = pct(reached, pool);
-
-  if (!pool) {
+  if (!reading.ready) {
     return (
       <div className="rounded-xl border border-editorial-navy/10 bg-card px-4 py-5 text-center">
         <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-editorial-label">
@@ -103,7 +59,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
             {scopeLabel || 'Scope'}
           </span>
           <span className="rounded-full border border-editorial-copper/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-editorial-copper">
-            {band ? band.label : 'Below floor'}
+            {reading.band ? reading.band.label : 'Below floor'}
           </span>
         </span>
       </div>
@@ -115,26 +71,27 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
             Mini ballots cast
           </p>
           <p className="mt-0.5 flex items-baseline gap-1 font-heading leading-none text-editorial-navy">
-            <span className="text-[30px] tabular-nums">{num(miniBallots)}</span>
+            <span className="text-[30px] tabular-nums">{num(reading.sittings)}</span>
             <span className="text-[12px] tabular-nums text-editorial-navy/35">
-              / {num(floor.sets)} floor
+              / {num(reading.floor.sittings)} floor
             </span>
           </p>
           <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.1em] tabular-nums text-editorial-label">
-            {pct(miniBallots, floor.sets)}% of floor · {pct(miniBallots, ideal.sets)}% of ideal
+            {pct(reading.sittings, reading.floor.sittings)}% of floor ·{' '}
+            {pct(reading.sittings, reading.ideal.sittings)}% of ideal
           </p>
         </div>
         <p className="shrink-0 pb-0.5 text-right text-[10px] leading-tight text-editorial-navy/55">
-          {toFloor > 0 ? (
+          {reading.toFloor > 0 ? (
             <>
-              <span className="font-semibold tabular-nums text-editorial-navy">{num(toFloor)}</span> to
+              <span className="font-semibold tabular-nums text-editorial-navy">{num(reading.toFloor)}</span> to
               the floor
             </>
           ) : (
             <span className="font-semibold text-editorial-navy">Floor cleared</span>
           )}
           <br />
-          {num(ideal.sets)} at the ideal
+          {num(reading.ideal.sittings)} at the ideal
         </p>
       </div>
 
@@ -142,11 +99,11 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
       <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-editorial-navy/10">
         <div
           className="h-full rounded-full bg-editorial-copper transition-[width] duration-500"
-          style={{ width: `${share(miniBallots, ideal.sets)}%` }}
+          style={{ width: `${share(reading.sittings, reading.ideal.sittings)}%` }}
         />
         <span
           className="absolute inset-y-0 w-px bg-editorial-navy/45"
-          style={{ left: `${share(floor.sets, ideal.sets)}%` }}
+          style={{ left: `${share(reading.floor.sittings, reading.ideal.sittings)}%` }}
           aria-hidden="true"
         />
       </div>
@@ -158,13 +115,14 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
             {live ? 'Comparisons per nominee' : 'Test comparisons per nominee'}
           </p>
           <p className="mt-0.5 flex items-baseline gap-1 text-editorial-navy">
-            <span className="font-heading text-[15px] tabular-nums">{dec(depth)}</span>
+            <span className="font-heading text-[15px] tabular-nums">{dec(reading.comparisonsPerNominee)}</span>
             <span className="text-[9.5px] tabular-nums text-editorial-navy/40">
-              of {dec(floorDepth)} · {dec(idealDepth)}
+              of {dec(reading.floor.comparisons)} · {dec(reading.ideal.comparisons)}
             </span>
           </p>
           <p className="text-[8.5px] font-semibold tabular-nums tracking-[0.04em] text-editorial-label">
-            {pct(depth, floorDepth)}% floor · {pct(depth, idealDepth)}% ideal
+            {pct(reading.comparisonsPerNominee, reading.floor.comparisons)}% floor ·{' '}
+            {pct(reading.comparisonsPerNominee, reading.ideal.comparisons)}% ideal
           </p>
         </div>
         <div>
@@ -172,22 +130,22 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
             Appearances per nominee
           </p>
           <p className="mt-0.5 flex items-baseline gap-1 text-editorial-navy">
-            <span className="font-heading text-[15px] tabular-nums">{dec(appearances)}</span>
+            <span className="font-heading text-[15px] tabular-nums">{dec(reading.appearancesPerNominee)}</span>
             <span className="text-[9.5px] tabular-nums text-editorial-navy/40">
-              of {dec(floorAppearances)} · {dec(idealAppearances)}
+              of {dec(reading.floor.appearances)} · {dec(reading.ideal.appearances)}
             </span>
           </p>
           <p className="text-[8.5px] font-semibold tabular-nums tracking-[0.04em] text-editorial-label">
-            {pct(appearances, floorAppearances)}% floor · {pct(appearances, idealAppearances)}%
-            ideal
+            {pct(reading.appearancesPerNominee, reading.floor.appearances)}% floor ·{' '}
+            {pct(reading.appearancesPerNominee, reading.ideal.appearances)}% ideal
           </p>
         </div>
       </div>
 
       {/* The scenarios, in order, with the sitting total each one asks of this pool. */}
       <div className="mt-2 flex items-end gap-1">
-        {ladder.map((step) => {
-          const cleared = miniBallots >= step.sets;
+        {reading.ladder.map((step) => {
+          const cleared = reading.sittings >= step.sittings;
           return (
             <div key={step.key} className="min-w-0 flex-1">
               <div
@@ -197,7 +155,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
               />
               <p
                 className={`mt-1 truncate text-[8px] uppercase tracking-[0.1em] ${
-                  band?.key === step.key
+                  reading.band?.key === step.key
                     ? 'font-semibold text-editorial-copper'
                     : cleared
                       ? 'text-editorial-navy/45'
@@ -211,7 +169,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
                   cleared ? 'text-editorial-navy/40' : 'text-editorial-navy/25'
                 }`}
               >
-                {num(step.sets)}
+                {num(step.sittings)}
               </p>
               {/* How far along this rung the run already stands. */}
               <p
@@ -219,7 +177,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
                   cleared ? 'text-editorial-label' : 'text-editorial-navy/30'
                 }`}
               >
-                {pct(miniBallots, step.sets)}%
+                {pct(reading.sittings, step.sittings)}%
               </p>
             </div>
           );
@@ -229,18 +187,18 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
       {/* Reach, printed beside the depth: the totals only hold if the allocator spreads
           sittings. Short form on a phone, full caveat on a desk. */}
       <p className="mt-1.5 text-[9px] leading-relaxed text-editorial-navy/40 md:hidden">
-        {num(reached)} of {num(pool)} nominees {live ? 'weighed' : 'walked'} once (
-        {reachedShare}%).{' '}
+        {num(reading.covered)} of {num(reading.pool)} nominees {live ? 'weighed' : 'walked'} once (
+        {pct(reading.covered, reading.pool)}%).{' '}
         {live
           ? `Live sets only${heldApart > 0 ? `; ${num(heldApart)} test marks held apart` : ''}.`
           : `Test sets only; ${num(heldApart)} community marks outside this view.`}
       </p>
       <p className="mt-1.5 hidden text-[9px] leading-relaxed text-editorial-navy/40 md:block">
-        {num(reached)} of {num(pool)} nominees {live ? 'weighed' : 'walked'} at least once —{' '}
-        {reachedShare}% of the pool. Five
-        marks to the mini ballot, four card appearances, five set targets scaled from a pool of 550.
-        The totals hold only if the sittings are spread evenly; precision is read at the cut line,
-        not from volume alone.
+        {num(reading.covered)} of {num(reading.pool)} nominees {live ? 'weighed' : 'walked'} at least once —{' '}
+        {pct(reading.covered, reading.pool)}% of the pool. {MARKS_PER_SITTING} marks to the mini
+        ballot, {CARDS_PER_SITTING} card appearances, and the set targets scaled from this pool of{' '}
+        {num(reading.pool)}. The totals hold only if the sittings are spread evenly; precision is
+        read at the cut line, not from volume alone.
         {live
           ? heldApart > 0
             ? ` ${num(heldApart)} test comparisons are held apart from this figure.`

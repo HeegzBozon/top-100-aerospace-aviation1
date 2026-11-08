@@ -2,6 +2,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts } from '../../shared/votingWindow.ts';
 import { LEVELS, ALL_MILESTONES } from '../../shared/votingProgress.ts';
 import { resolveSeededBallots } from '../../shared/ballotSeed.ts';
+import {
+  listPool as listScopePool,
+  readBallotMeasurement,
+} from '../../shared/ballotMeasurement.ts';
 
 // Selection analytics, across every cohort at once, read-only. The ladder it reports is the
 // named one from shared/votingProgress.ts, so the desk reads the same marks as the ballot.
@@ -22,28 +26,9 @@ function normalise(values) {
   return { min: Math.min(...nums), max: Math.max(...nums) };
 }
 
-// The whole pool, not a page of it. A single filter call answers a capped slice, which
-// silently hides the back of the field from the operator who is meant to be watching it.
-async function listPool(service, scopedIds) {
-  const query = {
-    status: { $in: VOTABLE },
-    $or: scopedIds.flatMap((id) => [{ season_ids: id }, { season_id: id }]),
-  };
-  const all = [];
-  let cursor = null;
-  let rounds = 0;
-  while (rounds !== 40) {
-    rounds += 1;
-    const options = { sort: '-elo_rating', limit: 500 };
-    if (cursor) options.cursor = cursor;
-    const page = await service.entities.Nominee.filter(query, options).catch(() => null);
-    const items = page?.items || (Array.isArray(page) ? page : []);
-    all.push(...items);
-    if (!page?.has_more || !page?.next_cursor) break;
-    cursor = page.next_cursor;
-  }
-  return all;
-}
+// The pool itself is read through shared/ballotMeasurement.ts — the committee's monitor
+// reads the same records with the same membership rule, so the two desks scale their marks
+// against one field.
 
 // Saved ballots, read to their end so the ledger can name every voter who cast one.
 async function listSavedBallots(service, seasonQuery) {
@@ -201,7 +186,7 @@ export default async function (req) {
       // Every mark of this view: the baseline is scored from the whole set, and the ledger
       // prints its most recent page of them.
       listMarks(service, markQuery),
-      listPool(service, scopedIds),
+      listScopePool(service, scopedIds),
     ]);
 
     const comparisons = mode === 'internal' ? internalMarkCount : liveMarkCount;
@@ -218,29 +203,17 @@ export default async function (req) {
     });
 
     // ── Signal coverage ──────────────────────────────────────────────────────────
-    // How much of the pool the community's own marks have actually reached. Coverage is
-    // read from the live ledger alone, whichever reading is on the glass: a test set is
-    // the operator's own walk-through, so it can never stand as evidence that a nominee
-    // has been weighed by the field.
-    const coverageMarks = mode === 'live' ? marks : await listMarks(service, liveMarkQuery);
-    const poolIds = new Set(scoped.map((n) => n.id));
-    const seen = new Set<string>();
-    const seenByCohort = new Map<string, Set<string>>();
-    coverageMarks.forEach((m) => {
-      const key = m.season_id || '';
-      if (!seenByCohort.has(key)) seenByCohort.set(key, new Set<string>());
-      const cohortSeen = seenByCohort.get(key)!;
-      [m.winner_nominee_id, m.loser_nominee_id].forEach((id) => {
-        if (!id || !poolIds.has(id)) return;
-        seen.add(id);
-        cohortSeen.add(id);
-      });
-    });
-    const evaluated = seen.size;
+    // How much of this pool each lane has actually reached. Read through the shared ballot
+    // measurement, which is also what the committee's monitor reads, so both desks count
+    // the same records against the same field. Coverage is cohort-scoped and clamped to the
+    // pool: a nominee from another cohort, or one this pool does not hold, never counts.
+    const measurement = await readBallotMeasurement(service, scopedIds, { pool: scoped });
+    const evaluated = measurement?.covered_live || 0;
     cohortStats.forEach((row) => {
-      const reached = seenByCohort.get(row.season_id)?.size || 0;
-      row.evaluated = reached;
-      row.coverage_pct = row.pool > 0 ? Math.round((reached / row.pool) * 1000) / 10 : 0;
+      const reached = measurement?.by_cohort?.find((c) => c.season_id === row.season_id);
+      row.evaluated = reached?.covered_live || 0;
+      row.evaluated_test = reached?.covered_test || 0;
+      row.coverage_pct = row.pool > 0 ? Math.round((row.evaluated / row.pool) * 1000) / 10 : 0;
     });
 
     // Borda, read two ways. The recorded score is whatever the last scoring run wrote; the
@@ -438,12 +411,18 @@ export default async function (req) {
         ballots_on_record: ballotCount + openDrafts.length,
         // People, not seats: a Fellow standing in two open cohorts is one person in the
         // pool, and summing the cohort counts would count them twice.
-        pool: scoped.length,
+        // The pool a reading is scaled against, and the figures the monitors derive from it.
+        // Both are read through shared/ballotMeasurement.ts, so the committee's monitor and
+        // this desk report one field, one coverage and one set of targets.
+        pool: measurement?.pool ?? scoped.length,
         pool_seats: cohortStats.reduce((n, c) => n + c.pool, 0),
-        // How many people the community's marks have actually reached, and the share of
-        // the pool that is — the one figure the signal dashboard is built on.
+        covered_live: evaluated,
+        covered_test: measurement?.covered_test || 0,
         evaluated,
-        coverage_pct: scoped.length > 0 ? Math.round((evaluated / scoped.length) * 1000) / 10 : 0,
+        coverage_pct:
+          (measurement?.pool || scoped.length) > 0
+            ? Math.round((evaluated / (measurement?.pool || scoped.length)) * 1000) / 10
+            : 0,
         votes_per_contributor:
           contributorCount > 0 ? Math.round((comparisons / contributorCount) * 10) / 10 : 0,
       },

@@ -1,19 +1,19 @@
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 import useSiteTraffic from './useSiteTraffic';
-import { COMPARISONS_PER_SET } from './signalConfig';
+import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
 // The monitor's head strip: the counts the ledger is producing, then the audience it is
 // producing them for. Everything else on the surface is the dive under these figures.
 //
 // Three levels of the same record, in the order they are cast: a ballot is a Fellow's
-// whole ordering, a mini ballot is one sitting of it — four cards, five marks — and a mark
+// whole ordering, a mini ballot is one sitting of it — four cards, seven marks — and a mark
 // is one nominee weighed against another. Marks are counted in the reading on the glass.
 
 const num = (value) => (Number(value) || 0).toLocaleString();
 
 const FIGURES = [
   { key: 'ballots', label: 'Ballots', note: 'whole orderings' },
-  { key: 'mini', label: 'Mini ballots', note: 'four cards, five marks' },
+  { key: 'mini', label: 'Mini ballots', note: 'four cards, seven marks' },
   { key: 'comparisons', label: 'Marks', note: 'nominee against nominee' },
   { key: 'pool', label: 'In pool', wide: true },
   { key: 'contributors', label: 'Fellows', wide: true },
@@ -22,9 +22,12 @@ const FIGURES = [
 // A phone carries only the three levels of the vote itself; the audience behind them is a
 // desk reading, and hiding it here leaves the signal instrument the head of the glass.
 
-// A mini ballot is the set as the record writes it: five marks to the sitting.
+// A mini ballot is the set as the record writes it: seven marks to the sitting, and a
+// sitting is whole or it is not cast.
 const valueFor = (total, totals) =>
-  total.key === 'mini' ? Math.round((Number(totals?.comparisons) || 0) / COMPARISONS_PER_SET) : totals?.[total.key];
+  total.key === 'mini'
+    ? Math.floor((Number(totals?.comparisons) || 0) / MARKS_PER_SITTING)
+    : totals?.[total.key];
 
 const TRAFFIC = [
   { key: 'users', label: 'Users' },

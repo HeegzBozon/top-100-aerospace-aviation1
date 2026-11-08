@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
 // A set is written as one burst of comparison rows, all sharing a voter and a moment.
 // The number of rows per set has differed across ballot versions, so the monitor reads
@@ -10,10 +11,10 @@ const POLL_MS = 9000;
 const PACE_WINDOW_MIN = 15;
 const FEED_SETS = 6;
 
-// A review is seven comparisons against four records, so a Fellow's reviews are read back
-// off their own rows. The rungs below are the ballot's own milestone list: signal progress
-// is how deep the cohort's analysis runs, counted in Fellows who have passed each rung.
-const COMPARISONS_PER_REVIEW = 7;
+// A review is seven marks written against four records (see shared/ballotMeasurement.ts),
+// so a Fellow's reviews are read back off their own rows. The rungs below are the ballot's
+// own milestone list: signal progress is how deep the cohort's analysis runs, counted in
+// Fellows who have passed each rung.
 const SIGNAL_RUNGS = [10, 25, 50, 100, 250];
 
 // A count is a number; a page is an object. Read either without asking which was sent.
@@ -64,6 +65,11 @@ function anchorsOf(rows) {
 // readings side by side. `scope` chooses which one is being read: 'community' is the
 // Fellows' weighing, 'test' is the house's own walkthroughs. The two never mix in one
 // figure — a test run is held out of measurement, and the monitor never blends them.
+//
+// The pool, the marks and the coverage all arrive from getBallotMeasurement, the same
+// reading the selection desk is built on: one definition of a sitting, one pool, one
+// coverage, so the two monitors cannot disagree. This hook only adds what is particular to
+// the live feed — the rows themselves, and how many Fellows stand at each rung.
 export default function useLiveBallotFeed(seasonId, refreshToken = 0, scope = 'community') {
   const isTestScope = scope === 'test';
   const [data, setData] = useState(null);
@@ -89,10 +95,8 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0, scope = 'c
       const since = new Date(Date.now() - PACE_WINDOW_MIN * 60000).toISOString();
       // The stamp the whole reading is cut on: one scope, one filter, every query.
       const stamped = isTestScope ? true : false;
-      // How much of the field has been weighed at least once, and the comparisons an
-      // administrator's own test runs have written: the first sets the reading's own
-      // coverage line, the second is held out of every figure above it.
-      const [tallies, recent, pace, weighed, tests] = await Promise.all([
+
+      const [tallies, recent, pace, measured] = await Promise.all([
         base44.entities.PairwiseVote.aggregate({
           query: { season_id: seasonId, is_test: stamped },
           groupBy: 'voter_email',
@@ -106,26 +110,14 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0, scope = 'c
           is_test: stamped,
           created_date: { $gte: since },
         }),
-        isTestScope
-          ? Promise.all([
-              base44.entities.PairwiseVote.aggregate({
-                query: { season_id: seasonId, is_test: true }, groupBy: 'winner_nominee_id',
-              }),
-              base44.entities.PairwiseVote.aggregate({
-                query: { season_id: seasonId, is_test: true }, groupBy: 'loser_nominee_id',
-              }),
-            ]).then(([wins, losses]) => new Set([
-              ...(wins?.rows || []).map((row) => row.winner_nominee_id),
-              ...(losses?.rows || []).map((row) => row.loser_nominee_id),
-            ].filter(Boolean)).size)
-          : base44.entities.Nominee.count({ pairwise_appearance_count: { $gt: 0 } }),
-        base44.entities.PairwiseVote.count({ season_id: seasonId, is_test: true }),
+        // The canonical reading: the cohort's pool, both lanes' marks, both lanes' coverage.
+        base44.functions.invoke('getBallotMeasurement', { season_ids: [seasonId] }),
       ]);
 
+      const measurement = measured?.data?.success ? measured.data : null;
+
       const voterRows = tallies?.rows || [];
-      const comparisons = voterRows.reduce((sum, r) => sum + (r.count || 0), 0);
-      const voterReviews = voterRows.map((r) => Math.floor((r.count || 0) / COMPARISONS_PER_REVIEW));
-      const reviews = Math.floor(comparisons / COMPARISONS_PER_REVIEW);
+      const voterReviews = voterRows.map((r) => Math.floor((r.count || 0) / MARKS_PER_SITTING));
       const rungs = SIGNAL_RUNGS.map((sets) => ({
         sets,
         reached: voterReviews.filter((n) => n >= sets).length,
@@ -146,11 +138,15 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0, scope = 'c
       setData({
         scope: isTestScope ? 'test' : 'community',
         voters: voterRows.length,
-        comparisons,
-        reviews,
+        // The lane's own marks, and the other lane's — never mixed in one figure.
+        comparisons: Number(
+          isTestScope ? measurement?.comparisons_test : measurement?.comparisons_live
+        ) || 0,
+        heldApart: Number(
+          isTestScope ? measurement?.comparisons_live : measurement?.comparisons_test
+        ) || 0,
+        measurement,
         rungs,
-        weighedOnce: asCount(weighed),
-        testComparisons: asCount(tests),
         recentComparisons: asCount(pace),
         feed: feed.map((set) => ({
           ...set,

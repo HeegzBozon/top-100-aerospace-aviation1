@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts, windowState } from '../../shared/votingWindow.ts';
 import { levelFor, milestonesFor, nextMilestoneFor, ALL_MILESTONES, XP_PER_SET } from '../../shared/votingProgress.ts';
+import { MARKS_PER_SITTING } from '../../shared/ballotMeasurement.ts';
 
 // Everything the ballot needs to open, in one call: which cohorts are counting, and where
 // the window stands, the Fellow's saved ballot, and the contribution ladder they have
@@ -80,7 +81,9 @@ export default async function (req) {
           service.entities.PairwiseVote.count(ledgerQuery(true)).catch(() => 0),
         ])
       : [0, 0];
-    const COMPARISONS_PER_REVIEW = 7;
+    // The mark count of a sitting, read from the one definition the monitors are built on
+    // (shared/ballotMeasurement.ts) rather than typed in here a second time.
+    const COMPARISONS_PER_REVIEW = MARKS_PER_SITTING;
     totals.sets = Math.max(totals.sets, Math.floor(fellowVotes / COMPARISONS_PER_REVIEW));
     totals.comparisons = Math.max(totals.comparisons, fellowVotes);
     // Experience is sets measured, and only sets measured — so it is counted from the

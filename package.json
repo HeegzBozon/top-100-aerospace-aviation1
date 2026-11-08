@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:ballot-parity": "node scripts/check-ballot-parity.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
