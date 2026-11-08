@@ -6,10 +6,8 @@ import { brand, ink } from '@/components/nominate/NominateConfig';
 //
 // A card holds one name and a sentence; a table holds twenty at a glance, which is what a
 // Fellow actually wants from their own record — the shape of their field, not a tour of it.
-// Two figures stand beside each name, both taken from the marks the record holds: what the
-// name carried (the marks it won) and how many marks it stood in. The second is there so a
-// name that always stood last still reads as present and weighed, the way the live monitor
-// prints it, instead of vanishing for want of a win.
+// The order is the record's own, best first: each name's place and the name itself. The
+// figure the place was read from stays in the record, not on the plate.
 //
 // The name opens the profile; the key at the end puts the name on the Fellow's ballot.
 // Nothing is added on the Fellow's behalf.
@@ -45,12 +43,6 @@ export default function StandingsTable({ standings, onAdd, onView }) {
             <th scope="col" className={`${HEAD} text-left`} style={{ color: ink.label }}>
               Name
             </th>
-            <th scope="col" className={`${HEAD} w-[42px] text-right`} style={{ color: ink.label }}>
-              Carried
-            </th>
-            <th scope="col" className={`${HEAD} w-[42px] text-right`} style={{ color: ink.label }}>
-              Marks
-            </th>
             <th scope="col" className="w-8">
               <span className="sr-only">Add to ballot</span>
             </th>
@@ -84,16 +76,6 @@ export default function StandingsTable({ standings, onAdd, onView }) {
                       {context}
                     </span>
                   )}
-                </td>
-                <td className="px-1 py-[5px] text-right align-middle">
-                  <span className="text-[11px] font-bold tabular-nums" style={{ color: brand.navy }}>
-                    {person.wins}
-                  </span>
-                </td>
-                <td className="px-1 py-[5px] text-right align-middle">
-                  <span className="text-[10px] tabular-nums" style={{ color: ink.soft }}>
-                    {person.marks}
-                  </span>
                 </td>
                 <td className="pr-1.5 align-middle">
                   <button
