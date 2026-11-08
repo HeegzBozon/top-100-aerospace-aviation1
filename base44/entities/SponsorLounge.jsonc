@@ -1,0 +1,119 @@
+{
+  "name": "SponsorLounge",
+  "description": "The house copy for a sponsor lounge, one row per room: the Leadership Summit briefing room and the Patrons' Table in the Colony Networking Lounge. Attribution only \u2014 nothing on this record is read by discovery, directory ordering, verification, measurement or scoring.",
+  "type": "object",
+  "properties": {
+    "room_key": {
+      "type": "string",
+      "description": "Which lounge the copy belongs to: summit or networking.",
+      "enum": [
+        "summit",
+        "networking"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "description": "The room's name as it is printed on the panel and the door."
+    },
+    "eyebrow": {
+      "type": "string",
+      "description": "The small-caps line above the headline, naming the room and its register."
+    },
+    "headline": {
+      "type": "string",
+      "description": "The room's headline."
+    },
+    "welcome": {
+      "type": "string",
+      "description": "The welcome paragraph that says what the room is for and what it is not."
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The guided conversation prompts for the briefing room, in the order they are read."
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The conversation zones at the open table, one line each."
+    },
+    "icebreakers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Optional openers a visitor can draw at the table. Never attributed, never scored."
+    },
+    "patron_name": {
+      "type": "string",
+      "description": "The Patron of Record credited in this room. Empty while the room's patronage is open."
+    },
+    "patron_note": {
+      "type": "string",
+      "description": "One line of attribution printed under the patron's name. Editorial credit only."
+    },
+    "patronage_url": {
+      "type": "string",
+      "default": "/mediakit",
+      "description": "Where the room's patronage key points. Defaults to the media kit."
+    },
+    "updated_by": {
+      "type": "string",
+      "description": "Email of the admin who last wrote this copy."
+    }
+  },
+  "required": [
+    "room_key"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
