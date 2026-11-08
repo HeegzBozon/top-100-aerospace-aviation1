@@ -42,10 +42,21 @@ function currentPath() {
   }
 }
 
+// A room link is the same promise: a host hands /colony?room=<key> to a guest and the
+// whole point is that they arrive standing in that room. The plate in front of it turns
+// an invitation into a menu, so a room that was asked for by name answers for itself.
+function isRoomLink(path) {
+  try {
+    return /^\/colony$/i.test(path) && /[?&]room=/.test(window.location.search);
+  } catch {
+    return false;
+  }
+}
+
 // Whether the surface the reader asked for answers for itself.
 export function takesOwnDoor() {
   const path = currentPath();
-  return DIRECT_ENTRY.some((pattern) => pattern.test(path));
+  return DIRECT_ENTRY.some((pattern) => pattern.test(path)) || isRoomLink(path);
 }
 
 // The plate is spent: this visitor did not come in through it, so it must not appear

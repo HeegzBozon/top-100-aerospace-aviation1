@@ -1,5 +1,6 @@
 import { Mic, MicOff, Video, VideoOff, PhoneOff, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import RoomShareKey from './RoomShareKey';
 
 // The call controls. Voice and camera start off: nothing is asked of the browser, and
 // nothing is captured, until the visitor presses a key to join with sound or picture.
@@ -11,6 +12,8 @@ export default function ColonyHUD({
   onLeave,
   participantCount,
   onToggleParticipants,
+  room,
+  roomLabel,
 }) {
   const dark = isMuted && isCamOff;
   return (
@@ -22,6 +25,9 @@ export default function ColonyHUD({
         </p>
       )}
       <div className="flex items-center justify-center gap-3">
+        {/* Hand this room to somebody: the link lands them standing in it */}
+        <RoomShareKey room={room} label={roomLabel} />
+
         {/* Participant Count */}
         <button
           onClick={onToggleParticipants}

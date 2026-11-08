@@ -61,6 +61,8 @@ export const COLONY_ROOMS = {
     zones: [
       { key: 'summit-exit', label: 'Summit Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
       { key: 'summit-stage', label: 'Main Stage', blurb: 'The Chamber of Commerce.', to: '/chamber', col: 22, row: 8, w: 20, h: 9 },
+      // The briefing room off the hall floor: the hosted half of the patronage conversation.
+      { key: 'summit-patrons-lounge', label: 'The Patrons’ Lounge', blurb: 'The briefing room: what attribution buys.', panel: 'sponsor-lounge', lounge: 'summit', col: 6, row: 22, w: 12, h: 7 },
     ],
   },
   'media-hub': {
@@ -91,6 +93,9 @@ export const COLONY_ROOMS = {
       { key: 'lounge-arcade', label: 'The Arcade', blurb: 'Three cabinets kept in the corner of the lounge.', panel: 'arcade', col: 3, row: 10, w: 14, h: 9 },
       { key: 'lounge-events', label: 'Events & Meetups', blurb: 'Meetups hosted across the network.', to: '/meetups', col: 4, row: 30, w: 14, h: 4 },
       { key: 'lounge-people', label: 'People & Directory', blurb: 'Your people in AeroSync.', to: '/aerosync/people', col: 46, row: 30, w: 15, h: 4 },
+      // The open table in the corner of the lounge: the same offer, in the room where the
+      // talking happens rather than the room where the panels are.
+      { key: 'lounge-patrons-table', label: 'The Sponsor Lounge', blurb: 'What a TOP 100 sponsorship buys — and never buys.', panel: 'sponsor-lounge', lounge: 'networking', col: 46, row: 10, w: 13, h: 8 },
     ],
   },
   'space-pavilion': {

@@ -16,6 +16,7 @@ import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyTheatrePanel from '@/components/colony/ColonyTheatrePanel';
 import ColonyArcadePanel from '@/components/colony/ColonyArcadePanel';
+import SponsorLoungePanel from '@/components/sponsor-lounge/SponsorLoungePanel';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { buildBrief, briefSummary, coachingFor } from '@/components/colony/campusBrief';
 import RoomSplash from '@/components/colony/RoomSplash';
@@ -61,7 +62,7 @@ import { Loader2, Shirt } from 'lucide-react';
 // Panels that take the wheel, pad and arrow keys for themselves while open.
 // Panels that take the controls themselves while they are open. The Arcade is one: its
 // cabinets read the same keys the wheel would otherwise walk with.
-const LIST_PANELS = ['directory', 'online', 'npc', 'person', 'quest', 'passport', 'arcade'];
+const LIST_PANELS = ['directory', 'online', 'npc', 'person', 'quest', 'passport', 'arcade', 'sponsor-lounge'];
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
@@ -129,6 +130,9 @@ function ColonyRoom({ onReplayWelcome }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
+  // A hotspot link carries ?zone=<key>: it is opened once the call is joined, exactly as
+  // pressing the door would. The room it lives in is read from ?room= above.
+  const wantedZoneRef = useRef(new URLSearchParams(window.location.search).get('zone'));
   // Pick up where you left off: the last room you stood in is remembered on this device.
   const [room, setRoom] = useState(() => {
     const asked = new URLSearchParams(window.location.search).get('room');
@@ -152,9 +156,17 @@ function ColonyRoom({ onReplayWelcome }) {
   const stickRef = useRef({});
   const zoneRef = useRef(null);
   zoneRef.current = zone;
-  const [panel, setPanel] = useState(null); // directory | chat | concierge | theatre | arcade | editor
+  // Returning from a Sponsor Lounge checkout opens the desk that sold, with the receipt
+  // acknowledged inside it (see SponsorLoungePanel).
+  const [panel, setPanel] = useState(() =>
+    new URLSearchParams(window.location.search).get('paid') === '1' ? 'sponsor-lounge' : null
+  ); // directory | chat | concierge | theatre | arcade | editor | sponsor-lounge
   // Which cabinet was walked up to, when the Arcade is the panel that opened.
   const [cabinet, setCabinet] = useState(null);
+  // Which lounge was walked up to, when a sponsor lounge is the panel that opened.
+  const [loungeKey, setLoungeKey] = useState(() =>
+    new URLSearchParams(window.location.search).get('paid') === '1' ? 'networking' : null
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const [me, setMe] = useState(undefined);
   const pp = usePassport(me);
@@ -204,7 +216,7 @@ function ColonyRoom({ onReplayWelcome }) {
     if (!z) return false;
     if (z.npc) { setNpcId(z.npc); setPanel('npc'); return true; }
     if (z.replay) { onReplayWelcome(); return true; }
-    if (z.panel) { setCabinet(z.cabinet || null); setPanel(z.panel); return true; }
+    if (z.panel) { setCabinet(z.cabinet || null); setLoungeKey(z.lounge || null); setPanel(z.panel); return true; }
     setZone(null);
     if (z.room) setRoom(z.room); else navigate(z.to);
     return true;
@@ -221,6 +233,15 @@ function ColonyRoom({ onReplayWelcome }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [callState, panel, activateZone]);
+
+  // Walk the visitor through the door the link named, once, as soon as they are in the room.
+  useEffect(() => {
+    if (callState !== 'joined' || !wantedZoneRef.current) return;
+    const wanted = wantedZoneRef.current;
+    wantedZoneRef.current = null;
+    const target = roomZones.find((z) => z.key === wanted);
+    if (target) activateZone(target);
+  }, [callState, room, roomZones, activateZone]);
 
   const sendChat = useCallback((text) => {
     const name = callRef.current?.participants()?.local?.user_name || 'Member';
@@ -563,7 +584,7 @@ function ColonyRoom({ onReplayWelcome }) {
         />
         {showAvatar && <ColonyAvatarPicker avatar={avatar} isGuest={!!sessionStorage.getItem('colony-guest-name')} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
-        {!panel && <ColonyZoneCard zone={zone} onActivate={activateZone} />}
+        {!panel && <ColonyZoneCard zone={zone} room={room} onActivate={activateZone} />}
         {mediaError && (
           <div className="absolute left-3 right-3 top-24 z-30 mx-auto flex max-w-md items-center gap-2 rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 px-3 py-2 text-xs text-editorial-cream">
             <span className="flex-1">{mediaError}</span>
@@ -621,6 +642,15 @@ function ColonyRoom({ onReplayWelcome }) {
         {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
         {panel === 'theatre' && <ColonyTheatrePanel onClose={() => setPanel(null)} />}
         {panel === 'arcade' && <ColonyArcadePanel initialCabinet={cabinet} onClose={() => setPanel(null)} />}
+        {panel === 'sponsor-lounge' && (
+          <SponsorLoungePanel
+            lounge={loungeKey || 'summit'}
+            isAdmin={isAdmin}
+            onClose={() => setPanel(null)}
+            onGoRoom={(r) => { setPanel(null); setZone(null); setRoom(r); }}
+            onGo={(to) => { setPanel(null); navigate(to); }}
+          />
+        )}
 
       </main>
 
@@ -634,6 +664,8 @@ function ColonyRoom({ onReplayWelcome }) {
         onLeave={handleLeave}
         participantCount={participantList.length}
         onToggleParticipants={() => setShowParticipants((prev) => !prev)}
+        room={room}
+        roomLabel={COLONY_ROOMS[room]?.label}
       />}
 
       {/* Participant Sidebar */}
