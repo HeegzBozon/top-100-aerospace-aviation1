@@ -207,10 +207,13 @@ export default async function (req) {
     // measurement, which is also what the committee's monitor reads, so both desks count
     // the same records against the same field. Coverage is cohort-scoped and clamped to the
     // pool: a nominee from another cohort, or one this pool does not hold, never counts.
-    const measurement = await readBallotMeasurement(service, scopedIds, { pool: scoped });
+    const measurement = await readBallotMeasurement(service, scopedIds);
     const evaluated = measurement?.covered_live || 0;
     cohortStats.forEach((row) => {
       const reached = measurement?.by_cohort?.find((c) => c.season_id === row.season_id);
+      // The pool a line is scaled against is the field the ballot deals from — the same one
+      // the totals use — while its coverage is read off its own marks.
+      row.pool = measurement?.pool || row.pool;
       row.evaluated = reached?.covered_live || 0;
       row.evaluated_test = reached?.covered_test || 0;
       row.coverage_pct = row.pool > 0 ? Math.round((row.evaluated / row.pool) * 1000) / 10 : 0;

@@ -1,7 +1,7 @@
 import { measureBallot, share, CARDS_PER_SITTING, MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
 // The monitor's progress instrument, read through the same module the committee's monitor
-// reads (src/lib/ballotMeasurement.js). One sitting is four cards and seven marks; the pool
+// reads (src/lib/ballotMeasurement.js). One sitting is four cards and five marks; the pool
 // is the cohort's own; coverage is clamped to it. Nothing here holds a target table or a
 // divisor of its own.
 //

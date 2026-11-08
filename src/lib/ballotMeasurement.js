@@ -8,12 +8,19 @@
 // THE UNITS, as the recorder writes them (base44/functions/submitAnchorVote):
 //
 //   mark         one nominee weighed against another — a single PairwiseVote row.
-//   sitting      one completed set: four cards set down, seven marks written (the top over
-//                each of the other three, the top over the bottom, each neutral over the
-//                bottom). One sitting is one mini ballot.
+//   sitting      one completed set: four cards set down, five marks written (the top over
+//                each of the two neutrals, the top over the bottom, each neutral over the
+//                bottom). The middle-versus-middle edge is deliberately not imputed. One
+//                sitting is one mini ballot.
 //   appearance   one card set down in front of a Fellow. A sitting carries four.
 //   comparison   a mark's two halves: both nominees in it are weighed against each other.
-//                One mark is two nominee-comparisons, so one sitting reveals fourteen.
+//                One mark is two nominee-comparisons, so one sitting reveals ten.
+//
+// FIVE IS NOT A CONVENTION: it is what the writer writes. The recorder guards its own set
+// shape — exactly two neutrals, four distinct cards — and applies five pairs. Scripts/
+// check-ballot-parity.mjs reads that guard and those pairs out of the function and fails if
+// this constant drifts from them, which is the drift that made one monitor read 1,140 mini
+// ballots and the other 1,597 from the same ledger.
 //
 // THE DEPTH READINGS:
 //   comparisons per nominee  = marks × 2 ÷ pool
@@ -21,17 +28,18 @@
 //
 // THE TARGETS are stated as card appearances per nominee and converted against the pool
 // that is standing, so a target moves with the field and the depth it asks of each nominee
-// stays put. The previous two tables had drifted apart (one read five marks to the sitting,
-// the other seven); there is now one table, and it is this one.
+// stays put. The previous two tables had drifted apart — one read five marks to the sitting
+// and the other seven — and that alone accounted for the split between the monitors. There
+// is now one table, and it is this one.
 //
 // COVERAGE is how many of the pool's own nominees the reading has reached at least once.
 // It is clamped to the pool: a count from outside the cohort can never stand as coverage.
 
 export const CARDS_PER_SITTING = 4;
-export const MARKS_PER_SITTING = 7;
+export const MARKS_PER_SITTING = 5;
 export const NOMINEE_TOUCHES_PER_MARK = 2;
 
-// The nominee-comparisons one card appearance spends: fourteen touches across four cards.
+// The nominee-comparisons one card appearance spends: ten touches across four cards.
 export const COMPARISONS_PER_APPEARANCE =
   (MARKS_PER_SITTING * NOMINEE_TOUCHES_PER_MARK) / CARDS_PER_SITTING;
 
@@ -59,8 +67,8 @@ export function measureBallot({ pool, marks, covered } = {}) {
   const total = Math.max(0, Math.round(Number(marks) || 0));
   const reached = Math.max(0, Math.min(field, Math.round(Number(covered) || 0)));
 
-  // A sitting is whole or it is not cast: 7,985 marks are 1,140 sittings and five marks
-  // written beside them, never 1,140.7 mini ballots.
+  // A sitting is whole or it is not cast: 7,986 marks are 1,597 sittings and one mark
+  // written beside them, never 1,597.2 mini ballots.
   const sittings = Math.floor(total / MARKS_PER_SITTING);
   const appearances = sittings * CARDS_PER_SITTING;
 

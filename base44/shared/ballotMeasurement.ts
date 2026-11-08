@@ -6,15 +6,19 @@
 // places. The derived figures (sittings, depth, targets) are computed once, from these
 // counts, in src/lib/ballotMeasurement.js.
 //
-// The recorder writes seven marks to a sitting (see functions/submitAnchorVote): the top
-// over each of the other three, the top over the bottom, each neutral over the bottom. One
-// mark involves two nominees.
+// The recorder writes five marks to a sitting (see functions/submitAnchorVote): the top over
+// each of the two neutrals, the top over the bottom, each neutral over the bottom. The
+// middle-versus-middle edge is deliberately not imputed. One mark involves two nominees.
+//
+// Five is the writer's own figure, not a convention: scripts/check-ballot-parity.mjs reads
+// the recorder's neutral guard and the pairs it applies, and fails if this constant drifts
+// from them.
 //
 // COVERAGE is cohort-scoped and clamped: a nominee reached by another cohort's marks, or one
 // the pool does not hold, is never counted.
 
 export const CARDS_PER_SITTING = 4;
-export const MARKS_PER_SITTING = 7;
+export const MARKS_PER_SITTING = 5;
 export const NOMINEE_TOUCHES_PER_MARK = 2;
 
 // The statuses a nominee can be weighed under, everywhere in the platform.
