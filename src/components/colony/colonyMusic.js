@@ -7,6 +7,8 @@ import { loadPlaylist } from '@/components/handheld/consoleMusic';
 // Same masters as the console — what makes a room sound like itself is which records
 // it is dealt and in what order, never a separate set of noises.
 export const ROOM_PLAYLISTS = {
+  // The deck above the campus: a room between journeys, and the sound of one.
+  station: [L.distantPlanet, L.starGuide, L.risingGalaxies],
   // Arrivals: slow-funk and lo-fi, the sound of a hall with people crossing it.
   lobby: [L.toTheMoon, L.distantPlanet, L.starGuide],
   // The working floor: a house record under everything that gets built.

@@ -10,6 +10,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 // to a page a visitor can read for themselves.
 
 const ROOMS = [
+  'Station Deck — where every visit begins; its teleporter reaches every room and door',
   'Main Entrance (lobby)',
   'Main Campus (hall)',
   'Innovation Expo — the App Store',

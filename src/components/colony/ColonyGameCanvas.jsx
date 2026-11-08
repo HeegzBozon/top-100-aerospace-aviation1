@@ -11,6 +11,9 @@ const CELL = 16;
 const COLS = NATIVE_W / CELL;
 const ROWS = NATIVE_H / CELL;
 const START = { col: Math.floor(COLS / 2), row: Math.floor(ROWS * 0.85) };
+// Rooms drawn straight on and wide: a figure near the glass reads smaller than one at the
+// foot of the floor. The station deck is composed the same way as the lobby it stands above.
+const PERSPECTIVE = ['lobby', 'station'];
 
 const images = {};
 const getImage = (url) => {
@@ -220,7 +223,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   occupiedRef.current = new Set([
     ...walls.flatMap(w => Array.from({ length: w.w * w.h }, (_, i) => `${w.col + (i % w.w)},${w.row + Math.floor(i / w.w)}`)),
     ...sprites
-      .filter(p => p.session_id !== localSessionId && positions[p.session_id] && (positions[p.session_id].room ?? 'lobby') === room)
+      .filter(p => p.session_id !== localSessionId && positions[p.session_id] && (positions[p.session_id].room ?? 'station') === room)
       .map(p => `${positions[p.session_id].col},${positions[p.session_id].row}`),
   ]);
 
@@ -246,7 +249,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   const fitScale = (W, H) => {
     const cover = Math.max(H / NATIVE_H, W / NATIVE_W);
     const wide = W / (window.devicePixelRatio || 1) >= 900;
-    const close = room === 'lobby' ? (wide ? 1 : 1.2) : (wide ? 1.35 : 1.8);
+    const close = PERSPECTIVE.includes(room) ? (wide ? 1 : 1.2) : (wide ? 1.35 : 1.8);
     return cover * close * zoomRef.current * (stateRef.current.wheelZoom || 1);
   };
 
@@ -291,7 +294,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
           return { id: `npc-${n.id}`, col: b.col, row: b.row, avatar: { image: n.sprite }, facing: b.facing, label: n.name, sub: n.role, line: b.mode === 'chat' ? b.line : null, npc: true };
         });
       })(),
-      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
+      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'station') === room).map((p, i) => ({
         id: p.session_id,
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
         row: positions[p.session_id]?.row ?? clampRow(START.row),
@@ -323,14 +326,14 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       if (dist <= stepPx || dist > CELL * 4) { d.x = tgt.x; d.y = tgt.y; }
       else { d.x += (dx / dist) * stepPx; d.y += (dy / dist) * stepPx; }
       const { x, y } = d;
-      // The lobby is drawn in perspective: further back (higher up) reads smaller.
-      const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
+      // The wide rooms are drawn in perspective: further back (higher up) reads smaller.
+      const depth = PERSPECTIVE.includes(room) ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
       const sx = Math.round(ox + x * sc), sy = Math.round(oy + y * sc);
       const sp = s.spawn[p.id] ? Math.min(1, (now - s.spawn[p.id]) / SPAWN_MS) : 1;
       if (sp < 1) drawBeam(ctx, sx, sy, CELL * sc * depth, 1 - sp * 0.6, now);
       s.last[p.id] = { x: sx, y: sy, cell: CELL * sc * depth };
       ctx.globalAlpha = sp;
-      drawSprite(ctx, sx, sy, p.avatar, p.facing, p.label, sc, depth, (room === 'lobby' ? 1.3 : 1) * (0.25 + 0.75 * sp), walk,
+      drawSprite(ctx, sx, sy, p.avatar, p.facing, p.label, sc, depth, (PERSPECTIVE.includes(room) ? 1.3 : 1) * (0.25 + 0.75 * sp), walk,
         { sub: p.sub, id: p.id, me: p.id === 'me', plates, line: p.line, npc: p.npc, now, cache: s.plateY,
           prox: p.id === 'me' ? 0.6 : Math.max(0, 1 - Math.hypot(p.col - s.playerCol, p.row - s.playerRow) / 10) });
     });

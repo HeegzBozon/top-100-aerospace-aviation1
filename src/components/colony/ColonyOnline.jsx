@@ -5,7 +5,7 @@ import ColonyListPanel from './ColonyListPanel';
 export default function ColonyOnline({ participants, positions, localSessionId, myRoom, onGo, onClose }) {
   const items = participants.map((p) => {
     const mine = p.session_id === localSessionId;
-    const room = mine ? myRoom : positions[p.session_id]?.room || 'lobby';
+    const room = mine ? myRoom : positions[p.session_id]?.room || 'station';
     return {
       key: p.session_id, room,
       label: `${p.user_name || 'Member'}${mine ? ' (You)' : ''}`,

@@ -153,3 +153,9 @@ export const COLONY_ROOMS = {
     ],
   },
 };
+
+// Where the back key takes you from a room. The deck is the head of the campus and has
+// nothing above it; the Main Entrance stands one step under it; everything else steps out
+// to the Main Campus, as it always has.
+export const roomBehind = (room) =>
+  room === 'station' ? null : room === 'lobby' ? 'station' : room === 'hall' ? 'lobby' : 'hall';
