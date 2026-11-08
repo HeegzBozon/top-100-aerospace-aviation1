@@ -30,7 +30,6 @@ export default function ExplorerRow({ nominee, index, focused, isAdded, onOpen, 
         role="button"
         tabIndex={0}
         onClick={onOpen}
-        onDoubleClick={onOpen}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();

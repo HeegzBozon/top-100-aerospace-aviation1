@@ -11,6 +11,13 @@ import { base44 } from '@/api/base44Client';
 // inflates a weight.
 //
 // It is a reading aid only: nothing here reaches ordering, measurement or scoring.
+const toLabel = (raw) =>
+  raw
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => (word.length > 2 ? word[0].toUpperCase() + word.slice(1) : word))
+    .join(' ');
+
 export default function useNomineeTags(enabled) {
   const [tags, setTags] = useState([]);
   const [byNominee, setByNominee] = useState(() => new Map());
@@ -38,7 +45,7 @@ export default function useNomineeTags(enabled) {
           held.add(key);
           index.set(row.nominee_id, held);
 
-          const stat = tally.get(key) || { key, label, count: 0, category: row.category };
+          const stat = tally.get(key) || { key, label: toLabel(label), count: 0, category: row.category };
           stat.count += 1;
           tally.set(key, stat);
         });

@@ -8,10 +8,24 @@ import { X } from 'lucide-react';
 // legible before a single name is read. Press a word and the roll narrows to the people
 // under it; press several and it narrows to the people under all of them.
 //
-// It is set on cream in navy ink with the copper rule above it — a printed index, not a
-// toy — and it is only here because there are tags to read. An empty vocabulary draws
-// nothing at all rather than an empty cloud.
-const CLOUD_CAP = 26;
+// A vocabulary this broad is not one jumble. The tags a record carries are filed by kind —
+// a skill, a field, a technology, a place — so the cloud is read by kind first and the
+// words it hangs are the ones in that kind. Geography is the heaviest family in the
+// records and would otherwise drown every other word.
+//
+// It is set on cream in navy ink under the copper rule: a printed index, not a toy. With
+// no vocabulary to read it draws nothing at all rather than an empty cloud.
+const CLOUD_CAP = 24;
+
+const KINDS = [
+  { key: 'all', label: 'Everything' },
+  { key: 'skill', label: 'Skills' },
+  { key: 'technology', label: 'Technology' },
+  { key: 'industry', label: 'Fields' },
+  { key: 'achievement', label: 'Achievements' },
+  { key: 'attribute', label: 'Attributes' },
+  { key: 'geography', label: 'Places' },
+];
 
 const sizeFor = (count, max) => {
   if (max <= 1) return 12;
@@ -24,10 +38,13 @@ const sizeFor = (count, max) => {
 
 export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) {
   const [expanded, setExpanded] = useState(false);
+  const [kind, setKind] = useState('all');
   if (!tags || tags.length === 0) return null;
 
-  const max = tags[0]?.count || 1;
-  const shown = expanded ? tags : tags.slice(0, CLOUD_CAP);
+  const kinds = KINDS.filter((entry) => entry.key === 'all' || tags.some((tag) => tag.category === entry.key));
+  const inKind = kind === 'all' ? tags : tags.filter((tag) => tag.category === kind);
+  const max = inKind[0]?.count || 1;
+  const shown = expanded ? inKind : inKind.slice(0, CLOUD_CAP);
 
   return (
     <section className="border-b border-editorial-navy/10 bg-editorial-sand/40 px-4 py-2.5">
@@ -63,7 +80,30 @@ export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) 
         </div>
       )}
 
-      <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+      {kinds.length > 2 && (
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+          {kinds.map((entry) => {
+            const active = kind === entry.key;
+            return (
+              <button
+                key={entry.key}
+                type="button"
+                aria-pressed={active}
+                onClick={() => { setKind(entry.key); setExpanded(false); }}
+                className={`font-body text-[8.5px] font-bold uppercase tracking-[0.14em] underline-offset-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${
+                  active
+                    ? 'text-editorial-navy underline decoration-editorial-copper'
+                    : 'text-editorial-navy/45 hover:text-editorial-navy/80'
+                }`}
+              >
+                {entry.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
         {shown.map((tag) => {
           const active = selected.some((picked) => picked.key === tag.key);
           return (
@@ -85,13 +125,13 @@ export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) 
           );
         })}
 
-        {tags.length > CLOUD_CAP && (
+        {inKind.length > CLOUD_CAP && (
           <button
             type="button"
             onClick={() => setExpanded((open) => !open)}
             className="font-body text-[10px] font-bold uppercase tracking-[0.14em] text-editorial-label underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
           >
-            {expanded ? 'Fewer' : `+${tags.length - CLOUD_CAP}`}
+            {expanded ? 'Fewer' : `+${inKind.length - CLOUD_CAP}`}
           </button>
         )}
       </div>
