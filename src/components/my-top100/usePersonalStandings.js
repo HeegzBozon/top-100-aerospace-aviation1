@@ -23,7 +23,7 @@ export default function usePersonalStandings({
   pool,
   excludeIds,
   scope = 'community',
-  seasonId,
+  seasonIds,
 }) {
   const [state, setState] = useState({
     loading: true,
@@ -67,8 +67,11 @@ export default function usePersonalStandings({
     // marks actually are when this one comes back empty.
     const lane = scope === 'test' ? true : { $ne: true };
     const otherLane = scope === 'test' ? { $ne: true } : true;
-    const base = seasonId
-      ? { voter_email: email, season_id: seasonId }
+    // Ballots are stamped with the cohort season they were cast in (Angels, Women, Men),
+    // never with the group season the surface is working in — so the column reads the
+    // group and every cohort beneath it, the way the live monitor's measure does.
+    const base = seasonIds?.length
+      ? { voter_email: email, season_id: { $in: seasonIds } }
       : { voter_email: email };
 
     const [won, lost, marks, otherMarks] = await Promise.all([
@@ -151,7 +154,7 @@ export default function usePersonalStandings({
       otherLaneMarks: asCount(otherMarks),
       error: null,
     });
-  }, [email, scope, seasonId]);
+  }, [email, scope, seasonIds?.join(',')]);
 
   useEffect(() => {
     let alive = true;

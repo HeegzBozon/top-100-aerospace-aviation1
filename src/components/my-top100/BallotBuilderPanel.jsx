@@ -24,7 +24,7 @@ export default function BallotBuilderPanel({
   pool,
   loadingPool,
   addedIds,
-  seasonId,
+  seasonIds,
   rankingsCount,
   ballotMinimum = 1,
   onAdd,
@@ -46,7 +46,7 @@ export default function BallotBuilderPanel({
       pool,
       excludeIds: addedIds,
       scope,
-      seasonId,
+      seasonIds,
     });
 
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
@@ -187,6 +187,10 @@ export default function BallotBuilderPanel({
             <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
               Weigh a set on the Crosscheck and the names your own judgments carry will be read
               out here, best first. Nothing is added to your ballot on your behalf.
+            </p>
+            <p className="mt-1.5 text-[9.5px] leading-relaxed" style={{ color: ink.soft }}>
+              This column reads the ballots filed under the account signed in, so a preview
+              signed in as the platform’s own account has none to read.
             </p>
             {onOpenVote && (
               <button

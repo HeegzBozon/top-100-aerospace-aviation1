@@ -63,6 +63,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [shareCode, setShareCode] = useState('');
   const [season, setSeason] = useState(null);
+  const [seasonIds, setSeasonIds] = useState([]);
   const [votingActive, setVotingActive] = useState(false);
   const [profileId, setProfileId] = useState(null);
   const [saveError, setSaveError] = useState('');
@@ -194,6 +195,11 @@ export default function MyTop100({ initialTab = null } = {}) {
             }
           }
           setSeason(resolved || activeSeasons?.[0] || null);
+          // Ballots are stamped with a cohort, so the personal column is scoped to the
+          // group season and every open cohort under it.
+          setSeasonIds(
+            (resolved ? [resolved.id] : []).concat(activeSeasons.map((s) => s.id)),
+          );
           setVotingActive(activeSeasons.length > 0);
         } catch { /* season resolution optional */ }
         try {
@@ -526,7 +532,7 @@ export default function MyTop100({ initialTab = null } = {}) {
     <BallotBuilderPanel
       user={user}
       pool={pool}
-      seasonId={season?.id}
+      seasonIds={seasonIds}
       loadingPool={loadingPool}
       addedIds={addedIds}
       rankingsCount={rankings.length}
