@@ -30,6 +30,7 @@ import {
     Eye,
     Mail,
     Route,
+    Tag,
 } from 'lucide-react';
 
 /**
@@ -68,6 +69,7 @@ export const ADMIN_SECTIONS = [
         tabs: [
             { id: 'workspace-selection', label: 'Cohort Workspace', icon: LayoutDashboard, component: 'CohortWorkspace' },
             { id: 'selection-monitor', label: 'Live Monitor', icon: Activity, component: 'SelectionMonitor' },
+            { id: 'tag-baseline', label: 'Directory Tags', icon: Tag, component: 'TagBaselineDesk' },
         ],
     },
     {

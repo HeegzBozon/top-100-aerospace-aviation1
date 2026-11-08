@@ -20,6 +20,7 @@ const SeasonManager             = lazy(() => import('@/components/admin/SeasonMa
 const SeasonViewModal           = lazy(() => import('@/components/admin/SeasonViewModal'));
 const CohortWorkspace           = lazy(() => import('@/components/admin/cohort-workspace/CohortWorkspace'));
 const SelectionMonitor          = lazy(() => import('@/components/admin/selection/SelectionMonitor'));
+const TagBaselineDesk           = lazy(() => import('@/components/admin/tag-baseline/TagBaselineDesk'));
 const MediaSurface              = lazy(() => import('@/components/admin/editorial/MediaSurface'));
 const SocialCardsPanel          = lazy(() => import('@/components/admin/editorial/SocialCardsPanel'));
 const ProviderReviewManager     = lazy(() => import('@/components/admin/ProviderReviewManager'));
@@ -256,6 +257,8 @@ export default function Admin() {
         return <CohortWorkspace phase="selection" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
       case 'selection-monitor':
         return <SelectionMonitor onOpenMenu={() => setMobileSidebarOpen(true)} />;
+      case 'tag-baseline':
+        return <TagBaselineDesk />;
       case 'workspace-editorial':
         return <CohortWorkspace phase="editorial" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
       case 'episodes':
