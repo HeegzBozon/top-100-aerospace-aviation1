@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import IssueExportButtons from '@/components/magazine/IssueExportButtons';
+import PreviewLink from '@/components/magazine/PreviewLink';
 import PromotionCopyStudio from '@/components/magazine/promotion/PromotionCopyStudio';
 import { Link } from 'react-router-dom';
 import { Check, AlertCircle, Eye, Send, ArrowUpRight, RotateCcw } from 'lucide-react';
@@ -120,6 +121,9 @@ export default function PreviewPublish({ issue, articles, pages, onPublish, onUn
           Resolve the items above before publishing.
         </p>
       )}
+
+      {/* The address the issue can be handed on at, before it is live. */}
+      <PreviewLink issue={issue} />
 
       {/* The announcement the issue goes out with: one brief, six assets. */}
       <PromotionCopyStudio issue={issue} articles={articles} pages={pages} />
