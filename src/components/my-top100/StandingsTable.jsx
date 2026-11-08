@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
+import StandingsRowKeys from '@/components/my-top100/StandingsRowKeys';
 
 // The standings as a table rather than a stack of cards.
 //
@@ -9,8 +9,8 @@ import { brand, ink } from '@/components/nominate/NominateConfig';
 // The order is the record's own, best first: each name's place and the name itself. The
 // figure the place was read from stays in the record, not on the plate.
 //
-// The name opens the profile; the key at the end puts the name on the Fellow's ballot.
-// Nothing is added on the Fellow's behalf.
+// Each name ends in its keys: read the record, follow the Fellow, put the name on the
+// Fellow's ballot. Nothing is added on the Fellow's behalf.
 
 const FIRST = 20;
 const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
@@ -24,7 +24,7 @@ function contextOf(person) {
   return line || null;
 }
 
-export default function StandingsTable({ standings, onAdd, onView }) {
+export default function StandingsTable({ standings, viewer, onAdd, onView }) {
   const [shown, setShown] = useState(FIRST);
   const rows = standings.slice(0, shown);
 
@@ -43,8 +43,8 @@ export default function StandingsTable({ standings, onAdd, onView }) {
             <th scope="col" className={`${HEAD} text-left`} style={{ color: ink.label }}>
               Name
             </th>
-            <th scope="col" className="w-8">
-              <span className="sr-only">Add to ballot</span>
+            <th scope="col" className="w-[68px]">
+              <span className="sr-only">Record, follow and ballot keys</span>
             </th>
           </tr>
         </thead>
@@ -78,15 +78,7 @@ export default function StandingsTable({ standings, onAdd, onView }) {
                   )}
                 </td>
                 <td className="pr-1.5 align-middle">
-                  <button
-                    type="button"
-                    onClick={() => onAdd(person)}
-                    aria-label={`Add ${person.name} to your ballot`}
-                    className="flex h-5 w-5 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-                    style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}14` }}
-                  >
-                    <Plus className="h-2.5 w-2.5" style={{ color: brand.navy }} />
-                  </button>
+                  <StandingsRowKeys person={person} viewer={viewer} onView={onView} onAdd={onAdd} />
                 </td>
               </tr>
             );

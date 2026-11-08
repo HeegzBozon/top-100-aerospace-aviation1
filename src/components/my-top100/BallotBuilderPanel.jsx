@@ -225,7 +225,12 @@ export default function BallotBuilderPanel({
         )}
 
         {!loading && !error && standings.length > 0 && (
-          <StandingsTable standings={standings} onAdd={onAdd} onView={onViewProfile} />
+          <StandingsTable
+            standings={standings}
+            viewer={user}
+            onAdd={onAdd}
+            onView={onViewProfile}
+          />
         )}
       </div>
 
