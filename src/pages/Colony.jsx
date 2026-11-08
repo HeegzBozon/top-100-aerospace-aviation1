@@ -130,6 +130,9 @@ function ColonyRoom({ onReplayWelcome }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
+  // A hotspot link carries ?zone=<key>: it is opened once the call is joined, exactly as
+  // pressing the door would. The room it lives in is read from ?room= above.
+  const wantedZoneRef = useRef(new URLSearchParams(window.location.search).get('zone'));
   // Pick up where you left off: the last room you stood in is remembered on this device.
   const [room, setRoom] = useState(() => {
     const asked = new URLSearchParams(window.location.search).get('room');
@@ -230,6 +233,15 @@ function ColonyRoom({ onReplayWelcome }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [callState, panel, activateZone]);
+
+  // Walk the visitor through the door the link named, once, as soon as they are in the room.
+  useEffect(() => {
+    if (callState !== 'joined' || !wantedZoneRef.current) return;
+    const wanted = wantedZoneRef.current;
+    wantedZoneRef.current = null;
+    const target = roomZones.find((z) => z.key === wanted);
+    if (target) activateZone(target);
+  }, [callState, room, roomZones, activateZone]);
 
   const sendChat = useCallback((text) => {
     const name = callRef.current?.participants()?.local?.user_name || 'Member';
@@ -572,7 +584,7 @@ function ColonyRoom({ onReplayWelcome }) {
         />
         {showAvatar && <ColonyAvatarPicker avatar={avatar} isGuest={!!sessionStorage.getItem('colony-guest-name')} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
-        {!panel && <ColonyZoneCard zone={zone} onActivate={activateZone} />}
+        {!panel && <ColonyZoneCard zone={zone} room={room} onActivate={activateZone} />}
         {mediaError && (
           <div className="absolute left-3 right-3 top-24 z-30 mx-auto flex max-w-md items-center gap-2 rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 px-3 py-2 text-xs text-editorial-cream">
             <span className="flex-1">{mediaError}</span>
