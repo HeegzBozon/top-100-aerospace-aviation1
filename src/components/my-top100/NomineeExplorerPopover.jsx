@@ -62,7 +62,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
 
   // The vocabulary the pool is read by: the approved tags, weighted by how many names
   // carry them. Read alongside the pool, never instead of it.
-  const { tags, byNominee } = useNomineeTags(isOpen);
+  const { tags, tagSetFor } = useNomineeTags(isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -90,7 +90,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       if (verifiedOnly && !(nominee.verified_status === 'fully_verified' || nominee.verified_status === 'partially_verified')) return false;
       if (categoryFilter !== 'all' && getNomineeCategory(nominee, seasonCategory) !== categoryFilter) return false;
       if (selectedTags.length > 0) {
-        const held = byNominee.get(nominee.id);
+        const held = tagSetFor(nominee);
         if (!held || !selectedTags.every((tag) => held.has(tag.key))) return false;
       }
       return true;
@@ -101,17 +101,31 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       random: (a, b) => rankIndex(a) - rankIndex(b),
       name: (a, b) => (a.name || '').localeCompare(b.name || ''),
       recent: (a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0),
-      verified: (a, b) => {
-        const av = a.verified_status === 'fully_verified' ? 2 : a.verified_status === 'partially_verified' ? 1 : 0;
-        const bv = b.verified_status === 'fully_verified' ? 2 : b.verified_status === 'partially_verified' ? 1 : 0;
-        return bv - av || rankIndex(a) - rankIndex(b);
-      },
     };
     return list.sort(byKey[sort] || byKey.random);
-  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly, categoryFilter, seasonCategory, selectedTags, byNominee]);
+  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly, categoryFilter, seasonCategory, selectedTags, tagSetFor]);
 
   const visible = sortedFiltered.slice(0, visibleCount);
   const hasMore = visibleCount < sortedFiltered.length;
+
+  // The cloud regenerates from the reading it is standing in, the way the old one did:
+  // only words held by someone still in the reading are offered, so every suggested tag
+  // lands on a person and a second tag can never dead-end.
+  const cloudTags = useMemo(() => {
+    if (tags.length === 0) return [];
+    const meta = new Map(tags.map((tag) => [tag.key, tag]));
+    const tally = new Map();
+    sortedFiltered.forEach((nominee) => {
+      tagSetFor(nominee).forEach((key) => {
+        const stat = meta.get(key);
+        if (!stat) return;
+        const row = tally.get(key) || { ...stat, count: 0 };
+        row.count += 1;
+        tally.set(key, row);
+      });
+    });
+    return [...tally.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  }, [sortedFiltered, tagSetFor, tags]);
 
   // A row is opened on the panel inside the sheet; the roll's cursor is held while it is
   // up, and the sheet's own keys belong to that panel (see the modal picker below).
@@ -225,7 +239,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
           {!loading && (
             <ExplorerTagCloud
-              tags={tags}
+              tags={cloudTags}
               selected={selectedTags}
               onToggle={toggleTag}
               onClear={() => setSelectedTags([])}

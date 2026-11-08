@@ -27,7 +27,6 @@ const ORDERS = [
   { key: 'random', label: 'Random' },
   { key: 'name', label: 'A–Z' },
   { key: 'recent', label: 'Newest' },
-  { key: 'verified', label: 'Verified first' },
 ];
 
 const COHORTS = [

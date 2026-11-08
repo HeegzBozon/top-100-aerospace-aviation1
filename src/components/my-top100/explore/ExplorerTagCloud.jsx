@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 
-// The cloud, back.
+// The cloud, back — and read the way the old one was.
 //
-// A tag cloud is a way of reading a field at a glance: the words the records actually
-// carry, set at the weight of how many people carry them, so the shape of the pool is
-// legible before a single name is read. Press a word and the roll narrows to the people
-// under it; press several and it narrows to the people under all of them.
+// The words the records actually carry, set at the weight of how many people in the
+// current reading hold them. The cloud is handed the reading, not the whole vocabulary,
+// so the words it offers are the ones that co-occur with what is already picked: every
+// suggestion lands on someone, and a second tag narrows rather than dead-ends.
 //
-// A vocabulary this broad is not one jumble. The tags a record carries are filed by kind —
-// a skill, a field, a technology, a place — so the cloud is read by kind first and the
-// words it hangs are the ones in that kind. Geography is the heaviest family in the
-// records and would otherwise drown every other word.
+// Press a word to add it, press it again to take it off. The picks stand above the words
+// as keys with their own crosses, so a stack is always visible and always undoable, and
+// one key clears the whole stack.
 //
-// It is set on cream in navy ink under the copper rule: a printed index, not a toy. With
-// no vocabulary to read it draws nothing at all rather than an empty cloud.
+// A vocabulary this broad is not one jumble, so it is read by kind — a skill, a field, a
+// technology, a place — with Places held apart because geography is the heaviest family in
+// the records and would otherwise drown every other word.
 const CLOUD_CAP = 24;
 
 const KINDS = [
@@ -39,10 +39,11 @@ const sizeFor = (count, max) => {
 export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) {
   const [expanded, setExpanded] = useState(false);
   const [kind, setKind] = useState('all');
-  if (!tags || tags.length === 0) return null;
+  const words = tags || [];
+  if (words.length === 0 && selected.length === 0) return null;
 
-  const kinds = KINDS.filter((entry) => entry.key === 'all' || tags.some((tag) => tag.category === entry.key));
-  const inKind = kind === 'all' ? tags : tags.filter((tag) => tag.category === kind);
+  const kinds = KINDS.filter((entry) => entry.key === 'all' || words.some((tag) => tag.category === entry.key));
+  const inKind = kind === 'all' ? words : words.filter((tag) => tag.category === kind);
   const max = inKind[0]?.count || 1;
   const shown = expanded ? inKind : inKind.slice(0, CLOUD_CAP);
 
@@ -50,7 +51,7 @@ export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) 
     <section className="border-b border-editorial-navy/10 bg-editorial-sand/40 px-4 py-2.5">
       <div className="flex items-baseline justify-between gap-2">
         <p className="pd-label text-[8.5px]">
-          {selected.length > 0 ? `Narrowed by ${selected.length}` : 'Read by tag'}
+          {selected.length > 0 ? `${selected.length} tag${selected.length === 1 ? '' : 's'} holding` : 'Read by tag'}
         </p>
         {selected.length > 0 && (
           <button
@@ -58,7 +59,7 @@ export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) 
             onClick={onClear}
             className="font-body text-[8.5px] font-bold uppercase tracking-[0.16em] text-editorial-copper underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
           >
-            Clear
+            Clear tags
           </button>
         )}
       </div>
@@ -103,38 +104,45 @@ export default function ExplorerTagCloud({ tags, selected, onToggle, onClear }) 
         </div>
       )}
 
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-        {shown.map((tag) => {
-          const active = selected.some((picked) => picked.key === tag.key);
-          return (
-            <button
-              key={tag.key}
-              type="button"
-              aria-pressed={active}
-              onClick={() => onToggle(tag)}
-              title={`${tag.count} ${tag.count === 1 ? 'name' : 'names'}`}
-              style={{ fontSize: sizeFor(tag.count, max) }}
-              className={`font-body leading-tight transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${
-                active
-                  ? 'font-bold text-editorial-copper underline decoration-editorial-copper/60 underline-offset-2'
-                  : 'text-editorial-navy/70 hover:text-editorial-navy'
-              }`}
-            >
-              {tag.label}
-            </button>
-          );
-        })}
+      {words.length === 0 ? (
+        <p className="mt-1.5 font-body text-[11px] leading-relaxed text-editorial-navy/55">
+          Nothing in this reading carries another tag.
+        </p>
+      ) : (
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+          {shown.map((tag) => {
+            const active = selected.some((picked) => picked.key === tag.key);
+            return (
+              <button
+                key={tag.key}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onToggle(tag)}
+                title={`${tag.count} ${tag.count === 1 ? 'name' : 'names'}${active ? ' · press again to remove' : ''}`}
+                style={{ fontSize: sizeFor(tag.count, max) }}
+                className={`font-body leading-tight transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${
+                  active
+                    ? 'font-bold text-editorial-copper underline decoration-editorial-copper/60 underline-offset-2'
+                    : 'text-editorial-navy/70 hover:text-editorial-navy'
+                }`}
+              >
+                {tag.label}
+                {active && <span className="text-editorial-copper/70"> ×</span>}
+              </button>
+            );
+          })}
 
-        {inKind.length > CLOUD_CAP && (
-          <button
-            type="button"
-            onClick={() => setExpanded((open) => !open)}
-            className="font-body text-[10px] font-bold uppercase tracking-[0.14em] text-editorial-label underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
-          >
-            {expanded ? 'Fewer' : `+${inKind.length - CLOUD_CAP}`}
-          </button>
-        )}
-      </div>
+          {inKind.length > CLOUD_CAP && (
+            <button
+              type="button"
+              onClick={() => setExpanded((open) => !open)}
+              className="font-body text-[10px] font-bold uppercase tracking-[0.14em] text-editorial-label underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
+            >
+              {expanded ? 'Fewer' : `+${inKind.length - CLOUD_CAP}`}
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }
