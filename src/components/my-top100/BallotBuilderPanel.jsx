@@ -32,7 +32,7 @@ export default function BallotBuilderPanel({
   onOpenVote,
   onOpenBriefing,
 }) {
-  const { loading, standings, standingCount, error, refresh } = usePersonalStandings({
+  const { loading, standings, standingCount, carried, error, refresh } = usePersonalStandings({
     user,
     pool,
     excludeIds: addedIds,
@@ -109,7 +109,7 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && standingCount === 0 && (
+        {!loading && !error && standingCount === 0 && carried === 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <Sparkles className="h-4 w-4" style={{ color: brand.gold }} />
             <p className="mt-1.5 text-[11.5px] font-bold" style={{ color: brand.navy }}>
@@ -129,6 +129,16 @@ export default function BallotBuilderPanel({
                 Weigh a set <ArrowRight className="h-3 w-3" />
               </button>
             )}
+          </div>
+        )}
+
+        {!loading && !error && standingCount === 0 && carried > 0 && (
+          <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
+            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Your carried names are not standing in this field</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Nothing you have advanced is in the open cohort. Search the directory, or weigh a
+              set in this field to begin a standing here.
+            </p>
           </div>
         )}
 

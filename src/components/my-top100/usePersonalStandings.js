@@ -34,6 +34,7 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
     loading: true,
     standings: [],
     standingCount: 0,
+    carried: 0,
     error: null,
   });
 
@@ -47,7 +48,7 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
 
   const load = useCallback(async () => {
     if (!email) {
-      setState({ loading: false, standings: [], standingCount: 0, error: null });
+      setState({ loading: false, standings: [], standingCount: 0, carried: 0, error: null });
       return;
     }
     setState((prev) => ({ ...prev, loading: true, error: null }));
@@ -60,8 +61,10 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
     });
 
     const byId = new Map((poolRef.current || []).map((n) => [n.id, n]));
-    const ranked = (tally?.rows || [])
-      .filter((row) => row.winner_nominee_id && row.count > 0)
+    const carriedNames = (tally?.rows || []).filter(
+      (row) => row.winner_nominee_id && row.count > 0
+    );
+    const ranked = carriedNames
       // Pool-scoped: only a name standing in the open field can take a place here.
       .map((row) => ({ person: byId.get(row.winner_nominee_id), count: row.count }))
       .filter((row) => row.person)
@@ -85,6 +88,8 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
       loading: false,
       standings: standings.filter((p) => !excludeRef.current?.has(p.id)).slice(0, STANDING_LIMIT),
       standingCount: standings.length,
+      // Names this Fellow's own comparisons carried, whether or not they stand in this field.
+      carried: carriedNames.length,
       error: null,
     });
   }, [email]);
@@ -97,6 +102,7 @@ export default function usePersonalStandings({ user, pool, excludeIds }) {
         loading: false,
         standings: [],
         standingCount: 0,
+        carried: 0,
         error: e?.message || 'Your Crosscheck standings could not be read.',
       });
     });
