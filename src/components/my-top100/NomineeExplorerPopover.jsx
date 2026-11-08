@@ -10,7 +10,7 @@ import ExplorerTagCloud from '@/components/my-top100/explore/ExplorerTagCloud';
 import SearchReadingNote from '@/components/my-top100/explore/SearchReadingNote';
 import ExplorerEndPlate from '@/components/my-top100/explore/ExplorerEndPlate';
 import {
-  planSearch, matchesPlan, searchText, regionMembers, sameLabels,
+  planSearch, matchesPlan, searchText, regionMembers, sameLabels, explainMatch,
 } from '@/components/my-top100/explore/searchVocabulary';
 import useNomineeTags from '@/components/my-top100/explore/useNomineeTags';
 import useExplorerCursor from '@/components/my-top100/explore/useExplorerCursor';
@@ -46,6 +46,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   const [nominees, setNominees] = useState([]);
   const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(true);
+  // The directory is the one read this sheet cannot work without, so its failure is a
+  // state of its own rather than a spinner that never resolves.
+  const [loadError, setLoadError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
@@ -62,15 +66,22 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     if (!isOpen) return undefined;
     let active = true;
     setLoading(true);
-    loadNomineePool().then(({ pool, seasonCategory: bySeason }) => {
-      if (!active) return;
-      setSeasonCategory(bySeason);
-      setNominees(pool);
-      setRandomOrder(stableShuffle(pool));
-      setLoading(false);
-    });
+    setLoadError(false);
+    loadNomineePool()
+      .then(({ pool, seasonCategory: bySeason }) => {
+        if (!active) return;
+        setSeasonCategory(bySeason);
+        setNominees(pool);
+        setRandomOrder(stableShuffle(pool));
+      })
+      .catch(() => {
+        if (active) setLoadError(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
     return () => { active = false; };
-  }, [isOpen]);
+  }, [isOpen, attempt]);
 
   // The vocabulary the pool is read by: the approved tags, weighted by how many names
   // carry them. Read alongside the pool, never instead of it.
@@ -274,9 +285,11 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                 The whole field
               </h2>
               <p className="mt-1.5 font-body text-[10px] uppercase tracking-[0.14em] text-editorial-cream/55">
-                {loading
-                  ? 'Reading the directory…'
-                  : `${reading.length} ${reading.length === 1 ? 'name' : 'names'} in this reading`}
+                {loadError
+                  ? 'Directory unavailable'
+                  : loading
+                    ? 'Reading the directory…'
+                    : `${reading.length} ${reading.length === 1 ? 'name' : 'names'} in this reading`}
               </p>
             </div>
             <button
@@ -302,8 +315,8 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
           onView={setView}
           autoFocus={deskOpened}
         >
-          {!loading && <SearchReadingNote plan={plan} members={reachedPlaces} />}
-          {!loading && (
+          {!loading && !loadError && <SearchReadingNote plan={plan} members={reachedPlaces} />}
+          {!loading && !loadError && (
             <ExplorerTagCloud
               tags={cloudTags}
               available={available}
@@ -311,14 +324,33 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               cohort={cohort}
               onCohort={setCohort}
               onToggle={toggleTag}
-              onClear={() => { setSelectedTags([]); setCohort('all'); }}
+              onClear={() => { setQuery(''); setSelectedTags([]); setCohort('all'); }}
             />
           )}
         </ExplorerControls>
 
         {/* The roll. */}
         <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-          {loading ? (
+          {loadError ? (
+            /* The one read this sheet cannot work without. Nothing is lost, and the way
+               back is a press rather than a guess. */
+            <div className="px-6 py-12 text-center">
+              <div className="pd-rule mx-auto w-10" />
+              <h3 className="mt-4 font-heading text-[17px] leading-tight text-editorial-navy">
+                The directory could not be read
+              </h3>
+              <p className="mx-auto mt-2 max-w-[300px] font-body text-[12px] leading-relaxed text-editorial-navy/60">
+                The field is unchanged. Read it again, or put a name forward from memory.
+              </p>
+              <button
+                type="button"
+                onClick={() => setAttempt((count) => count + 1)}
+                className="mt-5 inline-flex items-center gap-2 border border-editorial-copper bg-editorial-copper px-4 py-2 font-body text-[10px] font-bold uppercase tracking-[0.16em] text-editorial-cream transition-colors hover:bg-editorial-label focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-navy"
+              >
+                Try again
+              </button>
+            </div>
+          ) : loading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16">
               <Loader2 className="h-5 w-5 animate-spin text-editorial-copper" aria-hidden="true" />
               <p className="font-body text-[10px] uppercase tracking-[0.18em] text-editorial-navy/45">
@@ -363,6 +395,9 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                       index={index}
                       focused={index === cursor}
                       isAdded={addedIds.has(nominee.id)}
+                      matchNote={
+                        plan ? explainMatch(plan, haystacks.get(nominee.id), tagSetFor(nominee)) : null
+                      }
                       onOpen={() => openRow(nominee)}
                       onNominate={() => { setCursor(index); setNominating(nominee); }}
                     />

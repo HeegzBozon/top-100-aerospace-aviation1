@@ -233,6 +233,36 @@ export function matchesPlan(plan, text, tagKeys) {
   return false;
 }
 
+// Which field of the record answered the query, said in the reader's terms, so a name that
+// came back on its country never looks like a mistake. The parts are the ones searchText
+// joined, in the same order. A match on the name itself is left unsaid: the roll already
+// prints it.
+const FIELD_LABELS = ['name', 'title', 'role', 'company', 'organisation', 'country'];
+
+export function explainMatch(plan, text, tagKeys) {
+  if (!plan) return null;
+
+  const parts = (text || '').split(' \u0001 ');
+  for (let index = 1; index < parts.length; index += 1) {
+    const part = parts[index];
+    if (!part) continue;
+    if (plan.terms.some((term) => includesTerm(part, term))) {
+      return `on ${FIELD_LABELS[index] || 'the record'}`;
+    }
+  }
+
+  if (tagKeys) {
+    for (const key of tagKeys) {
+      const tag = normalize(key);
+      if (tag && plan.terms.some((term) => includesTerm(tag, term))) {
+        return `on the tag \u201c${key}\u201d`;
+      }
+    }
+  }
+
+  return null;
+}
+
 // Every key the same place may be filed under: the label as written, and its variants. So a
 // press on Colombia also answers the people filed under Columbia, without either record
 // being rewritten.

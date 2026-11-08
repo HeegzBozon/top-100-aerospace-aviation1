@@ -1,22 +1,36 @@
 import { X } from 'lucide-react';
 
-// The vocabulary, held as a density cloud.
+// The vocabulary, held as a density cloud and read by facet.
 //
 // Every pill carries the weight of the word in the reading the search and the cohort have
-// left: a word most of the field holds stands large and leads the row, a word only a few
+// left: a word most of the field holds stands large and leads its row, a word only a few
 // hold stands small and falls to the tail. So the cloud reads as a picture of the field
 // before anything is pressed — the heaviest words are the ones worth pressing — and it
 // re-reads itself as the search tightens, which is what makes browsing feel like the
 // vocabulary is answering rather than sitting still.
 //
-// Three registers, set by a word's share of the heaviest word in the row, never by an
-// absolute count (the field's own numbers are small): a leader big and bold, a middling
-// word at body size, a thin word small. The count is printed beside the leading and
-// middling words so the size is never a guess.
+// The words are not one undifferentiated row any more: they are filed by what they say
+// about a person — the field they work in, the role they hold, the impact they carry, the
+// place they are based — so a long vocabulary is scanned by kind rather than read through.
+// A facet with nobody in it simply does not draw.
+//
+// Three registers, set by a word's share of the heaviest word in its own facet, never by an
+// absolute count (the field's own numbers are small): a leader big and bold, a middling word
+// at body size, a thin word small. The count is printed beside the leading and middling
+// words so the size is never a guess.
 //
 // A word that the narrower reading (the words already pressed) can no longer reach stays in
 // place, dimmed and refused: the row keeps its shape, and no press can empty the sheet.
-const CLOUD_CAP = 30;
+const PER_FACET = 8;
+
+// The kinds a word is filed under, in the order they are read. Tags arrive from the directory
+// with one of the NomineeTag categories; a word with none is read as part of the field.
+const FACETS = [
+  { key: 'field', label: 'Field', categories: ['industry', 'technology'] },
+  { key: 'role', label: 'Role', categories: ['skill'] },
+  { key: 'impact', label: 'Impact', categories: ['achievement', 'attribute'] },
+  { key: 'region', label: 'Region', categories: ['geography'] },
+];
 
 const COHORTS = [
   { key: 'women', label: 'Women' },
@@ -30,11 +44,27 @@ const REGISTER = {
 };
 
 export default function ExplorerTagCloud({ tags, available, selected, cohort, onCohort, onToggle, onClear }) {
-  const words = (tags || []).slice(0, CLOUD_CAP);
   const hasSelection = selected.length > 0 || (cohort && cohort !== 'all');
-  const heaviest = words.reduce((max, tag) => Math.max(max, tag.weight || 0), 0) || 1;
 
-  const registerOf = (weight) => {
+  // Filed by facet, heaviest first in each, capped so one crowded kind of word cannot push
+  // the rest of the picture out of the band.
+  const buckets = FACETS.map((facet) => ({ facet, words: [] }));
+  (tags || []).forEach((tag) => {
+    const index = FACETS.findIndex((facet) => facet.categories.includes(tag.category));
+    buckets[index === -1 ? 0 : index].words.push(tag);
+  });
+  const drawn = buckets
+    .map(({ facet, words }) => {
+      const sorted = [...words].sort((a, b) => (b.weight || 0) - (a.weight || 0));
+      return {
+        facet,
+        words: sorted.slice(0, PER_FACET),
+        heaviest: sorted.reduce((max, tag) => Math.max(max, tag.weight || 0), 0) || 1,
+      };
+    })
+    .filter((bucket) => bucket.words.length > 0);
+
+  const registerOf = (weight, heaviest) => {
     const share = (weight || 0) / heaviest;
     if (share >= 0.55) return 'lead';
     if (share >= 0.22) return 'mid';
@@ -42,79 +72,84 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
   };
 
   return (
-    <div className="mt-2 flex max-h-[112px] flex-wrap content-start items-center gap-1 overflow-y-auto scrollbar-hide md:max-h-[136px]">
-      {COHORTS.map((option) => {
-        const active = cohort === option.key;
-        return (
+    <div className="mt-2 max-h-[116px] overflow-y-auto scrollbar-hide md:max-h-[150px]">
+      <div className="flex flex-wrap items-center gap-1">
+        {COHORTS.map((option) => {
+          const active = cohort === option.key;
+          return (
+            <button
+              key={option.key}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onCohort(active ? 'all' : option.key)}
+              className={`flex items-center gap-1 rounded-full border px-2.5 py-[3px] font-body text-[9.5px] font-bold uppercase leading-none tracking-[0.08em] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${
+                active
+                  ? 'border-editorial-navy bg-editorial-navy text-editorial-cream'
+                  : 'border-editorial-navy/30 text-editorial-navy/75 hover:border-editorial-navy/60'
+              }`}
+            >
+              {option.label}
+              {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
+            </button>
+          );
+        })}
+
+        {hasSelection && (
           <button
-            key={option.key}
             type="button"
-            aria-pressed={active}
-            onClick={() => onCohort(active ? 'all' : option.key)}
-            className={`flex items-center gap-1 rounded-full border px-2.5 py-[3px] font-body text-[9.5px] font-bold uppercase leading-none tracking-[0.08em] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${
-              active
-                ? 'border-editorial-navy bg-editorial-navy text-editorial-cream'
-                : 'border-editorial-navy/30 text-editorial-navy/75 hover:border-editorial-navy/60'
-            }`}
+            onClick={onClear}
+            className="ml-0.5 font-body text-[8.5px] font-bold uppercase tracking-[0.16em] text-editorial-label underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
           >
-            {option.label}
-            {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
+            Reset
           </button>
-        );
-      })}
+        )}
+      </div>
 
-      {/* The seam only stands when there is a vocabulary behind it: a reading nobody's
-          words reach closes on the cohorts alone rather than on a rule going nowhere. */}
-      {words.length > 0 && (
-        <span className="mx-0.5 h-4 w-px bg-editorial-navy/15" aria-hidden="true" />
-      )}
-
-      {words.map((tag) => {
-        const active = selected.some((picked) => picked.key === tag.key);
-        const live = active || available.has(tag.key);
-        const register = registerOf(tag.weight);
-        return (
-          <button
-            key={tag.key}
-            type="button"
-            aria-pressed={active}
-            disabled={!live}
-            onClick={() => onToggle(tag)}
-            title={
-              active
-                ? `Remove ${tag.label}`
-                : live
-                  ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in this reading`
-                  : `Nobody in this reading is tagged ${tag.label}`
-            }
-            className={`flex items-baseline gap-1 rounded-full border font-body leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
-              active
-                ? 'border-editorial-copper bg-editorial-copper text-editorial-cream'
-                : live
-                  ? 'border-editorial-navy/25 text-editorial-navy/80 hover:border-editorial-navy/60 hover:bg-editorial-navy/5'
-                  : 'cursor-default border-editorial-navy/10 text-editorial-navy/25'
-            }`}
-          >
-            {tag.label}
-            {register !== 'tail' && (
-              <span className={`tabular-nums ${active ? 'text-editorial-cream/70' : 'text-editorial-navy/45'}`}>
-                {tag.weight}
-              </span>
-            )}
-            {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
-          </button>
-        );
-      })}
-
-      {hasSelection && (
-        <button
-          type="button"
-          onClick={onClear}
-          className="ml-0.5 font-body text-[8.5px] font-bold uppercase tracking-[0.16em] text-editorial-label underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
-        >
-          Clear
-        </button>
-      )}
+      {drawn.map(({ facet, words, heaviest }) => (
+        <div key={facet.key} className="mt-1.5 flex items-start gap-1.5">
+          <span className="w-[30px] shrink-0 pt-[4px] font-body text-[7.5px] font-bold uppercase leading-none tracking-[0.12em] text-editorial-label/75">
+            {facet.label}
+          </span>
+          <div className="flex flex-1 flex-wrap content-start items-center gap-1">
+            {words.map((tag) => {
+              const active = selected.some((picked) => picked.key === tag.key);
+              const live = active || available.has(tag.key);
+              const register = registerOf(tag.weight, heaviest);
+              return (
+                <button
+                  key={tag.key}
+                  type="button"
+                  aria-pressed={active}
+                  disabled={!live}
+                  onClick={() => onToggle(tag)}
+                  title={
+                    active
+                      ? `Remove ${tag.label}`
+                      : live
+                        ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in this reading`
+                        : `Nobody in this reading is tagged ${tag.label}`
+                  }
+                  className={`flex items-baseline gap-1 rounded-full border font-body leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
+                    active
+                      ? 'border-editorial-copper bg-editorial-copper text-editorial-cream'
+                      : live
+                        ? 'border-editorial-navy/25 text-editorial-navy/80 hover:border-editorial-navy/60 hover:bg-editorial-navy/5'
+                        : 'cursor-default border-editorial-navy/10 text-editorial-navy/25'
+                  }`}
+                >
+                  {tag.label}
+                  {register !== 'tail' && (
+                    <span className={`tabular-nums ${active ? 'text-editorial-cream/70' : 'text-editorial-navy/45'}`}>
+                      {tag.weight}
+                    </span>
+                  )}
+                  {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

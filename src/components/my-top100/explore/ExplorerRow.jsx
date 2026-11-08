@@ -12,7 +12,7 @@ import HonoreeChips from '@/components/voting/HonoreeChips';
 // The line is not a nested-button sandwich: the reading area is one press that opens the
 // record, and the honoree chips inside it keep their own press (they stop it), so a chip
 // opens the archive's account of a volume without pulling the record up underneath it.
-export default function ExplorerRow({ nominee, index, focused, isAdded, onOpen, onNominate }) {
+export default function ExplorerRow({ nominee, index, focused, isAdded, matchNote, onOpen, onNominate }) {
   const avatar = nominee.avatar_url || nominee.photo_url;
   const verified = nominee.verified_status === 'fully_verified';
   const role = [nominee.title || nominee.professional_role, nominee.company || nominee.organization]
@@ -61,6 +61,13 @@ export default function ExplorerRow({ nominee, index, focused, isAdded, onOpen, 
           {role && (
             <span className="mt-0.5 block truncate font-body text-[9.5px] text-editorial-navy/55">
               {role}
+            </span>
+          )}
+          {/* Why this name came back, when the search is what brought it: a record read on
+              its country should never look like the directory guessed. */}
+          {matchNote && (
+            <span className="mt-0.5 block truncate font-body text-[8px] font-bold uppercase tracking-[0.12em] text-editorial-label">
+              Matched {matchNote}
             </span>
           )}
           <HonoreeChips nominee={nominee} max={2} className="mt-1" />
