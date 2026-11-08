@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X, Loader2, UserPlus } from 'lucide-react';
 import { machineOverline } from '@/components/shell/machine';
 import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
@@ -9,6 +9,7 @@ import ExplorerGallery from '@/components/my-top100/explore/ExplorerGallery';
 import ExplorerTagCloud from '@/components/my-top100/explore/ExplorerTagCloud';
 import useNomineeTags from '@/components/my-top100/explore/useNomineeTags';
 import useExplorerCursor from '@/components/my-top100/explore/useExplorerCursor';
+import useAutoLoad from '@/components/my-top100/explore/useAutoLoad';
 import '@/components/my-top100/explore/exploreSheet.css';
 import useModalPicker from '@/components/handheld/useModalPicker';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
@@ -21,18 +22,37 @@ import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomi
 // on the glass it takes the picture between the strip and the chin (see the
 // hh-glass-panel geometry in index.css), so the hardware never stands over the reading.
 //
+// One instrument narrows it. The search, the standing tags (the cohorts among them) and
+// the order are one band, seated above the roll so the tool is always in reach; the roll
+// reads on by itself as the window is walked down; and a name opens as a card laid over
+// the roll rather than as a screen that takes the directory away. Nothing about the band
+// re-cuts itself as the reading narrows — the pills keep their size, their order and their
+// place, which is what keeps a hand from chasing a control that moved under it.
+//
 // It is driven by the hand that is there: the ring walks the roll and the confirm key
 // opens the record; the arrow keys and Enter do the same on the desk, and Escape or B
-// hands the surface back. A row is opened on the panel inside the sheet — never a new
-// window, never a jump off the machine.
+// hands the surface back.
 const PAGE_SIZE = 40;
+
+// The families the vocabulary is read by, in the order the band offers them. Places sit
+// last because geography is the heaviest family in the records and would otherwise be the
+// only one anybody saw.
+const FAMILIES = [
+  { key: 'skill', label: 'Skills' },
+  { key: 'technology', label: 'Technology' },
+  { key: 'industry', label: 'Fields' },
+  { key: 'achievement', label: 'Achievements' },
+  { key: 'attribute', label: 'Attributes' },
+  { key: 'geography', label: 'Places' },
+];
 
 export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd, initialNominee, nominator }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [cohort, setCohort] = useState('all');
   const [sort, setSort] = useState('random');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [family, setFamily] = useState('all');
   const [seasonCategory, setSeasonCategory] = useState({});
   const [nominees, setNominees] = useState([]);
   const [randomOrder, setRandomOrder] = useState([]);
@@ -74,27 +94,37 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     }
   }, [isOpen, initialNominee]);
 
-  const sortedFiltered = useMemo(() => {
-    const list = nominees.filter((nominee) => {
-      if (query) {
-        const q = query.toLowerCase();
-        const matches =
-          nominee.name?.toLowerCase().includes(q) ||
-          nominee.title?.toLowerCase().includes(q) ||
-          nominee.professional_role?.toLowerCase().includes(q) ||
-          nominee.company?.toLowerCase().includes(q) ||
-          nominee.organization?.toLowerCase().includes(q);
-        if (!matches) return false;
-      }
-      if (!matchDiscipline(nominee, discipline)) return false;
-      if (verifiedOnly && !(nominee.verified_status === 'fully_verified' || nominee.verified_status === 'partially_verified')) return false;
-      if (categoryFilter !== 'all' && getNomineeCategory(nominee, seasonCategory) !== categoryFilter) return false;
-      if (selectedTags.length > 0) {
-        const held = tagSetFor(nominee);
-        if (!held || !selectedTags.every((tag) => held.has(tag.key))) return false;
-      }
-      return true;
-    });
+  // Everything the band narrows by except the words themselves. Held apart so the pills
+  // can be told which of them would still land on someone in the reading the other
+  // controls have left.
+  const baseReading = useMemo(
+    () =>
+      nominees.filter((nominee) => {
+        if (query) {
+          const q = query.toLowerCase();
+          const matches =
+            nominee.name?.toLowerCase().includes(q) ||
+            nominee.title?.toLowerCase().includes(q) ||
+            nominee.professional_role?.toLowerCase().includes(q) ||
+            nominee.company?.toLowerCase().includes(q) ||
+            nominee.organization?.toLowerCase().includes(q);
+          if (!matches) return false;
+        }
+        if (!matchDiscipline(nominee, discipline)) return false;
+        if (verifiedOnly && !(nominee.verified_status === 'fully_verified' || nominee.verified_status === 'partially_verified')) return false;
+        if (cohort !== 'all' && getNomineeCategory(nominee, seasonCategory) !== cohort) return false;
+        return true;
+      }),
+    [nominees, query, discipline, verifiedOnly, cohort, seasonCategory]
+  );
+
+  const reading = useMemo(() => {
+    const list = selectedTags.length
+      ? baseReading.filter((nominee) => {
+          const held = tagSetFor(nominee);
+          return !!held && selectedTags.every((tag) => held.has(tag.key));
+        })
+      : baseReading;
 
     const rankIndex = (n) => randomOrder.findIndex((r) => r.id === n.id);
     const byKey = {
@@ -102,33 +132,36 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       name: (a, b) => (a.name || '').localeCompare(b.name || ''),
       recent: (a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0),
     };
-    return list.sort(byKey[sort] || byKey.random);
-  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly, categoryFilter, seasonCategory, selectedTags, tagSetFor]);
+    return [...list].sort(byKey[sort] || byKey.random);
+  }, [baseReading, selectedTags, tagSetFor, sort, randomOrder]);
 
-  const visible = sortedFiltered.slice(0, visibleCount);
-  const hasMore = visibleCount < sortedFiltered.length;
+  const visible = reading.slice(0, visibleCount);
+  const hasMore = visibleCount < reading.length;
 
-  // The cloud regenerates from the reading it is standing in, the way the old one did:
-  // only words held by someone still in the reading are offered, so every suggested tag
-  // lands on a person and a second tag can never dead-end.
+  // The words that would still narrow this reading. A pill outside this set stays where it
+  // is and is simply refused, so no press can leave the sheet empty.
+  const available = useMemo(() => {
+    const keys = new Set();
+    reading.forEach((nominee) => tagSetFor(nominee).forEach((key) => keys.add(key)));
+    return keys;
+  }, [reading, tagSetFor]);
+
+  // The vocabulary is the directory's, not the reading's: the same words in the same order
+  // whatever has been narrowed, which is what keeps the band's shape still.
   const cloudTags = useMemo(() => {
-    if (tags.length === 0) return [];
-    const meta = new Map(tags.map((tag) => [tag.key, tag]));
-    const tally = new Map();
-    sortedFiltered.forEach((nominee) => {
-      tagSetFor(nominee).forEach((key) => {
-        const stat = meta.get(key);
-        if (!stat) return;
-        const row = tally.get(key) || { ...stat, count: 0 };
-        row.count += 1;
-        tally.set(key, row);
-      });
-    });
-    return [...tally.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-  }, [sortedFiltered, tagSetFor, tags]);
+    if (family === 'all') return tags;
+    return tags.filter(
+      (tag) => tag.category === family || selectedTags.some((picked) => picked.key === tag.key)
+    );
+  }, [tags, family, selectedTags]);
 
-  // A row is opened on the panel inside the sheet; the roll's cursor is held while it is
-  // up, and the sheet's own keys belong to that panel (see the modal picker below).
+  const families = useMemo(() => {
+    const present = new Set(tags.map((tag) => tag.category).filter(Boolean));
+    return FAMILIES.filter((entry) => present.has(entry.key));
+  }, [tags]);
+
+  // A row is opened on the card inside the sheet; the roll's cursor is held while it is up,
+  // and the sheet's own keys belong to that card (see the modal picker below).
   const panelOpen = !!viewingProfile || !!nominating || inlineNominate;
 
   const { cursor, setCursor, reset } = useExplorerCursor({
@@ -139,14 +172,30 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     bodyRef,
   });
 
+  // The roll reads on by itself, and the ring keeps it fed: walking the cursor towards the
+  // foot of what has been read folds the next page in rather than stopping at the edge.
+  const loadMore = useCallback(() => setVisibleCount((count) => count + PAGE_SIZE), []);
+  const setSentinel = useAutoLoad({
+    rootRef: bodyRef,
+    enabled: isOpen && !loading && !panelOpen,
+    hasMore,
+    onMore: loadMore,
+    watch: reading.length,
+  });
+
+  useEffect(() => {
+    if (view !== 'list') return;
+    if (cursor >= visible.length - 3 && hasMore) loadMore();
+  }, [cursor, visible.length, hasMore, view, loadMore]);
+
   // A new reading starts at its head: the first name the filters leave is the one the
   // cursor stands on.
   useEffect(() => {
     reset();
     setVisibleCount(PAGE_SIZE);
-  }, [query, discipline, sort, verifiedOnly, categoryFilter, view, selectedTags, reset]);
+  }, [query, discipline, sort, verifiedOnly, cohort, view, family, selectedTags, reset]);
 
-  // The record read on the panel is a read: a turn of the ring takes it down, and the
+  // The record read on the card is a read: a turn of the ring takes it down, and the
   // confirm key or the way back hands the sheet to the roll again.
   useModalPicker({
     open: isOpen && !!viewingProfile,
@@ -191,9 +240,9 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         aria-label="All nominees"
         className="machine-sheet explore-sheet hh-glass-panel-card relative flex w-full flex-col overflow-hidden border border-editorial-copper/40 md:max-h-full md:max-w-[720px] md:rounded-[14px]"
       >
-        {/* The plate: the maker's overline, the reading's name, and the field. */}
-        <header className="shrink-0 bg-editorial-navy pb-3 pt-3.5">
-          <div className="flex items-start justify-between gap-3 px-5">
+        {/* The plate: the maker's overline, the reading's name, and the way out. */}
+        <header className="shrink-0 bg-editorial-navy px-5 pb-2.5 pt-3">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="font-body text-[8.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold">
                 {machineOverline('Directory')}
@@ -204,7 +253,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               <p className="mt-1.5 font-body text-[10px] uppercase tracking-[0.14em] text-editorial-cream/55">
                 {loading
                   ? 'Reading the directory…'
-                  : `${sortedFiltered.length} ${sortedFiltered.length === 1 ? 'name' : 'names'} in this reading`}
+                  : `${reading.length} ${reading.length === 1 ? 'name' : 'names'} in this reading`}
               </p>
             </div>
             <button
@@ -217,35 +266,41 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               Close
             </button>
           </div>
-
-          <ExplorerControls
-            query={query}
-            onQuery={setQuery}
-            cohort={categoryFilter}
-            onCohort={setCategoryFilter}
-            field={discipline}
-            onField={setDiscipline}
-            sort={sort}
-            onSort={setSort}
-            verifiedOnly={verifiedOnly}
-            onVerifiedOnly={setVerifiedOnly}
-            view={view}
-            onView={setView}
-            autoFocus={deskOpened}
-          />
         </header>
 
-        {/* The roll. */}
-        <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+        {/* One band: the field, the tags that hold, the order, and the vocabulary. Held
+            above the roll, so the tool is in reach wherever the reading has got to. */}
+        <ExplorerControls
+          query={query}
+          onQuery={setQuery}
+          cohort={cohort}
+          onCohort={setCohort}
+          field={discipline}
+          onField={setDiscipline}
+          sort={sort}
+          onSort={setSort}
+          verifiedOnly={verifiedOnly}
+          onVerifiedOnly={setVerifiedOnly}
+          view={view}
+          onView={setView}
+          families={families}
+          family={family}
+          onFamily={setFamily}
+          autoFocus={deskOpened}
+        >
           {!loading && (
             <ExplorerTagCloud
               tags={cloudTags}
+              available={available}
               selected={selectedTags}
               onToggle={toggleTag}
               onClear={() => setSelectedTags([])}
             />
           )}
+        </ExplorerControls>
 
+        {/* The roll. */}
+        <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16">
               <Loader2 className="h-5 w-5 animate-spin text-editorial-copper" aria-hidden="true" />
@@ -253,7 +308,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                 Reading the directory
               </p>
             </div>
-          ) : sortedFiltered.length === 0 ? (
+          ) : reading.length === 0 ? (
             <div className="px-6 py-12 text-center">
               <div className="pd-rule mx-auto w-10" />
               <h3 className="mt-4 font-heading text-[17px] leading-tight text-editorial-navy">
@@ -298,15 +353,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                 </ul>
               )}
 
+              {/* The page the reading is about to read. */}
               {hasMore && (
-                <div className="px-3 py-3">
-                  <button
-                    type="button"
-                    onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-                    className="w-full border border-editorial-navy/25 py-2.5 font-body text-[9.5px] font-bold uppercase tracking-[0.16em] text-editorial-navy transition-colors hover:bg-editorial-navy hover:text-editorial-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
-                  >
-                    Read on · {sortedFiltered.length - visibleCount} more
-                  </button>
+                <div ref={setSentinel} aria-hidden="true" className="flex items-center justify-center py-4">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-editorial-copper/60" aria-hidden="true" />
                 </div>
               )}
             </>
@@ -324,19 +374,31 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
             </span>
           </p>
           <p className="font-body text-[8.5px] uppercase tracking-[0.16em] tabular-nums text-editorial-navy/45">
-            {loading ? '' : `${Math.min(visibleCount, sortedFiltered.length)} / ${sortedFiltered.length}`}
+            {loading ? '' : `${visible.length} / ${reading.length}`}
           </p>
         </footer>
 
-        {/* The record, opened on its own panel inside the sheet. */}
+        {/* The record, laid over the roll on its own card — the directory stays behind it,
+            in place, so dismissing the card puts the reader back where they stood. */}
         {viewingProfile && (
-          <NomineeProfilePanel
-            nominee={viewingProfile}
-            onBack={() => setViewingProfile(null)}
-            onAdd={(nominee) => onAdd(nominee)}
-            onNominate={(nominee) => { setViewingProfile(null); setNominating(nominee); }}
-            isAdded={addedIds.has(viewingProfile.id)}
-          />
+          <div
+            className="absolute inset-0 z-40 flex items-stretch justify-center bg-editorial-navy/45 p-2 md:items-center md:p-4"
+            role="presentation"
+          >
+            <button
+              type="button"
+              onClick={() => setViewingProfile(null)}
+              aria-label="Close the record"
+              className="absolute inset-0 h-full w-full cursor-default"
+              tabIndex={-1}
+            />
+            <NomineeProfilePanel
+              nominee={viewingProfile}
+              onBack={() => setViewingProfile(null)}
+              onNominate={(nominee) => { setViewingProfile(null); setNominating(nominee); }}
+              isAdded={addedIds.has(viewingProfile.id)}
+            />
+          </div>
         )}
 
         {/* The nomination ladder — the same intake the search opens. The sheet stands
