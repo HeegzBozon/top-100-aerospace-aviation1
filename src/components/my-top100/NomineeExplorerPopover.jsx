@@ -5,6 +5,9 @@ import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import NomineeProfilePanel from '@/components/my-top100/NomineeProfilePanel';
 import ExplorerControls from '@/components/my-top100/explore/ExplorerControls';
 import ExplorerRow from '@/components/my-top100/explore/ExplorerRow';
+import ExplorerGallery from '@/components/my-top100/explore/ExplorerGallery';
+import ExplorerTagCloud from '@/components/my-top100/explore/ExplorerTagCloud';
+import useNomineeTags from '@/components/my-top100/explore/useNomineeTags';
 import useExplorerCursor from '@/components/my-top100/explore/useExplorerCursor';
 import '@/components/my-top100/explore/exploreSheet.css';
 import useModalPicker from '@/components/handheld/useModalPicker';
@@ -38,6 +41,8 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
   const [viewingProfile, setViewingProfile] = useState(null);
+  const [view, setView] = useState('list');
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const bodyRef = useRef(null);
 
@@ -54,6 +59,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     });
     return () => { active = false; };
   }, [isOpen]);
+
+  // The vocabulary the pool is read by: the approved tags, weighted by how many names
+  // carry them. Read alongside the pool, never instead of it.
+  const { tags, byNominee } = useNomineeTags(isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -80,6 +89,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       if (!matchDiscipline(nominee, discipline)) return false;
       if (verifiedOnly && !(nominee.verified_status === 'fully_verified' || nominee.verified_status === 'partially_verified')) return false;
       if (categoryFilter !== 'all' && getNomineeCategory(nominee, seasonCategory) !== categoryFilter) return false;
+      if (selectedTags.length > 0) {
+        const held = byNominee.get(nominee.id);
+        if (!held || !selectedTags.every((tag) => held.has(tag.key))) return false;
+      }
       return true;
     });
 
@@ -95,7 +108,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       },
     };
     return list.sort(byKey[sort] || byKey.random);
-  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly, categoryFilter, seasonCategory]);
+  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly, categoryFilter, seasonCategory, selectedTags, byNominee]);
 
   const visible = sortedFiltered.slice(0, visibleCount);
   const hasMore = visibleCount < sortedFiltered.length;
@@ -106,7 +119,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
 
   const { cursor, setCursor, reset } = useExplorerCursor({
     rows: visible,
-    enabled: isOpen && !panelOpen,
+    enabled: isOpen && !panelOpen && view === 'list',
     onOpen: (row) => setViewingProfile(row),
     onClose,
     bodyRef,
@@ -117,7 +130,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   useEffect(() => {
     reset();
     setVisibleCount(PAGE_SIZE);
-  }, [query, discipline, sort, verifiedOnly, categoryFilter, reset]);
+  }, [query, discipline, sort, verifiedOnly, categoryFilter, view, selectedTags, reset]);
 
   // The record read on the panel is a read: a turn of the ring takes it down, and the
   // confirm key or the way back hands the sheet to the roll again.
@@ -128,6 +141,17 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   });
 
   const openRow = (row) => setViewingProfile(row);
+
+  // One word narrows the pool; several narrow it to the names carrying all of them — the
+  // same reading the old cloud gave, and the same one this directory gives by any other
+  // control: a filter, never a weight.
+  const toggleTag = (tag) => {
+    setSelectedTags((picked) =>
+      picked.some((held) => held.key === tag.key)
+        ? picked.filter((held) => held.key !== tag.key)
+        : [...picked, tag]
+    );
+  };
 
   // The field takes the cursor on a desk, where the hand is already on the keys. On the
   // glass it does not: the keys would come up over the reading the sheet was opened for.
@@ -154,8 +178,8 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         className="machine-sheet explore-sheet hh-glass-panel-card relative flex w-full flex-col overflow-hidden border border-editorial-copper/40 md:max-h-full md:max-w-[720px] md:rounded-[14px]"
       >
         {/* The plate: the maker's overline, the reading's name, and the field. */}
-        <header className="shrink-0 bg-editorial-navy px-5 pb-3.5 pt-3.5">
-          <div className="flex items-start justify-between gap-3">
+        <header className="shrink-0 bg-editorial-navy pb-3 pt-3.5">
+          <div className="flex items-start justify-between gap-3 px-5">
             <div className="min-w-0">
               <p className="font-body text-[8.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold">
                 {machineOverline('Directory')}
@@ -191,12 +215,23 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
             onSort={setSort}
             verifiedOnly={verifiedOnly}
             onVerifiedOnly={setVerifiedOnly}
+            view={view}
+            onView={setView}
             autoFocus={deskOpened}
           />
         </header>
 
         {/* The roll. */}
         <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+          {!loading && (
+            <ExplorerTagCloud
+              tags={tags}
+              selected={selectedTags}
+              onToggle={toggleTag}
+              onClear={() => setSelectedTags([])}
+            />
+          )}
+
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16">
               <Loader2 className="h-5 w-5 animate-spin text-editorial-copper" aria-hidden="true" />
@@ -226,19 +261,28 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
             </div>
           ) : (
             <>
-              <ul className="border-t border-editorial-copper">
-                {visible.map((nominee, index) => (
-                  <ExplorerRow
-                    key={nominee.id}
-                    nominee={nominee}
-                    index={index}
-                    focused={index === cursor}
-                    isAdded={addedIds.has(nominee.id)}
-                    onOpen={() => openRow(nominee)}
-                    onNominate={() => { setCursor(index); setNominating(nominee); }}
-                  />
-                ))}
-              </ul>
+              {view === 'gallery' ? (
+                <ExplorerGallery
+                  nominees={visible}
+                  addedIds={addedIds}
+                  onOpen={openRow}
+                  onNominate={(nominee) => setNominating(nominee)}
+                />
+              ) : (
+                <ul className="border-t border-editorial-copper">
+                  {visible.map((nominee, index) => (
+                    <ExplorerRow
+                      key={nominee.id}
+                      nominee={nominee}
+                      index={index}
+                      focused={index === cursor}
+                      isAdded={addedIds.has(nominee.id)}
+                      onOpen={() => openRow(nominee)}
+                      onNominate={() => { setCursor(index); setNominating(nominee); }}
+                    />
+                  ))}
+                </ul>
+              )}
 
               {hasMore && (
                 <div className="px-3 py-3">
@@ -258,8 +302,12 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         {/* The foot: how the machine is driven, and where the reading has got to. */}
         <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-editorial-copper/30 px-5 py-2">
           <p className="font-body text-[8.5px] uppercase tracking-[0.16em] text-editorial-navy/45">
-            <span className="md:hidden">Wheel walks · A opens · B back</span>
-            <span className="hidden md:inline">↑↓ walk · Enter opens · Esc back</span>
+            <span className="md:hidden">
+              {view === 'gallery' ? 'A opens · B back' : 'Wheel walks · A opens · B back'}
+            </span>
+            <span className="hidden md:inline">
+              {view === 'gallery' ? 'Every plate opens its record' : '↑↓ walk · Enter opens · Esc back'}
+            </span>
           </p>
           <p className="font-body text-[8.5px] uppercase tracking-[0.16em] tabular-nums text-editorial-navy/45">
             {loading ? '' : `${Math.min(visibleCount, sortedFiltered.length)} / ${sortedFiltered.length}`}
