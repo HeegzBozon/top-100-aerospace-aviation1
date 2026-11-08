@@ -87,15 +87,14 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
               <Plus className="h-3 w-3" />
             </button>
 
-            {person.nominee_email && (
-              <FollowButton
-                iconOnly
-                viewer={viewer}
-                targetEmail={person.nominee_email}
-                targetName={person.name}
-                targetAvatar={portrait}
-              />
-            )}
+            <FollowButton
+              iconOnly
+              viewer={viewer}
+              targetId={person.id}
+              targetEmail={person.nominee_email}
+              targetName={person.name}
+              targetAvatar={portrait}
+            />
 
             <button
               type="button"

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import StandingsRowKeys from '@/components/my-top100/StandingsRowKeys';
+import { useFollowedProfiles } from '@/components/fellow-home/useFollows';
+import { addressOf, followKey } from '@/components/following/followRecord';
 
 // The standings as a table rather than a stack of cards.
 //
@@ -27,6 +29,9 @@ function contextOf(person) {
 export default function StandingsTable({ standings, viewer, onAdd, onView }) {
   const [shown, setShown] = useState(FIRST);
   const rows = standings.slice(0, shown);
+  // The viewer's follows, read once for the column rather than a hundred times over.
+  const { isFollowing, busyKey, toggle } = useFollowedProfiles(viewer);
+  const viewerEmail = (viewer?.email || '').toLowerCase();
 
   return (
     <div
@@ -78,7 +83,16 @@ export default function StandingsTable({ standings, viewer, onAdd, onView }) {
                   )}
                 </td>
                 <td className="pr-1.5 align-middle">
-                  <StandingsRowKeys person={person} viewer={viewer} onView={onView} onAdd={onAdd} />
+                  <StandingsRowKeys
+                    person={person}
+                    isSelf={!!viewerEmail && addressOf(person).toLowerCase() === viewerEmail}
+                    canFollow={!!viewerEmail && addressOf(person).toLowerCase() !== viewerEmail}
+                    followed={isFollowing(person)}
+                    busy={busyKey === followKey(person)}
+                    onToggleFollow={toggle}
+                    onView={onView}
+                    onAdd={onAdd}
+                  />
                 </td>
               </tr>
             );

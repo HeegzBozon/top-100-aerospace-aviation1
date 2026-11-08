@@ -6,6 +6,7 @@
 const LINES = {
   'signed-out': 'Sign in to keep the people you follow, and a list of your own.',
   'no-address': 'No address on her record, so she cannot be kept yet.',
+  'no-identity': 'This name is not linked to a record that can be followed.',
   'no-record': 'This name is not linked to a record yet.',
   cancelled: '',
   failed: 'That did not go through. Try it again.',
