@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Shuffle, Sparkles, UserPlus } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import { MANIFEST } from '@/components/voting/ballotNaming';
 import BallotSuggestionCard from '@/components/my-top100/BallotSuggestionCard';
-import useBallotSuggestions from '@/components/my-top100/useBallotSuggestions';
+import usePersonalStandings from '@/components/my-top100/usePersonalStandings';
 
-// The organizing column of the ballot: how the order works, where the ballot stands, and a
-// short list of profiles drawn from the Fellow's own judging. A suggestion is never a
-// placement — it reaches the ballot only through the Fellow's own hand — and the whole
-// column doubles as a way into a profile, a follow in AeroSync, or the directory itself.
+// The organizing column of the ballot: how the order works, where the ballot stands, and the
+// standings the Fellow's own Crosscheck has produced. The column reads only the ballots this
+// Fellow cast — no platform score, no other member's weighing — and prints no counts. A name
+// reaches the ballot only through the Fellow's own hand, and the whole column doubles as a
+// way into a profile, a follow in AeroSync, or the directory itself.
 
 function SectionLabel({ children }) {
   return (
@@ -32,19 +32,12 @@ export default function BallotBuilderPanel({
   onOpenVote,
   onOpenBriefing,
 }) {
-  const { loading, suggestions, basis, judged, error, refresh, shuffle } = useBallotSuggestions({
+  const { loading, standings, standingCount, error, refresh } = usePersonalStandings({
     user,
     pool,
     excludeIds: addedIds,
   });
 
-  const open = suggestions.filter((person) => !addedIds.has(person.id));
-
-  // A name added to the ballot makes room for another face: the column redraws itself
-  // rather than thinning out one card at a time.
-  useEffect(() => {
-    shuffle();
-  }, [addedIds.size, shuffle]);
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
 
   return (
@@ -82,26 +75,15 @@ export default function BallotBuilderPanel({
         </button>
       </div>
 
-      {/* The suggestions. */}
-      <div className="mt-4 flex items-baseline justify-between gap-2">
-        <SectionLabel>Suggested for you</SectionLabel>
-        {open.length > 0 && (
-          <button
-            type="button"
-            onClick={shuffle}
-            className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            style={{ color: `${brand.navy}60` }}
-          >
-            <Shuffle className="h-3 w-3" /> Shuffle
-          </button>
-        )}
+      {/* The Fellow's own standings, read back to them. */}
+      <div className="mt-4">
+        <SectionLabel>Your Crosscheck standings</SectionLabel>
       </div>
 
-      {basis.length > 0 && (
-        <p className="mt-0.5 text-[10px]" style={{ color: `${brand.navy}55` }}>
-          Read from the sets you have analysed · {basis.join(' · ')}
-        </p>
-      )}
+      <p className="mt-0.5 text-[10px] leading-relaxed" style={{ color: ink.soft }}>
+        The names your own comparisons have carried, best first. No platform score, and no
+        one else&apos;s ballot.
+      </p>
 
       <div className="mt-2 space-y-2">
         {(loading || loadingPool) && (
@@ -127,15 +109,15 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && judged === 0 && (
+        {!loading && !error && standingCount === 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <Sparkles className="h-4 w-4" style={{ color: brand.gold }} />
             <p className="mt-1.5 text-[11.5px] font-bold" style={{ color: brand.navy }}>
-              Suggestions follow your judging
+              Your standings begin with one set
             </p>
-            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-              Analyse a few sets on the ballot — the profiles you advance draw a short list here.
-              Nothing is added to your ballot on your behalf.
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Weigh a set on the Crosscheck and the names your own judgments carry will be read
+              out here, best first. Nothing is added to your ballot on your behalf.
             </p>
             {onOpenVote && (
               <button
@@ -150,19 +132,20 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && judged > 0 && open.length === 0 && (
+        {!loading && !error && standingCount > 0 && standings.length === 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
-            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Every suggestion is on your ballot</p>
-            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-              Search the directory, or analyse more sets to widen the field.
+            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Every name your Crosscheck carries is on your ballot</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Search the directory, or weigh more sets to widen the field.
             </p>
           </div>
         )}
 
-        {!loading && !error && open.map((person) => (
+        {!loading && !error && standings.map((person) => (
           <BallotSuggestionCard
             key={person.id}
             person={person}
+            place={person.place}
             viewer={user}
             onAdd={onAdd}
             onView={onViewProfile}
@@ -170,7 +153,7 @@ export default function BallotBuilderPanel({
         ))}
       </div>
 
-      {/* The two ways past the suggestions: the whole directory, and a name it does not hold. */}
+      {/* The two ways past the standings: the whole directory, and a name it does not hold. */}
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
         <button
           type="button"
@@ -192,8 +175,8 @@ export default function BallotBuilderPanel({
 
       <p className="mt-3 flex items-start gap-1.5 text-[9.5px] leading-relaxed" style={{ color: `${brand.navy}45` }}>
         <Compass className="mt-[1px] h-3 w-3 shrink-0" />
-        A suggestion is an invitation to look, never a placement. Open a profile to follow or
-        connect in AeroSync.
+        A standing is a reading of your own comparisons, never a placement. Open a profile to
+        follow or connect in AeroSync.
       </p>
     </div>
   );

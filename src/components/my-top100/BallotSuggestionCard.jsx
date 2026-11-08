@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowUpRight, Plus, RotateCw } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import FollowButton from '@/components/fellow-home/FollowButton';
 import HonoreeChips from '@/components/voting/HonoreeChips';
 
@@ -29,7 +29,7 @@ function Face({ children, turned = false }) {
   );
 }
 
-export default function BallotSuggestionCard({ person, viewer, onAdd, onView }) {
+export default function BallotSuggestionCard({ person, place, viewer, onAdd, onView }) {
   const [flipped, setFlipped] = useState(false);
 
   const role = person.professional_role || person.title;
@@ -48,6 +48,17 @@ export default function BallotSuggestionCard({ person, viewer, onAdd, onView }) 
         {/* ── The face: who they are, and the two acts ── */}
         <Face>
           <div className="flex items-center gap-1.5">
+            {/* The name's place in this Fellow's own standings — a position, never a count.
+                The reason line says it in words, so the numeral is for the eye alone. */}
+            {place ? (
+              <span
+                aria-hidden="true"
+                className="w-3.5 shrink-0 font-heading text-[11px] leading-none tabular-nums"
+                style={{ color: ink.label }}
+              >
+                {String(place).padStart(2, '0')}
+              </span>
+            ) : null}
             <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full" style={{ background: `${brand.navy}08` }}>
               {portrait ? (
                 <img src={portrait} alt="" className="h-full w-full object-cover" loading="lazy" />
@@ -112,7 +123,7 @@ export default function BallotSuggestionCard({ person, viewer, onAdd, onView }) 
                 {where}
               </p>
             )}
-            <p className="mt-1 text-[10px] leading-snug" style={{ color: brand.gold }}>
+            <p className="mt-1 text-[10px] leading-snug" style={{ color: ink.label }}>
               {person.reason}
             </p>
             {person.description && (
