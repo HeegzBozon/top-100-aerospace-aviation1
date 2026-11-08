@@ -20,7 +20,7 @@ const field =
   'mt-1.5 w-full border border-editorial-navy/20 bg-editorial-cream px-3 py-2 text-[12px] text-editorial-navy outline-none focus:border-editorial-copper';
 const label = 'text-[8.5px] font-bold uppercase tracking-[0.2em] text-editorial-navy/55';
 
-export default function LoungeInquirySheet({ intent, copy, onBack }) {
+export default function LoungeInquirySheet({ intent, copy, answers = [], checkout = null, onBack }) {
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
@@ -39,10 +39,31 @@ export default function LoungeInquirySheet({ intent, copy, onBack }) {
       return;
     }
     setStatus('sending');
+    const brief = answers.map((row) => `${row.ask} ${row.answer}`).join('\n');
     try {
+      // A reader who is ready pays here, at the rate the server resolves from the card; a
+      // reader making the case asks for the proposal, with the interview attached.
+      if (checkout?.tier) {
+        const session = await base44.functions.invoke('createSponsorCheckout', {
+          tier: checkout.tier,
+          organization_name: form.organization_name,
+          contact_name: form.contact_name,
+          contact_role: form.contact_role,
+          contact_email: form.contact_email,
+          message: form.message,
+          answers,
+          source_detail: `${copy.label} — ${intent.headline}`.slice(0, 160),
+        });
+        if (session?.data?.error) throw new Error(session.data.error);
+        if (!session?.data?.url) throw new Error('The checkout did not open.');
+        window.location.assign(session.data.url);
+        return;
+      }
+
       const response = await base44.functions.invoke('patronIntake', {
         ...form,
         interest: intent.interest,
+        message: [form.message, brief].filter(Boolean).join('\n\n'),
         source_detail: `${copy.label} — ${intent.label}`.slice(0, 160),
       });
       if (response?.data?.error) throw new Error(response.data.error);
@@ -130,7 +151,9 @@ export default function LoungeInquirySheet({ intent, copy, onBack }) {
             {intent.label}
           </button>
           <p className="text-[10px] leading-relaxed text-editorial-navy/45">
-            Nobody is subscribed by asking. One reply, from a named person.
+            {checkout?.tier
+              ? 'Stripe takes the card. The receipt and the agreement arrive together, from a named person.'
+              : 'Nobody is subscribed by asking. One reply, from a named person.'}
           </p>
         </div>
       </form>

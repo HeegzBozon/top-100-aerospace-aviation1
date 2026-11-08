@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import useLoungeCopy from './useLoungeCopy';
 import LoungeRoom from './LoungeRoom';
@@ -11,6 +11,16 @@ import LoungeComposer from './LoungeComposer';
 export default function SponsorLoungePanel({ lounge = 'summit', isAdmin, onClose, onGoRoom, onGo }) {
   const { copy, state, reload } = useLoungeCopy(lounge);
   const [view, setView] = useState({ name: 'room' });
+  // Back from Stripe, the room opens on the desk that sold and says what was bought. The
+  // parameters are cleared from the address once read, so a later visit is just a visit.
+  const [paid] = useState(() => new URLSearchParams(window.location.search).get('paid') === '1');
+  useEffect(() => {
+    if (!paid) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('paid');
+    url.searchParams.delete('session_id');
+    window.history.replaceState({}, '', url);
+  }, [paid]);
 
   return (
     <div className="absolute inset-2 z-30 mx-auto flex max-w-4xl flex-col overflow-hidden rounded-lg border border-editorial-copper/60 bg-editorial-navy shadow-2xl">
@@ -31,8 +41,24 @@ export default function SponsorLoungePanel({ lounge = 'summit', isAdmin, onClose
         </button>
       </div>
 
+      {paid && (
+        <div className="border-b border-editorial-copper/50 bg-editorial-cream px-4 py-3">
+          <p className="pd-label">Paid</p>
+          <p className="mt-1 max-w-[58ch] text-[11.5px] leading-relaxed text-editorial-navy/75">
+            The slot is held and the desk has the interview. The receipt and the agreement arrive
+            together by email; nothing is printed until it is countersigned.
+          </p>
+        </div>
+      )}
+
       {view.name === 'form' && view.intent ? (
-        <LoungeInquirySheet intent={view.intent} copy={copy} onBack={() => setView({ name: 'room' })} />
+        <LoungeInquirySheet
+          intent={view.intent}
+          copy={copy}
+          answers={view.answers || []}
+          checkout={view.checkout || null}
+          onBack={() => setView({ name: 'room' })}
+        />
       ) : view.name === 'edit' && isAdmin ? (
         <LoungeComposer
           copy={copy}
@@ -43,7 +69,8 @@ export default function SponsorLoungePanel({ lounge = 'summit', isAdmin, onClose
         <LoungeRoom
           copy={copy}
           isAdmin={isAdmin}
-          onIntent={(intent) => setView({ name: 'form', intent })}
+          onIntent={(intent, answers) => setView({ name: 'form', intent, answers })}
+          onPay={(intent, tier, answers) => setView({ name: 'form', intent, answers, checkout: { tier } })}
           onEdit={() => setView({ name: 'edit' })}
           onGoRoom={onGoRoom}
           onGo={onGo}

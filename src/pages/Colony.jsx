@@ -153,11 +153,17 @@ function ColonyRoom({ onReplayWelcome }) {
   const stickRef = useRef({});
   const zoneRef = useRef(null);
   zoneRef.current = zone;
-  const [panel, setPanel] = useState(null); // directory | chat | concierge | theatre | arcade | editor
+  // Returning from a Sponsor Lounge checkout opens the desk that sold, with the receipt
+  // acknowledged inside it (see SponsorLoungePanel).
+  const [panel, setPanel] = useState(() =>
+    new URLSearchParams(window.location.search).get('paid') === '1' ? 'sponsor-lounge' : null
+  ); // directory | chat | concierge | theatre | arcade | editor | sponsor-lounge
   // Which cabinet was walked up to, when the Arcade is the panel that opened.
   const [cabinet, setCabinet] = useState(null);
   // Which lounge was walked up to, when a sponsor lounge is the panel that opened.
-  const [loungeKey, setLoungeKey] = useState(null);
+  const [loungeKey, setLoungeKey] = useState(() =>
+    new URLSearchParams(window.location.search).get('paid') === '1' ? 'networking' : null
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const [me, setMe] = useState(undefined);
   const pp = usePassport(me);

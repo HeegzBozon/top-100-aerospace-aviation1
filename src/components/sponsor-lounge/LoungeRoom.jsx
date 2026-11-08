@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, ArrowUpRight, Pencil } from 'lucide-react';
 import { FIREWALL, INTENTS, PATRONAGE_LABEL } from './loungeConfig';
-import SponsorAgent from './SponsorAgent';
+import SponsorDialogue from './SponsorDialogue';
 
 const LABEL = 'text-[9px] font-bold uppercase tracking-[0.22em]';
 
@@ -9,7 +9,7 @@ const LABEL = 'text-[9px] font-bold uppercase tracking-[0.22em]';
 // The Networking Lounge is the desk: it asks what the reader is trying to do, then shows the
 // rung of the ladder that answers it, priced from the published rate card. Both credit a
 // Patron of Record, and neither sells a position.
-export default function LoungeRoom({ copy, isAdmin, onIntent, onEdit, onGoRoom, onGo }) {
+export default function LoungeRoom({ copy, isAdmin, onIntent, onPay, onEdit, onGoRoom, onGo }) {
   const selling = copy.key === 'networking';
   const [drawn, setDrawn] = useState(0);
   const opener = copy.icebreakers.length ? copy.icebreakers[drawn % copy.icebreakers.length] : '';
@@ -26,7 +26,7 @@ export default function LoungeRoom({ copy, isAdmin, onIntent, onEdit, onGoRoom, 
       </div>
 
       {selling ? (
-        <SponsorAgent copy={copy} onIntent={onIntent} onGo={onGo} />
+        <SponsorDialogue copy={copy} onIntent={onIntent} onPay={onPay} onGo={onGo} />
       ) : (
         <div className="bg-editorial-cream px-5 py-6 md:px-8">
           <p className="pd-label">How the briefing runs</p>

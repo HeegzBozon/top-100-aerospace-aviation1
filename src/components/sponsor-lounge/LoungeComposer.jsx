@@ -127,7 +127,7 @@ export default function LoungeComposer({ copy, onSaved, onCancel }) {
           {status === 'saving' ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
           Save the room
         </button>
-        <button type="button" onClick={onCancel} className="desk-key desk-key-quiet">
+        <button type="button" onClick={onCancel} className="pd-acct-link text-[9.5px]">
           Leave it as it was
         </button>
       </div>
