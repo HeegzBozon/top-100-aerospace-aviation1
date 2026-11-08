@@ -25,7 +25,7 @@ export default function TagBaselinePreview({ proposal, onToggle, onDismiss }) {
           type="button"
           onClick={onDismiss}
           aria-label={`Dismiss ${proposal.name}`}
-          className="shrink-0 rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--border)]/50 hover:text-[var(--text)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#b87333]"
+          className="shrink-0 rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--border)]/50 hover:text-[var(--text)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -47,12 +47,12 @@ export default function TagBaselinePreview({ proposal, onToggle, onDismiss }) {
                   onClick={() => onToggle(index)}
                   aria-pressed={!dropped}
                   title={`${FACET_LABEL[tag.facet || ''] || tag.category} · ${inferred ? 'read off the record' : 'stated by the record'} — ${tag.evidence}`}
-                  className={`flex flex-col items-start gap-0.5 rounded border px-2 py-1 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#b87333] ${
+                  className={`flex flex-col items-start gap-0.5 rounded border px-2 py-1 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${
                     dropped
                       ? 'border-dashed border-[var(--border)] text-[var(--muted)] opacity-60'
                       : inferred
-                        ? 'border-[#b87333]/60 bg-[#b87333]/8 text-[var(--text)]'
-                        : 'border-[#1e3a5a]/35 bg-[#1e3a5a]/5 text-[var(--text)]'
+                        ? 'border-editorial-copper/60 bg-editorial-copper/10 text-[var(--text)]'
+                        : 'border-editorial-navy/35 bg-editorial-navy/5 text-[var(--text)]'
                   }`}
                 >
                   <span className="font-body text-[10.5px] font-semibold leading-none">

@@ -227,7 +227,7 @@ export default function TagBaselineDesk() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="flex items-center gap-2 font-heading text-xl text-[var(--text)]">
-            <Tag className="h-4 w-4 text-[#b87333]" />
+            <Tag className="h-4 w-4 text-editorial-copper" />
             Directory Tags
           </h2>
           <p className="mt-1 max-w-2xl font-body text-[12px] leading-relaxed text-[var(--muted)]">
@@ -250,7 +250,7 @@ export default function TagBaselineDesk() {
             {busy === 'read' ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
             Read next {Math.min(BATCH, queue.length) || ''}
           </Button>
-          <Button size="sm" onClick={file} disabled={!!busy || pending === 0} className="bg-[#b87333] text-[#faf8f5] hover:bg-[#b87333]/90">
+          <Button size="sm" onClick={file} disabled={!!busy || pending === 0} className="bg-editorial-copper text-editorial-cream hover:bg-editorial-copper/90">
             {busy === 'file' ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <FileCheck2 className="mr-1.5 h-3.5 w-3.5" />}
             File {pending} {pending === 1 ? 'word' : 'words'}
           </Button>
@@ -296,7 +296,7 @@ export default function TagBaselineDesk() {
               Stop
             </Button>
           ) : (
-            <Button size="sm" onClick={sweep} disabled={!!busy} className="bg-[#1e3a5a] text-[#faf8f5] hover:bg-[#1e3a5a]/90">
+            <Button size="sm" onClick={sweep} disabled={!!busy} className="bg-editorial-navy text-editorial-cream hover:bg-editorial-navy/90">
               <Sparkles className="mr-1.5 h-3.5 w-3.5" />
               Read &amp; file the field
             </Button>
@@ -305,7 +305,7 @@ export default function TagBaselineDesk() {
       )}
 
       {filed && (filed.added > 0 || filed.removed > 0 || filed.skipped > 0) && (
-        <div className="rounded-lg border border-[#b87333]/35 bg-[#b87333]/5 px-3 py-2.5">
+        <div className="rounded-lg border border-editorial-copper/35 bg-editorial-copper/5 px-3 py-2.5">
           <p className="font-body text-[11px] text-[var(--text)]">
             {filed.added > 0 && `${filed.added} words filed · `}
             {filed.skipped > 0 && `${filed.skipped} already carried · `}

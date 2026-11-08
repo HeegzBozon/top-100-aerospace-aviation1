@@ -47,9 +47,12 @@ class CallerError extends Error {
 
 const tidy = (value) => String(value ?? '').replace(/\s+/g, ' ').trim().replace(/[.,;:]+$/, '');
 
+// One word per pill: a value that lists two things, or carries a parenthetical, is not a
+// word the directory can be browsed by.
 const asLabel = (value) => {
   const text = tidy(value);
   if (!text || text.length > 60 || JUNK.test(text) || /^https?:/i.test(text)) return '';
+  if (/[,()/]/.test(text)) return '';
   return text.length > LABEL_MAX ? text.slice(0, LABEL_MAX).trim() : text;
 };
 
