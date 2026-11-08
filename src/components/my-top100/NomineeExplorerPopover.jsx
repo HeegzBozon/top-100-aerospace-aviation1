@@ -51,7 +51,6 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   const [discipline, setDiscipline] = useState('all');
   const [cohort, setCohort] = useState('all');
   const [sort, setSort] = useState('random');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [family, setFamily] = useState('all');
   const [seasonCategory, setSeasonCategory] = useState({});
   const [nominees, setNominees] = useState([]);
@@ -111,11 +110,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
           if (!matches) return false;
         }
         if (!matchDiscipline(nominee, discipline)) return false;
-        if (verifiedOnly && !(nominee.verified_status === 'fully_verified' || nominee.verified_status === 'partially_verified')) return false;
         if (cohort !== 'all' && getNomineeCategory(nominee, seasonCategory) !== cohort) return false;
         return true;
       }),
-    [nominees, query, discipline, verifiedOnly, cohort, seasonCategory]
+    [nominees, query, discipline, cohort, seasonCategory]
   );
 
   const reading = useMemo(() => {
@@ -193,7 +191,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   useEffect(() => {
     reset();
     setVisibleCount(PAGE_SIZE);
-  }, [query, discipline, sort, verifiedOnly, cohort, view, family, selectedTags, reset]);
+  }, [query, discipline, sort, cohort, view, family, selectedTags, reset]);
 
   // The record read on the card is a read: a turn of the ring takes it down, and the
   // confirm key or the way back hands the sheet to the roll again.
@@ -273,14 +271,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
         <ExplorerControls
           query={query}
           onQuery={setQuery}
-          cohort={cohort}
-          onCohort={setCohort}
           field={discipline}
           onField={setDiscipline}
           sort={sort}
           onSort={setSort}
-          verifiedOnly={verifiedOnly}
-          onVerifiedOnly={setVerifiedOnly}
           view={view}
           onView={setView}
           families={families}
@@ -293,8 +287,10 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               tags={cloudTags}
               available={available}
               selected={selectedTags}
+              cohort={cohort}
+              onCohort={setCohort}
               onToggle={toggleTag}
-              onClear={() => setSelectedTags([])}
+              onClear={() => { setSelectedTags([]); setCohort('all'); }}
             />
           )}
         </ExplorerControls>
