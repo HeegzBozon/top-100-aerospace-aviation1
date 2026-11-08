@@ -2,12 +2,11 @@ import { X } from 'lucide-react';
 
 // The vocabulary, held as a density cloud and read by facet.
 //
-// Every pill carries the weight of the word in the reading the search and the cohort have
-// left: a word most of the field holds stands large and leads its row, a word only a few
-// hold stands small and falls to the tail. So the cloud reads as a picture of the field
-// before anything is pressed — the heaviest words are the ones worth pressing — and it
-// re-reads itself as the search tightens, which is what makes browsing feel like the
-// vocabulary is answering rather than sitting still.
+// The cloud is a map of the whole field, not of the reading in front of it: each word
+// carries how many names in the directory hold it, so its size and its place never change
+// while the reader narrows. Pressing a word, typing a search or choosing a cohort dims the
+// words that reading no longer reaches and refuses them — the picture keeps its shape, and
+// the reader's eye keeps its place on the word it was about to press.
 //
 // The words are not one undifferentiated row any more: they stand in columns by what they
 // say about a person — the field they work in, the role they hold, the impact they carry, the
@@ -37,10 +36,13 @@ const COHORTS = [
   { key: 'men', label: 'Men' },
 ];
 
+// The registers are cut twice: a column of the glass is only half a desk column wide, so on a
+// phone every pill comes down a step and takes a tighter padding, and the label is allowed to
+// wrap inside its capsule rather than run past the column it was filed in.
 const REGISTER = {
-  lead: 'px-3 py-[5px] text-[11.5px] font-bold',
-  mid: 'px-2.5 py-[4px] text-[10px] font-semibold',
-  tail: 'px-2 py-[3px] text-[9.5px] font-semibold',
+  lead: 'px-2 py-[3.5px] text-[10.5px] font-bold md:px-3 md:py-[5px] md:text-[11.5px]',
+  mid: 'px-1.5 py-[3px] text-[9.5px] font-semibold md:px-2.5 md:py-[4px] md:text-[10px]',
+  tail: 'px-1.5 py-[2.5px] text-[9px] font-semibold md:px-2 md:py-[3px] md:text-[9.5px]',
 };
 
 export default function ExplorerTagCloud({ tags, available, selected, cohort, onCohort, onToggle, onClear }) {
@@ -72,7 +74,7 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
   };
 
   return (
-    <div className="mt-2 max-h-[116px] overflow-y-auto scrollbar-hide md:max-h-[150px]">
+    <div className="mt-2 max-h-[128px] overflow-y-auto scrollbar-hide md:max-h-[150px]">
       <div className="flex flex-wrap items-center gap-1">
         {COHORTS.map((option) => {
           const active = cohort === option.key;
@@ -105,10 +107,10 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
         )}
       </div>
 
-      <div className="mt-1.5 grid grid-cols-2 gap-x-2.5 gap-y-2 md:grid-cols-4">
+      <div className="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-2 md:gap-x-2.5 md:grid-cols-4">
         {drawn.map(({ facet, words, heaviest }) => (
           <div key={facet.key} className="min-w-0">
-            <span className="block border-b border-editorial-copper/35 pb-0.5 font-body text-[7.5px] font-bold uppercase leading-none tracking-[0.12em] text-editorial-label">
+            <span className="block border-b border-editorial-copper/35 pb-1 font-body text-[8px] font-bold uppercase leading-none tracking-[0.1em] text-editorial-label md:pb-0.5 md:text-[7.5px] md:tracking-[0.12em]">
               {facet.label}
             </span>
             <div className="mt-1 flex flex-wrap content-start items-center gap-1">
@@ -127,10 +129,10 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
                       active
                         ? `Remove ${tag.label}`
                         : live
-                          ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in this reading`
-                          : `Nobody in this reading is tagged ${tag.label}`
+                          ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in the directory`
+                          : `Nobody in this reading is filed under ${tag.label}`
                     }
-                    className={`flex items-baseline gap-1 rounded-full border font-body leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
+                    className={`flex max-w-full items-baseline gap-1 rounded-full border text-left font-body leading-[1.15] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
                       active
                         ? 'border-editorial-copper bg-editorial-copper text-editorial-cream'
                         : live
@@ -138,13 +140,13 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
                           : 'cursor-default border-editorial-navy/10 text-editorial-navy/25'
                     }`}
                   >
-                    {tag.label}
+                    <span className="min-w-0">{tag.label}</span>
                     {register !== 'tail' && (
-                      <span className={`tabular-nums ${active ? 'text-editorial-cream/70' : 'text-editorial-navy/45'}`}>
+                      <span className={`shrink-0 tabular-nums ${active ? 'text-editorial-cream/70' : 'text-editorial-navy/45'}`}>
                         {tag.weight}
                       </span>
                     )}
-                    {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
+                    {active && <X className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />}
                   </button>
                 );
               })}

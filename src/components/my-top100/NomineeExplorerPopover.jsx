@@ -164,27 +164,28 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     [plan, available]
   );
 
-  // What each word is worth in the reading the search and the cohort have left. Counted
-  // against the reading *before* the words themselves, so pressing a word never re-sizes or
-  // re-sorts the row under the hand that pressed it — the cloud answers the search, not the
-  // press.
-  const weights = useMemo(() => {
+  // What each word is worth across the whole directory. Counted against the field rather than
+  // against the reading, so the cloud holds its words in their places: narrowing dims a word
+  // the reading no longer reaches and refuses it, but nothing grows, shrinks, moves or falls
+  // out from under the hand that is reading. A vocabulary that re-cut itself on every
+  // keystroke was the last thing still moving in a sheet that is now a fixed frame.
+  const fieldWeights = useMemo(() => {
     const counts = new Map();
-    baseReading.forEach((nominee) => {
+    nominees.forEach((nominee) => {
       tagSetFor(nominee).forEach((key) => counts.set(key, (counts.get(key) || 0) + 1));
     });
     return counts;
-  }, [baseReading, tagSetFor]);
+  }, [nominees, tagSetFor]);
 
-  // The cloud as a density picture of the field: heaviest first, and a word nobody in this
-  // reading holds falls out of the row entirely rather than standing as dead furniture.
+  // The cloud as a density picture of the whole field: heaviest first, and a word that nobody
+  // in the directory carries is the only word that does not draw.
   const cloudTags = useMemo(
     () =>
       tags
-        .map((tag) => ({ ...tag, weight: weights.get(tag.key) || 0 }))
-        .filter((tag) => tag.weight > 0 || selectedTags.some((picked) => picked.key === tag.key))
+        .map((tag) => ({ ...tag, weight: fieldWeights.get(tag.key) || 0 }))
+        .filter((tag) => tag.weight > 0)
         .sort((a, b) => b.weight - a.weight || a.label.localeCompare(b.label)),
-    [tags, weights, selectedTags]
+    [tags, fieldWeights]
   );
 
   // A row is opened on the card inside the sheet; the roll's cursor is held while it is up,
