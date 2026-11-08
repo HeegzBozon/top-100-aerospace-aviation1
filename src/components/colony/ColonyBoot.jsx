@@ -3,24 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import ColonySplash from './ColonySplash';
 import AdminQuickActions from '@/components/start/AdminQuickActions';
 import { registerPicker } from '@/components/handheld/handheldPicker';
-import { isReturningVisitor } from '@/components/core/appOpening';
 
 const KEY = 'colony-boot-seen';
 const HOLD_MS = 1600;
 
-// The first screen of every session: the Colony plate, then two paths —
-// Start/Continue into the campus, or the Main Menu (the title screen).
+// The first screen of every session: the Colony plate, then the way in —
+// the Selection Committee, or the Main Menu (the title screen).
 export default function ColonyBoot({ onDone }) {
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
   const [sel, setSel] = useState(0);
-  const [returning] = useState(() => isReturningVisitor() || !!localStorage.getItem('colony-room'));
   const options = [
-    // A word, not an order: the plate opens the floor rather than shouting at the reader.
-    { label: returning ? 'Continue' : 'Explore', to: '/colony' },
-    // The weighing, one press from the plate: /vote is the Crosscheck itself for a Fellow,
-    // and the invitation that explains both ballots for whoever has not signed in yet.
-    { label: 'Crosscheck', to: '/vote' },
+    // The weighing, one press from the plate: /vote is the ballot itself for a Fellow,
+    // and the invitation that explains it for whoever has not signed in yet.
+    { label: 'Selection Committee', to: '/vote' },
     { label: 'Main Menu', to: '/' },
   ];
   const ref = useRef({});
