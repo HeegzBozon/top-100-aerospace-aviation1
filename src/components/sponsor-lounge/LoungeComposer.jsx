@@ -97,16 +97,11 @@ export default function LoungeComposer({ copy, onSaved, onCancel }) {
       </label>
 
       {open ? (
-        <>
-          <label className="mt-3 block">
-            <span className={label}>Conversation zones — one per line, label | line</span>
-            <textarea rows={4} className={field} value={form.zones} onChange={set('zones')} />
-          </label>
-          <label className="mt-3 block">
-            <span className={label}>Openers — one per line</span>
-            <textarea rows={4} className={field} value={form.icebreakers} onChange={set('icebreakers')} />
-          </label>
-        </>
+        <p className="mt-3 border-l-2 border-editorial-copper/60 pl-3 text-[10.5px] leading-relaxed text-editorial-navy/55">
+          The offer this room sells is read from the published media kit. Its rates, bundle,
+          audience figures and firewall are not edited here — they are changed on the card itself,
+          so a buyer never reads one price in the room and another on the kit.
+        </p>
       ) : (
         <label className="mt-3 block">
           <span className={label}>Prompts — one per line</span>

@@ -95,7 +95,7 @@ export const COLONY_ROOMS = {
       { key: 'lounge-people', label: 'People & Directory', blurb: 'Your people in AeroSync.', to: '/aerosync/people', col: 46, row: 30, w: 15, h: 4 },
       // The open table in the corner of the lounge: the same offer, in the room where the
       // talking happens rather than the room where the panels are.
-      { key: 'lounge-patrons-table', label: 'The Patrons’ Table', blurb: 'An open table for the patronage conversation.', panel: 'sponsor-lounge', lounge: 'networking', col: 46, row: 10, w: 13, h: 8 },
+      { key: 'lounge-patrons-table', label: 'The Sponsor Lounge', blurb: 'What a TOP 100 sponsorship buys — and never buys.', panel: 'sponsor-lounge', lounge: 'networking', col: 46, row: 10, w: 13, h: 8 },
     ],
   },
   'space-pavilion': {
