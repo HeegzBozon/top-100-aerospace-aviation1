@@ -20,7 +20,18 @@ const BOOT_KEY = 'colony-boot-seen';
 // /media-kit is a door that only ever redirects now, and the plate must not be drawn in
 // front of a redirect: a sponsor following an old link would be handed the menu, then the
 // media kit, having asked only for the rate card.
-const DIRECT_ENTRY = [/^\/vote$/i, /^\/mediakit$/i, /^\/patronage$/i, /^\/media-kit(\/.*)?$/i];
+// An issue of the magazine is the other address the house hands out: the studio's preview
+// link and the reader's own File menu both send /magazine/:issueId to a writer, a patron or
+// a reviewer, and they were sent to read the book — not to be shown a menu and asked to
+// choose a door. The plate over a deep-linked issue took the address away from them and left
+// reloading as the only way back, so the issue answers for itself like the ballot does.
+const DIRECT_ENTRY = [
+  /^\/vote$/i,
+  /^\/mediakit$/i,
+  /^\/patronage$/i,
+  /^\/media-kit(\/.*)?$/i,
+  /^\/magazine\/[^/]+$/i,
+];
 
 function currentPath() {
   try {
