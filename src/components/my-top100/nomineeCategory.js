@@ -66,7 +66,7 @@ export async function loadNomineePool() {
         fields: [
           'id', 'name', 'title', 'professional_role', 'company', 'organization',
           'avatar_url', 'photo_url', 'discipline', 'description', 'industry',
-          'category', 'country', 'season_id', 'season_ids', 'status',
+          'category', 'country', 'season_id', 'season_ids', 'status', 'verified_status',
           'linkedin_profile_url', 'nominee_email',
         ],
       }
