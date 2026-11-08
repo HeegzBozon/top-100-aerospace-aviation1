@@ -124,7 +124,7 @@ export default function BallotBuilderPanel({
                 type="button"
                 onClick={onOpenVote}
                 className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em]"
-                style={{ color: brand.gold }}
+                style={{ color: ink.label }}
               >
                 Weigh a set <ArrowRight className="h-3 w-3" />
               </button>
