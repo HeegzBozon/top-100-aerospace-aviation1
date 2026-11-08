@@ -7,7 +7,11 @@ import ExplorerControls from '@/components/my-top100/explore/ExplorerControls';
 import ExplorerRow from '@/components/my-top100/explore/ExplorerRow';
 import ExplorerGallery from '@/components/my-top100/explore/ExplorerGallery';
 import ExplorerTagCloud from '@/components/my-top100/explore/ExplorerTagCloud';
+import SearchReadingNote from '@/components/my-top100/explore/SearchReadingNote';
 import ExplorerEndPlate from '@/components/my-top100/explore/ExplorerEndPlate';
+import {
+  planSearch, matchesPlan, searchText, regionMembers, sameLabels,
+} from '@/components/my-top100/explore/searchVocabulary';
 import useNomineeTags from '@/components/my-top100/explore/useNomineeTags';
 import useExplorerCursor from '@/components/my-top100/explore/useExplorerCursor';
 import useAutoLoad from '@/components/my-top100/explore/useAutoLoad';
@@ -86,30 +90,39 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   // Everything the band narrows by except the words themselves. Held apart so the pills
   // can be told which of them would still land on someone in the reading the other
   // controls have left.
+  // What the query means, read through the curated vocabulary: the term itself, the ways
+  // the same place is written (Colombia and Columbia), and the places a region holds — so
+  // "Latin America" reaches a Fellow filed under Brazil. A region widens; a country never
+  // widens itself into its neighbours.
+  const plan = useMemo(() => planSearch(query), [query]);
+
+  // One normalized reading of each record, built once for the pool rather than per keystroke.
+  const haystacks = useMemo(() => {
+    const map = new Map();
+    nominees.forEach((nominee) => map.set(nominee.id, searchText(nominee)));
+    return map;
+  }, [nominees]);
+
   const baseReading = useMemo(
     () =>
       nominees.filter((nominee) => {
-        if (query) {
-          const q = query.toLowerCase();
-          const matches =
-            nominee.name?.toLowerCase().includes(q) ||
-            nominee.title?.toLowerCase().includes(q) ||
-            nominee.professional_role?.toLowerCase().includes(q) ||
-            nominee.company?.toLowerCase().includes(q) ||
-            nominee.organization?.toLowerCase().includes(q);
-          if (!matches) return false;
-        }
+        if (!matchesPlan(plan, haystacks.get(nominee.id), tagSetFor(nominee))) return false;
         if (cohort !== 'all' && getNomineeCategory(nominee, seasonCategory) !== cohort) return false;
         return true;
       }),
-    [nominees, query, cohort, seasonCategory]
+    [nominees, plan, haystacks, tagSetFor, cohort, seasonCategory]
   );
 
   const reading = useMemo(() => {
     const list = selectedTags.length
       ? baseReading.filter((nominee) => {
           const held = tagSetFor(nominee);
-          return !!held && selectedTags.every((tag) => held.has(tag.key));
+          if (!held) return false;
+          // A word answers every spelling of the place it names, so pressing Colombia also
+          // holds the people the directory filed under Columbia.
+          return selectedTags.every((tag) =>
+            sameLabels(tag.label).some((key) => held.has(key))
+          );
         })
       : baseReading;
 
@@ -132,6 +145,13 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     reading.forEach((nominee) => tagSetFor(nominee).forEach((key) => keys.add(key)));
     return keys;
   }, [reading, tagSetFor]);
+
+  // The places the named region actually reached here, so the note explains the widening
+  // with the words the roll is carrying rather than with a list of every country on earth.
+  const reachedPlaces = useMemo(
+    () => regionMembers(plan).filter((member) => available.has(member.key)),
+    [plan, available]
+  );
 
   // What each word is worth in the reading the search and the cohort have left. Counted
   // against the reading *before* the words themselves, so pressing a word never re-sizes or
@@ -282,6 +302,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
           onView={setView}
           autoFocus={deskOpened}
         >
+          {!loading && <SearchReadingNote plan={plan} members={reachedPlaces} />}
           {!loading && (
             <ExplorerTagCloud
               tags={cloudTags}
