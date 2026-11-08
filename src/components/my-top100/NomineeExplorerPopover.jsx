@@ -149,13 +149,19 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   const visible = reading.slice(0, visibleCount);
   const hasMore = visibleCount < reading.length;
 
-  // The words that would still narrow this reading. A pill outside this set stays where it
-  // is and is simply refused, so no press can leave the sheet empty.
-  const available = useMemo(() => {
-    const keys = new Set();
-    reading.forEach((nominee) => tagSetFor(nominee).forEach((key) => keys.add(key)));
-    return keys;
+  // What the reading actually holds: every word its names carry, and how many of them carry
+  // it. The cloud is drawn from this map, so a word on the sheet is always true of the
+  // reading — nothing stands greyed out pretending the field has no other words.
+  const readingTagCounts = useMemo(() => {
+    const counts = new Map();
+    reading.forEach((nominee) => {
+      tagSetFor(nominee).forEach((key) => counts.set(key, (counts.get(key) || 0) + 1));
+    });
+    return counts;
   }, [reading, tagSetFor]);
+
+  // The same map answers whether a word is reachable at all.
+  const available = readingTagCounts;
 
   // The places the named region actually reached here, so the note explains the widening
   // with the words the roll is carrying rather than with a list of every country on earth.
@@ -164,11 +170,9 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     [plan, available]
   );
 
-  // What each word is worth across the whole directory. Counted against the field rather than
-  // against the reading, so the cloud holds its words in their places: narrowing dims a word
-  // the reading no longer reaches and refuses it, but nothing grows, shrinks, moves or falls
-  // out from under the hand that is reading. A vocabulary that re-cut itself on every
-  // keystroke was the last thing still moving in a sheet that is now a fixed frame.
+  // What each word is worth across the whole directory. It sets the size of a word and the
+  // order it is read in — never which words are on the sheet — so the same word keeps the same
+  // register at every narrowing while the slots around it refill with what is still true.
   const fieldWeights = useMemo(() => {
     const counts = new Map();
     nominees.forEach((nominee) => {
@@ -177,15 +181,21 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     return counts;
   }, [nominees, tagSetFor]);
 
-  // The cloud as a density picture of the whole field: heaviest first, and a word that nobody
-  // in the directory carries is the only word that does not draw.
+  // The cloud as a density picture of this reading, sorted by each word's standing in the
+  // field so the order is honest about the whole directory while the contents answer the
+  // narrowing. A word no name in the reading carries is not drawn — except a word already
+  // pressed, which stays so it can always be lifted again.
   const cloudTags = useMemo(
     () =>
       tags
-        .map((tag) => ({ ...tag, weight: fieldWeights.get(tag.key) || 0 }))
-        .filter((tag) => tag.weight > 0)
-        .sort((a, b) => b.weight - a.weight || a.label.localeCompare(b.label)),
-    [tags, fieldWeights]
+        .map((tag) => ({
+          ...tag,
+          weight: readingTagCounts.get(tag.key) || 0,
+          fieldWeight: fieldWeights.get(tag.key) || 0,
+        }))
+        .filter((tag) => tag.weight > 0 || selectedTags.some((picked) => picked.key === tag.key))
+        .sort((a, b) => b.fieldWeight - a.fieldWeight || a.label.localeCompare(b.label)),
+    [tags, readingTagCounts, fieldWeights, selectedTags]
   );
 
   // A row is opened on the card inside the sheet; the roll's cursor is held while it is up,

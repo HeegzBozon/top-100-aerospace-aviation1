@@ -2,11 +2,16 @@ import { X } from 'lucide-react';
 
 // The vocabulary, held as a density cloud and read by facet.
 //
-// The cloud is a map of the whole field, not of the reading in front of it: each word
-// carries how many names in the directory hold it, so its size and its place never change
-// while the reader narrows. Pressing a word, typing a search or choosing a cohort dims the
-// words that reading no longer reaches and refuses them — the picture keeps its shape, and
-// the reader's eye keeps its place on the word it was about to press.
+// Every word on the sheet is true of the reading in front of it: the band is filled with the
+// words the reading actually holds, and a word it does not hold is not drawn at all. A cloud
+// that kept its old words and greyed them out was saying something false — that the reading
+// had no other words — when the truth was the opposite: narrowing Spain leaves every other
+// word the people filed under Spain carry. So the slots are refilled as the reader narrows,
+// and the sheet always answers with what is left.
+//
+// What holds still is the measure, not the words. A word's size comes from its standing in
+// the whole field, never from its share of the reading, so the same word keeps the same
+// register at every narrowing and the band keeps its height and its frame.
 //
 // The words are not one undifferentiated row any more: they stand in columns by what they
 // say about a person — the field they work in, the role they hold, the impact they carry, the
@@ -57,17 +62,21 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
   });
   const drawn = buckets
     .map(({ facet, words }) => {
-      const sorted = [...words].sort((a, b) => (b.weight || 0) - (a.weight || 0));
+      const sorted = [...words].sort(
+        (a, b) => (b.fieldWeight || 0) - (a.fieldWeight || 0) || a.label.localeCompare(b.label)
+      );
       return {
         facet,
         words: sorted.slice(0, PER_FACET),
-        heaviest: sorted.reduce((max, tag) => Math.max(max, tag.weight || 0), 0) || 1,
+        heaviest: sorted.reduce((max, tag) => Math.max(max, tag.fieldWeight || 0), 0) || 1,
       };
     })
     .filter((bucket) => bucket.words.length > 0);
 
-  const registerOf = (weight, heaviest) => {
-    const share = (weight || 0) / heaviest;
+  // A word's size is its standing in the field, never its share of the reading: so the same
+  // word keeps the same register as the reader narrows, even as the words beside it change.
+  const registerOf = (fieldWeight, heaviest) => {
+    const share = (fieldWeight || 0) / heaviest;
     if (share >= 0.55) return 'lead';
     if (share >= 0.22) return 'mid';
     return 'tail';
@@ -117,7 +126,7 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
               {words.map((tag) => {
                 const active = selected.some((picked) => picked.key === tag.key);
                 const live = active || available.has(tag.key);
-                const register = registerOf(tag.weight, heaviest);
+                const register = registerOf(tag.fieldWeight, heaviest);
                 return (
                   <button
                     key={tag.key}
@@ -129,7 +138,7 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
                       active
                         ? `Remove ${tag.label}`
                         : live
-                          ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in the directory`
+                          ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in this reading`
                           : `Nobody in this reading is filed under ${tag.label}`
                     }
                     className={`flex max-w-full items-baseline gap-1 rounded-full border text-left font-body leading-[1.15] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
