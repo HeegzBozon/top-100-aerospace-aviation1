@@ -15,6 +15,20 @@ const START = { col: Math.floor(COLS / 2), row: Math.floor(ROWS * 0.85) };
 // foot of the floor. The station deck is composed the same way as the lobby it stands above.
 const PERSPECTIVE = ['lobby', 'station'];
 
+// A standing figure is measured in map cells, not in pixels, so it keeps its proportions
+// at every depth and on every screen.
+const SPRITE_CELLS = 2.45;
+
+// Depth of field. Every floor is walked with its back wall furthest away, so a figure at
+// the foot of the plate reads larger than one at the head of it, and the whole cast sits
+// in the room rather than on a flat sheet. The rooms composed wide (the deck, and the
+// lobby it stands above) already exaggerate their floor, so they carry a stronger
+// falloff; the top-down rooms a gentler one.
+const depthAt = (room, row) => {
+  const t = Math.pow(row / (ROWS - 1), 1.35);
+  return PERSPECTIVE.includes(room) ? 1.3 + 1.85 * t : 0.72 + 0.5 * t;
+};
+
 const images = {};
 const getImage = (url) => {
   if (typeof Image === 'undefined') return null;
@@ -118,7 +132,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   const sc = sc0 * depth;
   const cell = CELL * sc;
   const spr = avatar?.image && getSprite(avatar.image);
-  const top = y + cell * 0.5 - cell * 2.1 * tall;
+  const top = y + cell * 0.5 - cell * SPRITE_CELLS * tall;
   // Stretch the figure upward from its feet.
   ctx.save();
   // Mid-stride: a step bob, a sway from side to side, and a squash on each footfall.
@@ -132,7 +146,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   ctx.scale(1 / squash, tall * squash);
   ctx.translate(-x, -(y + cell * 0.5 + bob));
   if (spr) {
-    const h = cell * 2.1, w = h * spr.width / spr.height;
+    const h = cell * SPRITE_CELLS, w = h * spr.width / spr.height;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     ctx.beginPath();
@@ -155,7 +169,14 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
       ctx.fillText(meta.line, bx + tw / 2, by - th / 2);
       ctx.restore();
     }
-  } else drawAvatar(ctx, x, y, avatar, facing, Math.max(1.5, sc * 1.2));
+  } else {
+    // The pixel figure is cut from the same cloth as a portrait sprite: the drawing runs
+    // fourteen units from the tip of its headgear to its feet, so it is given the same
+    // standing height and stood on the same baseline. Without this it was a quarter the
+    // height of the cast around it, and it ignored the floor's depth entirely.
+    const p = Math.max(1, Math.round((cell * SPRITE_CELLS) / 14));
+    drawAvatar(ctx, x, y + cell * 0.5 - 4 * p, avatar, facing, p);
+  }
   ctx.restore();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -203,7 +224,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
       ctx.font = `700 ${ss}px sans-serif`;
       ctx.fillText(meta.sub.toUpperCase(), Math.round(x), ly + fs + ss / 2 + 5);
     }
-    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * 2.1 * tall - ly), tag: { x: lx, y: ly, w, h } });
+    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * SPRITE_CELLS * tall - ly), tag: { x: lx, y: ly, w, h } });
   }
 }
 
@@ -326,8 +347,8 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       if (dist <= stepPx || dist > CELL * 4) { d.x = tgt.x; d.y = tgt.y; }
       else { d.x += (dx / dist) * stepPx; d.y += (dy / dist) * stepPx; }
       const { x, y } = d;
-      // The wide rooms are drawn in perspective: further back (higher up) reads smaller.
-      const depth = PERSPECTIVE.includes(room) ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
+      // Further back (higher up the plate) reads smaller, nearer the foot reads larger.
+      const depth = depthAt(room, p.row);
       const sx = Math.round(ox + x * sc), sy = Math.round(oy + y * sc);
       const sp = s.spawn[p.id] ? Math.min(1, (now - s.spawn[p.id]) / SPAWN_MS) : 1;
       if (sp < 1) drawBeam(ctx, sx, sy, CELL * sc * depth, 1 - sp * 0.6, now);
