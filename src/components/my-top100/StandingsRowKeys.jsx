@@ -4,8 +4,9 @@ import { useFollow } from '@/components/fellow-home/useFollows';
 
 // The three keys a name carries in the standings table: read the record, follow the Fellow,
 // put the name on the ballot. The follow is the platform's own one-way follow — no acceptance,
-// distinct from a connection made in AeroSync — and it is only offered where the record holds
-// an address to follow and that address is not the reader's own.
+// distinct from a connection made in AeroSync. It stands on every row so the table reads as one
+// column, and is held quiet — not removed — where the record carries no address to follow or
+// the address is the reader's own, because a follow is keyed to an address.
 
 const KEY =
   'flex h-5 w-5 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1';
@@ -22,7 +23,8 @@ export default function StandingsRowKeys({ person, viewer, onView, onAdd }) {
     viewer,
     { email: targetEmail, name: person.name, avatar: person.avatar_url }
   );
-  const canFollow = !!viewer?.email && !!targetEmail && viewer.email !== targetEmail;
+  const isSelf = !!viewer?.email && viewer.email === targetEmail;
+  const canFollow = !!viewer?.email && !!targetEmail && !isSelf;
 
   return (
     <div className="flex items-center justify-end gap-[3px]">
@@ -37,26 +39,30 @@ export default function StandingsRowKeys({ person, viewer, onView, onAdd }) {
         <Eye className="h-2.5 w-2.5" />
       </button>
 
-      {canFollow && (
-        <button
-          type="button"
-          onClick={toggle}
-          disabled={busy}
-          aria-pressed={following}
-          aria-label={`${following ? 'Unfollow' : 'Follow'} ${person.name}`}
-          title={following ? 'Following' : 'Follow'}
-          className={`${KEY} disabled:opacity-60`}
-          style={following ? HELD : QUIET}
-        >
-          {busy ? (
-            <Loader2 className="h-2.5 w-2.5 animate-spin" />
-          ) : following ? (
-            <BellRing className="h-2.5 w-2.5" />
-          ) : (
-            <Bell className="h-2.5 w-2.5" />
-          )}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={busy || !canFollow}
+        aria-pressed={following}
+        aria-label={
+          canFollow
+            ? `${following ? 'Unfollow' : 'Follow'} ${person.name}`
+            : isSelf
+              ? 'Your own record'
+              : `No address on record, so ${person.name} cannot be followed`
+        }
+        title={canFollow ? (following ? 'Following' : 'Follow') : isSelf ? 'This is you' : 'No address on record'}
+        className={`${KEY} disabled:opacity-50`}
+        style={following ? HELD : QUIET}
+      >
+        {busy ? (
+          <Loader2 className="h-2.5 w-2.5 animate-spin" />
+        ) : following ? (
+          <BellRing className="h-2.5 w-2.5" />
+        ) : (
+          <Bell className="h-2.5 w-2.5" />
+        )}
+      </button>
 
       <button
         type="button"
