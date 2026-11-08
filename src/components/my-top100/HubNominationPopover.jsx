@@ -81,7 +81,7 @@ const STEP_META = {
   review: { q: 'Ready to submit?', hint: 'Take one last look.' },
 };
 
-export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator, initialNominee, initialName }) {
+export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator, initialNominee, initialName, initialTags }) {
   // The sheet is laid over the surface it was opened from, so the console's keys are its
   // while it is up. It carries fields, so the confirm key is left alone — a turn reads the
   // sheet down and the way back closes it, and # never spends itself on cancelling a
@@ -101,6 +101,14 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
 
   const activeRef = useRef(null);
   const stepId = STEPS[step];
+
+  // The words the directory was being read by when this name was put forward. They travel
+  // into the intake with the nomination: the desk receives the person already filed the way
+  // the field was narrowed, rather than as a bare name to sort later.
+  const seededTags = (initialTags || [])
+    .map((tag) => (typeof tag === 'string' ? tag : tag?.label))
+    .map((label) => (label || '').trim())
+    .filter(Boolean);
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -188,6 +196,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
         nominator_email: nominator?.email || '',
         source: 'my_top100_hub',
         status: 'new',
+        suggested_tags: seededTags,
       };
       await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: nominationCategory });
       if (alsoAngels === 'yes') {
@@ -334,6 +343,24 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                 </div>
               </div>
 
+              {/* The narrowing this name arrived with, held where it was found. */}
+              {seededTags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1 px-4 pb-2 shrink-0" style={{ background: 'white' }}>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: `${brand.navy}50` }}>
+                    Filed under
+                  </span>
+                  {seededTags.map((label) => (
+                    <span
+                      key={label}
+                      className="rounded-full px-2 py-[2px] text-[9.5px] font-semibold"
+                      style={{ background: `${brand.navy}08`, color: brand.navy }}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {/* Step body */}
               <div ref={bodyRef} className="overflow-y-auto px-6 py-6 flex-1">
                 <AnimatePresence mode="wait">
@@ -446,7 +473,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                     )}
 
                     {stepId === 'review' && (
-                      <ReviewSummary form={form} nominationCategory={nominationCategory} alsoAngels={alsoAngels === 'yes'} selectedNominee={selectedNominee} />
+                      <ReviewSummary form={form} nominationCategory={nominationCategory} alsoAngels={alsoAngels === 'yes'} selectedNominee={selectedNominee} suggestedTags={seededTags} />
                     )}
 
                     {error && <p className="text-xs font-medium mt-4" style={{ color: '#c0392b' }}>{error}</p>}
@@ -528,7 +555,7 @@ function ChoiceList({ options, value, onPick }) {
   );
 }
 
-function ReviewSummary({ form, nominationCategory, alsoAngels, selectedNominee }) {
+function ReviewSummary({ form, nominationCategory, alsoAngels, selectedNominee, suggestedTags = [] }) {
   const rows = [
     ['Track', nominationCategory ? nominationCategory.charAt(0).toUpperCase() + nominationCategory.slice(1) : '—'],
     ['Name', form.name || '—'],
@@ -540,6 +567,7 @@ function ReviewSummary({ form, nominationCategory, alsoAngels, selectedNominee }
     ['Impact', form.reason_impact || '—'],
     ['Leadership', form.reason_leadership || '—'],
     ['Credit', form.share_name === 'yes' ? 'Credited' : form.share_name === 'no' ? 'Anonymous' : '—'],
+    ...(suggestedTags.length ? [['Filed under', suggestedTags.join(' · ')]] : []),
     ['Also Angels', alsoAngels ? 'Yes' : 'No'],
   ];
   return (

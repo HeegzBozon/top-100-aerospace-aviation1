@@ -3,13 +3,12 @@ import { useFollow } from '@/components/fellow-home/useFollows';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // One-way follow toggle — no acceptance, distinct from a mutual Connection.
-export default function FollowButton({ viewer, targetEmail, targetName, targetAvatar, accent, inline = false, iconOnly = false }) {
-  const { following, busy, toggle } = useFollow(
-    viewer,
-    { email: targetEmail, name: targetName, avatar: targetAvatar }
-  );
+export default function FollowButton({ viewer, targetId, targetEmail, targetName, targetAvatar, accent, inline = false, iconOnly = false }) {
+  const target = { id: targetId, email: targetEmail, name: targetName, avatar: targetAvatar };
+  const { following, busy, toggle } = useFollow(viewer, target);
 
-  if (!viewer?.email || !targetEmail || viewer.email === targetEmail) return null;
+  const isSelf = !!viewer?.email && !!targetEmail && viewer.email.toLowerCase() === targetEmail.toLowerCase();
+  if (!viewer?.email || isSelf || !(targetId || targetEmail)) return null;
 
   // One key, no label: the follow held in a row of other keys, where the word would crowd
   // the name beside it. The state is carried by the bell, and named for a screen reader.

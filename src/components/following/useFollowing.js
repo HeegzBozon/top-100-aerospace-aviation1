@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { personKey, readHonoree } from './honoreeRecord';
+import { followKey, followTarget, rowStandsFor } from './followRecord';
 
 // The people a Fellow keeps: the follow graph as this corner of the app needs it.
 //
@@ -59,10 +60,10 @@ export default function useFollowing() {
   // it must not offer to follow twice.
   const rowFor = useCallback(
     (person = {}) => {
-      const email = personKey(person.email);
       const name = personKey(person.name);
       return (
-        rows.find((row) => (email && personKey(row.following_email) === email) || (name && personKey(row.following_name) === name)) ||
+        rows.find((row) => rowStandsFor(row, person)) ||
+        (name && rows.find((row) => personKey(row.following_name) === name)) ||
         null
       );
     },
@@ -82,15 +83,17 @@ export default function useFollowing() {
         }
 
         const record = await readHonoree(person);
-        if (!record.email) return { ok: false, reason: 'no-address' };
+        if (!followKey(record)) return { ok: false, reason: 'no-identity' };
+        const { profileId, stored } = followTarget(record);
 
         await base44.entities.Follow.create({
           follower_email: me.email,
           follower_name: me.full_name || '',
           follower_avatar_url: me.avatar_url || '',
-          following_email: record.email,
+          following_email: stored,
           following_name: record.name,
           following_avatar_url: record.avatar || '',
+          ...(profileId ? { following_profile_id: profileId } : {}),
         });
         return { ok: true, following: true, name: record.name };
       } catch {

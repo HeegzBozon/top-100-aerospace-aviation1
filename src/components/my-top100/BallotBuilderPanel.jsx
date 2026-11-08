@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
-import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Shuffle, Sparkles, UserPlus } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { useState } from 'react';
+import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import { MANIFEST } from '@/components/voting/ballotNaming';
-import BallotSuggestionCard from '@/components/my-top100/BallotSuggestionCard';
-import useBallotSuggestions from '@/components/my-top100/useBallotSuggestions';
+import StandingsTable from '@/components/my-top100/StandingsTable';
+import usePersonalStandings from '@/components/my-top100/usePersonalStandings';
 
-// The organizing column of the ballot: how the order works, where the ballot stands, and a
-// short list of profiles drawn from the Fellow's own judging. A suggestion is never a
-// placement — it reaches the ballot only through the Fellow's own hand — and the whole
-// column doubles as a way into a profile, a follow in AeroSync, or the directory itself.
+// The organizing column of the ballot: how the order works, where the ballot stands, and the
+// standings the Fellow's own Crosscheck has produced. The column reads only the ballots this
+// Fellow cast — no platform score, no other member's weighing — and prints no counts. A name
+// reaches the ballot only through the Fellow's own hand, and the whole column doubles as a
+// way into a profile, a follow in AeroSync, or the directory itself.
 
 function SectionLabel({ children }) {
   return (
@@ -23,6 +24,7 @@ export default function BallotBuilderPanel({
   pool,
   loadingPool,
   addedIds,
+  seasonIds,
   rankingsCount,
   ballotMinimum = 1,
   onAdd,
@@ -32,19 +34,21 @@ export default function BallotBuilderPanel({
   onOpenVote,
   onOpenBriefing,
 }) {
-  const { loading, suggestions, basis, judged, error, refresh, shuffle } = useBallotSuggestions({
-    user,
-    pool,
-    excludeIds: addedIds,
-  });
+  // Every ballot an administrator casts is stamped as a test, so an operator's own weighing
+  // lives in the test lane and never in the community's. The column opens on the lane their
+  // marks are actually in, and offers the other one the way the live monitor does.
+  const isAdmin = user?.role === 'admin';
+  const [scope, setScope] = useState(isAdmin ? 'test' : 'community');
 
-  const open = suggestions.filter((person) => !addedIds.has(person.id));
+  const { loading, standings, standingCount, carried, marks, sittings, otherLaneMarks, error, refresh } =
+    usePersonalStandings({
+      user,
+      pool,
+      excludeIds: addedIds,
+      scope,
+      seasonIds,
+    });
 
-  // A name added to the ballot makes room for another face: the column redraws itself
-  // rather than thinning out one card at a time.
-  useEffect(() => {
-    shuffle();
-  }, [addedIds.size, shuffle]);
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
 
   return (
@@ -82,26 +86,51 @@ export default function BallotBuilderPanel({
         </button>
       </div>
 
-      {/* The suggestions. */}
-      <div className="mt-4 flex items-baseline justify-between gap-2">
-        <SectionLabel>Suggested for you</SectionLabel>
-        {open.length > 0 && (
-          <button
-            type="button"
-            onClick={shuffle}
-            className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            style={{ color: `${brand.navy}60` }}
-          >
-            <Shuffle className="h-3 w-3" /> Shuffle
-          </button>
+      {/* The Fellow's own standings, read back to them. An operator reads their test lane
+          here: a rehearsal is theirs to inspect, and it is still never the community's. */}
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <SectionLabel>Your Crosscheck standings</SectionLabel>
+        {isAdmin && (
+          <span className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Which ballot to read">
+            {[
+              ['community', 'Community'],
+              ['test', 'Test'],
+            ].map(([key, name]) => {
+              const active = scope === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setScope(key)}
+                  className="rounded px-1.5 py-[2px] text-[6.5px] font-bold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+                  style={
+                    active
+                      ? key === 'test'
+                        ? { background: 'rgb(var(--editorial-copper-rgb))', color: 'rgb(var(--editorial-cream-rgb))' }
+                        : { background: `${brand.navy}14`, border: `1px solid ${brand.navy}22`, color: brand.navy }
+                      : { background: 'transparent', border: `1px solid ${brand.navy}0D`, color: ink.soft }
+                  }
+                >
+                  {name}
+                </button>
+              );
+            })}
+          </span>
         )}
       </div>
 
-      {basis.length > 0 && (
-        <p className="mt-0.5 text-[10px]" style={{ color: `${brand.navy}55` }}>
-          Read from the sets you have analysed · {basis.join(' · ')}
-        </p>
-      )}
+      {/* The lane's own size, so the column can be checked against the record the live
+          monitor prints rather than taken on trust. */}
+      <p className="mt-0.5 text-[10px] leading-relaxed" style={{ color: ink.soft }}>
+        {loading
+          ? 'Reading your own record…'
+          : marks > 0
+            ? `${marks.toLocaleString()} marks across ${sittings} sittings — your own ballots, in the ${
+                scope === 'test' ? 'test lane, held out of the community’s measure' : 'community lane'
+              }.`
+            : `No marks of your own in the ${scope === 'test' ? 'test' : 'community'} lane.`}
+      </p>
 
       <div className="mt-2 space-y-2">
         {(loading || loadingPool) && (
@@ -127,22 +156,48 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && judged === 0 && (
+        {/* The lane is empty but the Fellow has weighed somewhere: say where, rather than
+            leaving a column that looks broken. */}
+        {!loading && !error && marks === 0 && otherLaneMarks > 0 && (
+          <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
+            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>
+              Your {otherLaneMarks.toLocaleString()} marks are in the {scope === 'test' ? 'community' : 'test'} lane
+            </p>
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Every ballot is stamped with the lane of the account that cast it. Read the other
+              lane to see the names those marks carried.
+            </p>
+            <button
+              type="button"
+              onClick={() => setScope(scope === 'test' ? 'community' : 'test')}
+              className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+              style={{ color: ink.label }}
+            >
+              Read the {scope === 'test' ? 'community' : 'test'} lane <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && standingCount === 0 && marks === 0 && otherLaneMarks === 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <Sparkles className="h-4 w-4" style={{ color: brand.gold }} />
             <p className="mt-1.5 text-[11.5px] font-bold" style={{ color: brand.navy }}>
-              Suggestions follow your judging
+              Your standings begin with one set
             </p>
-            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-              Analyse a few sets on the ballot — the profiles you advance draw a short list here.
-              Nothing is added to your ballot on your behalf.
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Weigh a set on the Crosscheck and the names your own judgments carry will be read
+              out here, best first. Nothing is added to your ballot on your behalf.
+            </p>
+            <p className="mt-1.5 text-[9.5px] leading-relaxed" style={{ color: ink.soft }}>
+              This column reads the ballots filed under the account signed in, so a preview
+              signed in as the platform’s own account has none to read.
             </p>
             {onOpenVote && (
               <button
                 type="button"
                 onClick={onOpenVote}
                 className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em]"
-                style={{ color: brand.gold }}
+                style={{ color: ink.label }}
               >
                 Weigh a set <ArrowRight className="h-3 w-3" />
               </button>
@@ -150,27 +205,36 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && judged > 0 && open.length === 0 && (
+        {!loading && !error && standingCount === 0 && carried > 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
-            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Every suggestion is on your ballot</p>
-            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-              Search the directory, or analyse more sets to widen the field.
+            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Your carried names are not standing in this field</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Nothing you have advanced is in the open cohort. Search the directory, or weigh a
+              set in this field to begin a standing here.
             </p>
           </div>
         )}
 
-        {!loading && !error && open.map((person) => (
-          <BallotSuggestionCard
-            key={person.id}
-            person={person}
+        {!loading && !error && standingCount > 0 && standings.length === 0 && (
+          <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
+            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>Every name your Crosscheck carries is on your ballot</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Search the directory, or weigh more sets to widen the field.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && standings.length > 0 && (
+          <StandingsTable
+            standings={standings}
             viewer={user}
             onAdd={onAdd}
             onView={onViewProfile}
           />
-        ))}
+        )}
       </div>
 
-      {/* The two ways past the suggestions: the whole directory, and a name it does not hold. */}
+      {/* The two ways past the standings: the whole directory, and a name it does not hold. */}
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
         <button
           type="button"
@@ -192,8 +256,8 @@ export default function BallotBuilderPanel({
 
       <p className="mt-3 flex items-start gap-1.5 text-[9.5px] leading-relaxed" style={{ color: `${brand.navy}45` }}>
         <Compass className="mt-[1px] h-3 w-3 shrink-0" />
-        A suggestion is an invitation to look, never a placement. Open a profile to follow or
-        connect in AeroSync.
+        A standing is a reading of your own comparisons, never a placement. Open a profile to
+        follow or connect in AeroSync.
       </p>
     </div>
   );

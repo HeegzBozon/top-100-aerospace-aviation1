@@ -16,7 +16,7 @@
     },
     "following_email": {
       "type": "string",
-      "description": "Email of the Fellow being followed"
+      "description": "Address the followed Fellow can be written to, where the record holds one. A profile with no address on record keeps its profile key here instead (see following_profile_id), so every profile can be followed."
     },
     "following_name": {
       "type": "string",
@@ -25,6 +25,10 @@
     "following_avatar_url": {
       "type": "string",
       "description": "Avatar URL of the followed Fellow, denormalized for display"
+    },
+    "following_profile_id": {
+      "type": "string",
+      "description": "Nominee record the follow stands against. This is the identity of a follow: the address above is only what the row can say about that record, and most records have none."
     }
   },
   "required": [

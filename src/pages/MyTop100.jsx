@@ -63,6 +63,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [shareCode, setShareCode] = useState('');
   const [season, setSeason] = useState(null);
+  const [seasonIds, setSeasonIds] = useState([]);
   const [votingActive, setVotingActive] = useState(false);
   const [profileId, setProfileId] = useState(null);
   const [saveError, setSaveError] = useState('');
@@ -194,6 +195,11 @@ export default function MyTop100({ initialTab = null } = {}) {
             }
           }
           setSeason(resolved || activeSeasons?.[0] || null);
+          // Ballots are stamped with a cohort, so the personal column is scoped to the
+          // group season and every open cohort under it.
+          setSeasonIds(
+            (resolved ? [resolved.id] : []).concat(activeSeasons.map((s) => s.id)),
+          );
           setVotingActive(activeSeasons.length > 0);
         } catch { /* season resolution optional */ }
         try {
@@ -374,6 +380,29 @@ export default function MyTop100({ initialTab = null } = {}) {
     setSaveTimer(timer);
   }, [saveTimer, persistAndSync]);
 
+  // A record's cohort belongs to the record, not to the moment it was added. An entry
+  // written before that was so carries a stale label and reads under the wrong view —
+  // a woman listed under the men. Once the pool is in hand, any stored category that
+  // the record's own season contradicts is corrected in place and saved, so the
+  // Manifest reads every name under the cohort its record actually belongs to. Only the
+  // two views are aligned: a record filed as an angel keeps its label, Angels being no
+  // view of this ballot.
+  useEffect(() => {
+    if (loadingPool || !user || !pool.length || !rankings.length) return;
+    const byId = new Map(pool.map(n => [n.id, n]));
+    let changed = false;
+    const aligned = rankings.map(r => {
+      const resolved = getNomineeCategory(byId.get(r.nominee_id), seasonCategory);
+      if (resolved !== 'women' && resolved !== 'men') return r;
+      if (resolved === r.nomination_category) return r;
+      changed = true;
+      return { ...r, nomination_category: resolved };
+    });
+    if (!changed) return;
+    setRankings(aligned);
+    scheduleSave(aligned, listName);
+  }, [loadingPool, user, pool, seasonCategory, rankings, listName, scheduleSave]);
+
   // The glass always arranges the whole ballot — the cohorts are counted off that one
   // order, so there is no filtered subset to merge it back into.
   const handleReorderAll = (newOrder) => {
@@ -526,6 +555,7 @@ export default function MyTop100({ initialTab = null } = {}) {
     <BallotBuilderPanel
       user={user}
       pool={pool}
+      seasonIds={seasonIds}
       loadingPool={loadingPool}
       addedIds={addedIds}
       rankingsCount={rankings.length}

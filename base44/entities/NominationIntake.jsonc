@@ -101,6 +101,14 @@
     "migrated_from_nomination_id": {
       "type": "string",
       "description": "Source legacy Nomination record ID when migrated. Migration flag and idempotency key."
+    },
+    "suggested_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Labels the directory was narrowed by when the name was put forward, carried into the intake so the review desk can file the new record under the same words. Provenance only; never read by discovery, ordering, measurement or scoring."
     }
   },
   "required": [

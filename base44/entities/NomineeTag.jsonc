@@ -61,6 +61,28 @@
       ],
       "default": "approved",
       "description": "Moderation status (auto-approved by default, can be removed by admin)"
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "community",
+        "baseline"
+      ],
+      "default": "community",
+      "description": "Where the row came from: proposed by a member of the community, or read off the profile by the baseline tagging desk. Provenance only; never read by discovery ordering, measurement, ranking or scoring."
+    },
+    "basis": {
+      "type": "string",
+      "enum": [
+        "stated",
+        "inferred"
+      ],
+      "default": "stated",
+      "description": "Whether the record states the word outright ('stated') or strongly implies it without naming it ('inferred'). Provenance only; never read by discovery ordering, measurement, ranking or scoring."
+    },
+    "evidence": {
+      "type": "string",
+      "description": "The phrase on the profile the word rests on, kept so a filed baseline word can be read back against the record it came from. Provenance only; never read by discovery ordering, measurement, ranking or scoring."
     }
   },
   "required": [
