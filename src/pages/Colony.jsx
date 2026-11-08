@@ -652,6 +652,8 @@ function ColonyRoom({ onReplayWelcome }) {
         onLeave={handleLeave}
         participantCount={participantList.length}
         onToggleParticipants={() => setShowParticipants((prev) => !prev)}
+        room={room}
+        roomLabel={COLONY_ROOMS[room]?.label}
       />}
 
       {/* Participant Sidebar */}
