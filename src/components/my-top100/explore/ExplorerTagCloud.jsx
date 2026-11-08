@@ -63,7 +63,11 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
         );
       })}
 
-      <span className="mx-0.5 h-4 w-px bg-editorial-navy/15" aria-hidden="true" />
+      {/* The seam only stands when there is a vocabulary behind it: a reading nobody's
+          words reach closes on the cohorts alone rather than on a rule going nowhere. */}
+      {words.length > 0 && (
+        <span className="mx-0.5 h-4 w-px bg-editorial-navy/15" aria-hidden="true" />
+      )}
 
       {words.map((tag) => {
         const active = selected.some((picked) => picked.key === tag.key);

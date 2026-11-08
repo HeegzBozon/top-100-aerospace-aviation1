@@ -7,6 +7,7 @@ import ExplorerControls from '@/components/my-top100/explore/ExplorerControls';
 import ExplorerRow from '@/components/my-top100/explore/ExplorerRow';
 import ExplorerGallery from '@/components/my-top100/explore/ExplorerGallery';
 import ExplorerTagCloud from '@/components/my-top100/explore/ExplorerTagCloud';
+import ExplorerEndPlate from '@/components/my-top100/explore/ExplorerEndPlate';
 import useNomineeTags from '@/components/my-top100/explore/useNomineeTags';
 import useExplorerCursor from '@/components/my-top100/explore/useExplorerCursor';
 import useAutoLoad from '@/components/my-top100/explore/useAutoLoad';
@@ -44,6 +45,9 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
+  // The words the reading was narrowed by, carried into the intake a name is put forward
+  // with, so the desk receives the person already filed the way they were found.
+  const [quickTags, setQuickTags] = useState([]);
   const [viewingProfile, setViewingProfile] = useState(null);
   const [view, setView] = useState('list');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -75,6 +79,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       setViewingProfile(null);
       setNominating(null);
       setInlineNominate(false);
+      setQuickTags([]);
     }
   }, [isOpen, initialNominee]);
 
@@ -207,6 +212,13 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     );
   };
 
+  // A name is put forward from wherever the reading left off: the words in force at that
+  // moment travel with it into the intake, and nothing is lost when the roll is exhausted.
+  const openQuickAdd = () => {
+    setQuickTags(selectedTags.map((tag) => tag.label));
+    setInlineNominate(true);
+  };
+
   // The field takes the cursor on a desk, where the hand is already on the keys. On the
   // glass it does not: the keys would come up over the reading the sheet was opened for.
   const deskOpened =
@@ -305,7 +317,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               </p>
               <button
                 type="button"
-                onClick={() => setInlineNominate(true)}
+                onClick={openQuickAdd}
                 className="mt-5 inline-flex items-center gap-2 border border-editorial-copper bg-editorial-copper px-4 py-2 font-body text-[10px] font-bold uppercase tracking-[0.16em] text-editorial-cream transition-colors hover:bg-editorial-label focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-navy"
               >
                 <UserPlus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -338,10 +350,21 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
               )}
 
               {/* The page the reading is about to read. */}
-              {hasMore && (
+              {hasMore ? (
                 <div ref={setSentinel} aria-hidden="true" className="flex items-center justify-center py-4">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-editorial-copper/60" aria-hidden="true" />
                 </div>
+              ) : (
+                /* The floor: the roll closes on the mark, and the mark is where a name
+                   that is not in the field is put forward. */
+                <ExplorerEndPlate
+                  onAdd={openQuickAdd}
+                  hint={
+                    selectedTags.length > 0
+                      ? `Filed under ${selectedTags.map((tag) => tag.label).join(' · ')}`
+                      : null
+                  }
+                />
               )}
             </>
           )}
@@ -393,10 +416,12 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
             nominator={nominator}
             initialNominee={nominating}
             initialName={inlineNominate ? query : null}
-            onClose={() => { setNominating(null); setInlineNominate(false); }}
+            initialTags={quickTags}
+            onClose={() => { setNominating(null); setInlineNominate(false); setQuickTags([]); }}
             onSubmitted={(result) => {
               setNominating(null);
               setInlineNominate(false);
+              setQuickTags([]);
               if (result.existing) {
                 onAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
               } else {
