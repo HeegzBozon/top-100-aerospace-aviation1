@@ -66,7 +66,7 @@ export default async function (req) {
       { xp: 0, sets: 0, comparisons: 0 }
     );
 
-    // The ledger is the ground truth. Every recorded review writes seven comparisons
+    // The ledger is the ground truth. Every recorded review writes five comparisons
     // against the voter, stamped test or not, so the count is read back from the votes
     // themselves: a ladder row that was never written (or written by an older recorder)
     // can no longer hold the tally at zero.

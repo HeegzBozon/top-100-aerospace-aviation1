@@ -211,9 +211,9 @@ export default async function (req) {
     const evaluated = measurement?.covered_live || 0;
     cohortStats.forEach((row) => {
       const reached = measurement?.by_cohort?.find((c) => c.season_id === row.season_id);
-      // The pool a line is scaled against is the field the ballot deals from — the same one
-      // the totals use — while its coverage is read off its own marks.
-      row.pool = measurement?.pool || row.pool;
+      // The line's own pool, as the shared measurement resolved it — the same rule the
+      // totals are scaled with, cut to this cohort.
+      row.pool = reached?.pool || row.pool;
       row.evaluated = reached?.covered_live || 0;
       row.evaluated_test = reached?.covered_test || 0;
       row.coverage_pct = row.pool > 0 ? Math.round((row.evaluated / row.pool) * 1000) / 10 : 0;
