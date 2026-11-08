@@ -526,6 +526,7 @@ export default function MyTop100({ initialTab = null } = {}) {
     <BallotBuilderPanel
       user={user}
       pool={pool}
+      seasonId={season?.id}
       loadingPool={loadingPool}
       addedIds={addedIds}
       rankingsCount={rankings.length}

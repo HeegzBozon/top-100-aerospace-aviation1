@@ -1,40 +1,38 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 
 // The Fellow's own Crosscheck standings.
 //
-// This column used to offer a random draw from the field. It now reads the Fellow's own
-// record back to them: the names their own pairwise judgments carried, best first. Only the
-// ballots this Fellow cast are counted — no other member's weighing, no ranked-choice weight,
-// no platform score — and no count is ever printed. The order is the standing; the words
-// beside each name say why it stands where it does.
+// Read back from the record itself: the marks this Fellow's own sittings wrote, in one
+// lane, for one season. Two tallies are taken server-side — the marks each name won, and
+// the marks each name lost — because a sitting writes five marks over four cards. A name
+// that always stood last wins nothing, so counting wins alone silently dropped a quarter of
+// every sitting out of this reading, and the tail of the list never agreed with the sets the
+// live monitor prints. Counting both halves keeps every card in the reading.
 //
-// Nothing here writes: not to the ballot, not to a score, not to anything the measure reads.
-// A name reaches the manifest only when the Fellow adds it by hand.
+// Only the ballots this Fellow cast are read: no other member's weighing, no ranked-choice
+// weight, no platform score. Nothing here writes — not to the ballot, not to a score.
 
-const STANDING_LIMIT = 8;
+const RETURN_LIMIT = 40;
 
-const ORDINAL = ['', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth'];
+const asCount = (value) => (typeof value === 'number' ? value : value?.count || 0);
 
-const label = (value) => String(value || '').replace(/_/g, ' ');
-
-function reasonFor(place, person) {
-  if (place === 1) {
-    const field = label(person.discipline);
-    return field
-      ? `${field} — carried furthest in your own Crosscheck`
-      : 'Carried furthest in your own Crosscheck';
-  }
-  const word = ORDINAL[place];
-  return word ? `${word} in your own Crosscheck` : 'Carried through your Crosscheck';
-}
-
-export default function usePersonalStandings({ user, pool, excludeIds, scope = 'community' }) {
+export default function usePersonalStandings({
+  user,
+  pool,
+  excludeIds,
+  scope = 'community',
+  seasonId,
+}) {
   const [state, setState] = useState({
     loading: true,
     standings: [],
     standingCount: 0,
     carried: 0,
+    marks: 0,
+    sittings: 0,
+    otherLaneMarks: 0,
     error: null,
   });
 
@@ -48,54 +46,112 @@ export default function usePersonalStandings({ user, pool, excludeIds, scope = '
 
   const load = useCallback(async () => {
     if (!email) {
-      setState({ loading: false, standings: [], standingCount: 0, carried: 0, error: null });
+      setState({
+        loading: false,
+        standings: [],
+        standingCount: 0,
+        carried: 0,
+        marks: 0,
+        sittings: 0,
+        otherLaneMarks: 0,
+        error: null,
+      });
       return;
     }
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    // One tally, taken server-side: the ballots this Fellow cast, counted by the name each
-    // comparison carried. The lane is the surface's to choose. A ballot cast by an
+    // The lane this column is reading, and the one it is not. A ballot cast by an
     // administrator is stamped as a test (see submitAnchorVote), so an operator's own
-    // weighing stands in the test lane and nowhere else — read there, and still held out
-    // of the community's.
-    const tally = await base44.entities.PairwiseVote.aggregate({
-      query: { voter_email: email, is_test: scope === 'test' ? true : { $ne: true } },
-      groupBy: 'winner_nominee_id',
-    });
+    // weighing stands in the test lane and nowhere else — read there, still never the
+    // community's. The other lane is counted only so the column can say where a Fellow's
+    // marks actually are when this one comes back empty.
+    const lane = scope === 'test' ? true : { $ne: true };
+    const otherLane = scope === 'test' ? { $ne: true } : true;
+    const base = seasonId
+      ? { voter_email: email, season_id: seasonId }
+      : { voter_email: email };
 
-    const byId = new Map((poolRef.current || []).map((n) => [n.id, n]));
-    const carriedNames = (tally?.rows || []).filter(
-      (row) => row.winner_nominee_id && row.count > 0
+    const [won, lost, marks, otherMarks] = await Promise.all([
+      base44.entities.PairwiseVote.aggregate({
+        query: { ...base, is_test: lane },
+        groupBy: 'winner_nominee_id',
+      }),
+      base44.entities.PairwiseVote.aggregate({
+        query: { ...base, is_test: lane },
+        groupBy: 'loser_nominee_id',
+      }),
+      base44.entities.PairwiseVote.count({ ...base, is_test: lane }),
+      base44.entities.PairwiseVote.count({ ...base, is_test: otherLane }),
+    ]);
+
+    const tally = new Map();
+    const bump = (id, field, count) => {
+      if (!id || !count) return;
+      const entry = tally.get(id) || { id, wins: 0, losses: 0 };
+      entry[field] += count;
+      tally.set(id, entry);
+    };
+    (won?.rows || []).forEach((row) => bump(row.winner_nominee_id, 'wins', row.count || 0));
+    (lost?.rows || []).forEach((row) => bump(row.loser_nominee_id, 'losses', row.count || 0));
+
+    const rankedAll = [...tally.values()].sort(
+      (a, b) => b.wins - a.wins || a.losses - b.losses || a.id.localeCompare(b.id)
     );
-    const ranked = carriedNames
-      // Pool-scoped: only a name standing in the open field can take a place here.
-      .map((row) => ({ person: byId.get(row.winner_nominee_id), count: row.count }))
+
+    // Names are read from the field already in hand; the few a Fellow weighed that are not
+    // standing in it (an archived volume, a record now held back) are resolved by id, so a
+    // name in the record is never missing from the reading.
+    const byId = new Map((poolRef.current || []).map((n) => [n.id, n]));
+    const wanted = rankedAll.slice(0, RETURN_LIMIT).map((row) => row.id);
+    const missing = wanted.filter((id) => !byId.has(id));
+    if (missing.length) {
+      const res = await base44.entities.Nominee.filter({ id: { $in: missing } });
+      const people = Array.isArray(res) ? res : res.items || [];
+      people.forEach((p) => byId.set(p.id, p));
+    }
+
+    const ranked = rankedAll
+      .map((row) => ({ ...row, person: byId.get(row.id) }))
       .filter((row) => row.person)
       .sort(
         (a, b) =>
-          b.count - a.count || (a.person.name || '').localeCompare(b.person.name || '')
+          b.wins - a.wins ||
+          a.losses - b.losses ||
+          (a.person.name || '').localeCompare(b.person.name || '')
       );
 
     // Equal carries share a standing rather than being split by the alphabet.
     let place = 0;
     let carried = null;
     const standings = ranked.map((row, index) => {
-      if (row.count !== carried) {
+      if (row.wins !== carried) {
         place = index + 1;
-        carried = row.count;
+        carried = row.wins;
       }
-      return { ...row.person, place, reason: reasonFor(place, row.person) };
+      return {
+        ...row.person,
+        place,
+        wins: row.wins,
+        losses: row.losses,
+        marks: row.wins + row.losses,
+      };
     });
 
+    const markCount = asCount(marks);
     setState({
       loading: false,
-      standings: standings.filter((p) => !excludeRef.current?.has(p.id)).slice(0, STANDING_LIMIT),
+      standings: standings
+        .filter((p) => !excludeRef.current?.has(p.id))
+        .slice(0, RETURN_LIMIT),
       standingCount: standings.length,
-      // Names this Fellow's own comparisons carried, whether or not they stand in this field.
-      carried: carriedNames.length,
+      // Every name the record carries, in this field or out of it.
+      carried: tally.size,
+      marks: markCount,
+      sittings: Math.round(markCount / MARKS_PER_SITTING),
+      otherLaneMarks: asCount(otherMarks),
       error: null,
     });
-  }, [email, scope]);
+  }, [email, scope, seasonId]);
 
   useEffect(() => {
     let alive = true;
@@ -106,6 +162,9 @@ export default function usePersonalStandings({ user, pool, excludeIds, scope = '
         standings: [],
         standingCount: 0,
         carried: 0,
+        marks: 0,
+        sittings: 0,
+        otherLaneMarks: 0,
         error: e?.message || 'Your Crosscheck standings could not be read.',
       });
     });

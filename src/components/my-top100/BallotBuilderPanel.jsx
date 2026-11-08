@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import { MANIFEST } from '@/components/voting/ballotNaming';
-import BallotSuggestionCard from '@/components/my-top100/BallotSuggestionCard';
+import StandingsTable from '@/components/my-top100/StandingsTable';
 import usePersonalStandings from '@/components/my-top100/usePersonalStandings';
 
 // The organizing column of the ballot: how the order works, where the ballot stands, and the
@@ -24,6 +24,7 @@ export default function BallotBuilderPanel({
   pool,
   loadingPool,
   addedIds,
+  seasonId,
   rankingsCount,
   ballotMinimum = 1,
   onAdd,
@@ -39,12 +40,14 @@ export default function BallotBuilderPanel({
   const isAdmin = user?.role === 'admin';
   const [scope, setScope] = useState(isAdmin ? 'test' : 'community');
 
-  const { loading, standings, standingCount, carried, error, refresh } = usePersonalStandings({
-    user,
-    pool,
-    excludeIds: addedIds,
-    scope,
-  });
+  const { loading, standings, standingCount, carried, marks, sittings, otherLaneMarks, error, refresh } =
+    usePersonalStandings({
+      user,
+      pool,
+      excludeIds: addedIds,
+      scope,
+      seasonId,
+    });
 
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
 
@@ -117,10 +120,16 @@ export default function BallotBuilderPanel({
         )}
       </div>
 
+      {/* The lane's own size, so the column can be checked against the record the live
+          monitor prints rather than taken on trust. */}
       <p className="mt-0.5 text-[10px] leading-relaxed" style={{ color: ink.soft }}>
-        {scope === 'test'
-          ? 'Your own test ballots, read back as you cast them. An internal lane: held out of the community’s measure, and out of nothing you add here.'
-          : 'The names your own comparisons have carried, best first. No platform score, and no one else’s ballot.'}
+        {loading
+          ? 'Reading your own record…'
+          : marks > 0
+            ? `${marks.toLocaleString()} marks across ${sittings} sittings — your own ballots, in the ${
+                scope === 'test' ? 'test lane, held out of the community’s measure' : 'community lane'
+              }.`
+            : `No marks of your own in the ${scope === 'test' ? 'test' : 'community'} lane.`}
       </p>
 
       <div className="mt-2 space-y-2">
@@ -147,7 +156,29 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && standingCount === 0 && carried === 0 && (
+        {/* The lane is empty but the Fellow has weighed somewhere: say where, rather than
+            leaving a column that looks broken. */}
+        {!loading && !error && marks === 0 && otherLaneMarks > 0 && (
+          <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
+            <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>
+              Your {otherLaneMarks.toLocaleString()} marks are in the {scope === 'test' ? 'community' : 'test'} lane
+            </p>
+            <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
+              Every ballot is stamped with the lane of the account that cast it. Read the other
+              lane to see the names those marks carried.
+            </p>
+            <button
+              type="button"
+              onClick={() => setScope(scope === 'test' ? 'community' : 'test')}
+              className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+              style={{ color: ink.label }}
+            >
+              Read the {scope === 'test' ? 'community' : 'test'} lane <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && standingCount === 0 && carried === 0 && marks > 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <Sparkles className="h-4 w-4" style={{ color: brand.gold }} />
             <p className="mt-1.5 text-[11.5px] font-bold" style={{ color: brand.navy }}>
@@ -189,16 +220,9 @@ export default function BallotBuilderPanel({
           </div>
         )}
 
-        {!loading && !error && standings.map((person) => (
-          <BallotSuggestionCard
-            key={person.id}
-            person={person}
-            place={person.place}
-            viewer={user}
-            onAdd={onAdd}
-            onView={onViewProfile}
-          />
-        ))}
+        {!loading && !error && standings.length > 0 && (
+          <StandingsTable standings={standings} onAdd={onAdd} onView={onViewProfile} />
+        )}
       </div>
 
       {/* The two ways past the standings: the whole directory, and a name it does not hold. */}
