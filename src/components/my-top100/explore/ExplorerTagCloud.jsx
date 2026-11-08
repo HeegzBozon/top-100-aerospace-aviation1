@@ -9,10 +9,10 @@ import { X } from 'lucide-react';
 // re-reads itself as the search tightens, which is what makes browsing feel like the
 // vocabulary is answering rather than sitting still.
 //
-// The words are not one undifferentiated row any more: they are filed by what they say
-// about a person — the field they work in, the role they hold, the impact they carry, the
-// place they are based — so a long vocabulary is scanned by kind rather than read through.
-// A facet with nobody in it simply does not draw.
+// The words are not one undifferentiated row any more: they stand in columns by what they
+// say about a person — the field they work in, the role they hold, the impact they carry, the
+// place they are based — four across on the desk and two on the glass, so a long vocabulary
+// is scanned by kind rather than read through. A facet with nobody in it does not draw.
 //
 // Three registers, set by a word's share of the heaviest word in its own facet, never by an
 // absolute count (the field's own numbers are small): a leader big and bold, a middling word
@@ -105,51 +105,53 @@ export default function ExplorerTagCloud({ tags, available, selected, cohort, on
         )}
       </div>
 
-      {drawn.map(({ facet, words, heaviest }) => (
-        <div key={facet.key} className="mt-1.5 flex items-start gap-1.5">
-          <span className="w-[30px] shrink-0 pt-[4px] font-body text-[7.5px] font-bold uppercase leading-none tracking-[0.12em] text-editorial-label/75">
-            {facet.label}
-          </span>
-          <div className="flex flex-1 flex-wrap content-start items-center gap-1">
-            {words.map((tag) => {
-              const active = selected.some((picked) => picked.key === tag.key);
-              const live = active || available.has(tag.key);
-              const register = registerOf(tag.weight, heaviest);
-              return (
-                <button
-                  key={tag.key}
-                  type="button"
-                  aria-pressed={active}
-                  disabled={!live}
-                  onClick={() => onToggle(tag)}
-                  title={
-                    active
-                      ? `Remove ${tag.label}`
-                      : live
-                        ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in this reading`
-                        : `Nobody in this reading is tagged ${tag.label}`
-                  }
-                  className={`flex items-baseline gap-1 rounded-full border font-body leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
-                    active
-                      ? 'border-editorial-copper bg-editorial-copper text-editorial-cream'
-                      : live
-                        ? 'border-editorial-navy/25 text-editorial-navy/80 hover:border-editorial-navy/60 hover:bg-editorial-navy/5'
-                        : 'cursor-default border-editorial-navy/10 text-editorial-navy/25'
-                  }`}
-                >
-                  {tag.label}
-                  {register !== 'tail' && (
-                    <span className={`tabular-nums ${active ? 'text-editorial-cream/70' : 'text-editorial-navy/45'}`}>
-                      {tag.weight}
-                    </span>
-                  )}
-                  {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
-                </button>
-              );
-            })}
+      <div className="mt-1.5 grid grid-cols-2 gap-x-2.5 gap-y-2 md:grid-cols-4">
+        {drawn.map(({ facet, words, heaviest }) => (
+          <div key={facet.key} className="min-w-0">
+            <span className="block border-b border-editorial-copper/35 pb-0.5 font-body text-[7.5px] font-bold uppercase leading-none tracking-[0.12em] text-editorial-label">
+              {facet.label}
+            </span>
+            <div className="mt-1 flex flex-wrap content-start items-center gap-1">
+              {words.map((tag) => {
+                const active = selected.some((picked) => picked.key === tag.key);
+                const live = active || available.has(tag.key);
+                const register = registerOf(tag.weight, heaviest);
+                return (
+                  <button
+                    key={tag.key}
+                    type="button"
+                    aria-pressed={active}
+                    disabled={!live}
+                    onClick={() => onToggle(tag)}
+                    title={
+                      active
+                        ? `Remove ${tag.label}`
+                        : live
+                          ? `${tag.weight} ${tag.weight === 1 ? 'name' : 'names'} in this reading`
+                          : `Nobody in this reading is tagged ${tag.label}`
+                    }
+                    className={`flex items-baseline gap-1 rounded-full border font-body leading-none transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-editorial-copper ${REGISTER[register]} ${
+                      active
+                        ? 'border-editorial-copper bg-editorial-copper text-editorial-cream'
+                        : live
+                          ? 'border-editorial-navy/25 text-editorial-navy/80 hover:border-editorial-navy/60 hover:bg-editorial-navy/5'
+                          : 'cursor-default border-editorial-navy/10 text-editorial-navy/25'
+                    }`}
+                  >
+                    {tag.label}
+                    {register !== 'tail' && (
+                      <span className={`tabular-nums ${active ? 'text-editorial-cream/70' : 'text-editorial-navy/45'}`}>
+                        {tag.weight}
+                      </span>
+                    )}
+                    {active && <X className="h-2.5 w-2.5" aria-hidden="true" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
