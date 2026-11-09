@@ -522,7 +522,6 @@ export default function MyTop100({ initialTab = null } = {}) {
         }}
         saving={saving}
         count={rankings.length}
-        note="Who would you choose?"
       />
       <BallotStatusBanner
         rankings={rankings}

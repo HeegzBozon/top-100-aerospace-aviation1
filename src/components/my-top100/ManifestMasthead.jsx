@@ -13,14 +13,10 @@ export default function ManifestMasthead({
   onEndEdit,
   saving,
   count,
-  note,
 }) {
   return (
     <div className="pb-4">
-      <div className="flex items-baseline justify-between gap-4">
-        <p className="font-body text-[10px] font-bold uppercase tracking-[0.22em] text-editorial-label">
-          The Manifest
-        </p>
+      <div className="flex items-baseline justify-end gap-4">
         <p className="font-body text-[10px] uppercase tracking-[0.18em] text-editorial-navy/45 tabular-nums">
           {count} of 100
         </p>
@@ -61,11 +57,6 @@ export default function ManifestMasthead({
         {saving && <Loader2 className="h-3 w-3 shrink-0 animate-spin text-editorial-navy/35" aria-hidden="true" />}
       </div>
 
-      {note && (
-        <p className="mt-2 max-w-lg font-body text-[11.5px] leading-relaxed text-editorial-navy/55">
-          {note}
-        </p>
-      )}
     </div>
   );
 }

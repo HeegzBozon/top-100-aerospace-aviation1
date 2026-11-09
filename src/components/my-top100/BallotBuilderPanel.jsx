@@ -1,13 +1,11 @@
 import { Compass, Search, UserPlus } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import { MANIFEST } from '@/components/voting/ballotNaming';
-import PersonalStandings from '@/components/my-top100/PersonalStandings';
 
 // The organizing column of the ballot: how the order works, where the ballot stands, and the
-// standings the Fellow's own Crosscheck has produced. The column reads only the ballots this
-// Fellow cast — no platform score, no other member's weighing — and prints no counts. A name
-// reaches the ballot only through the Fellow's own hand, and the whole column doubles as a
-// way into a profile, a follow in AeroSync, or the directory itself.
+// two ways into the field. The column reads only the ballots this Fellow cast — no platform
+// score, no other member's weighing. A name reaches the ballot only through the Fellow's own
+// hand, and the column doubles as a way into a profile, a follow in AeroSync, or the directory.
 
 function SectionLabel({ children }) {
   return (
@@ -69,22 +67,7 @@ export default function BallotBuilderPanel({
         </button>
       </div>
 
-      {/* The Fellow's own standings, read back to them. An operator reads their test lane
-          here: a rehearsal is theirs to inspect, and it is still never the community's. The
-          reading itself is shared with the Manifest's Crosscheck tab, so both print one table. */}
-      <PersonalStandings
-        className="mt-4"
-        user={user}
-        pool={pool}
-        loadingPool={loadingPool}
-        addedIds={addedIds}
-        seasonIds={seasonIds}
-        onAdd={onAdd}
-        onViewProfile={onViewProfile}
-        onOpenVote={onOpenVote}
-      />
-
-      {/* The two ways past the standings: the whole directory, and a name it does not hold. */}
+      {/* The two ways into the field: the whole directory, and a name it does not hold. */}
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
         <button
           type="button"
@@ -106,8 +89,8 @@ export default function BallotBuilderPanel({
 
       <p className="mt-3 flex items-start gap-1.5 text-[9.5px] leading-relaxed" style={{ color: `${brand.navy}45` }}>
         <Compass className="mt-[1px] h-3 w-3 shrink-0" />
-        A standing is a reading of your own comparisons, never a placement. Open a profile to
-        follow or connect in AeroSync.
+        Open a profile to follow or connect in AeroSync. Your Crosscheck standings are read on
+        the Manifest tab.
       </p>
     </div>
   );

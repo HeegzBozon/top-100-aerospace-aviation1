@@ -1,5 +1,5 @@
 const TABS = [
-  { key: 'all', label: 'All' },
+  { key: 'all', label: 'Manifest' },
   { key: 'crosscheck', label: 'Crosscheck' },
   { key: 'women', label: 'Women' },
   { key: 'men', label: 'Men' },
