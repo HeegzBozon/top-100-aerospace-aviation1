@@ -94,14 +94,7 @@ export default function BoardingPass({ user, hasExisting, onBegin, onVote }) {
   }, [name, roleLine, organisation, personId]);
 
   return (
-    <div className="mx-auto w-full max-w-[23rem] px-4 py-6 lg:py-8">
-      <p className="font-body text-[9.5px] font-bold uppercase tracking-[0.24em] text-editorial-label">
-        Your credentials
-      </p>
-      <p className="mt-1.5 font-body text-[12.5px] leading-relaxed text-editorial-navy/70">
-        One record, printed three ways. Wear it, carry it, or leave it behind.
-      </p>
-
+    <div className="mx-auto w-full max-w-[23rem] px-4 py-5 lg:py-7">
       {status === 'loading' && (
         <div
           className="mt-4 overflow-hidden rounded-[18px] bg-editorial-navy/95 p-5"

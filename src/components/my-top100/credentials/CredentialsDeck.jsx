@@ -9,21 +9,9 @@ import CredentialCard from '@/components/my-top100/credentials/CredentialCard';
 // room, the pass carried to a desk, the card kept after they leave. So they are one deck,
 // turned between — never three screens to hunt through.
 export const CREDENTIAL_FLAVORS = [
-  {
-    key: 'badge',
-    label: 'Badge',
-    note: 'Worn in a room. The code hands your card over without a tap.',
-  },
-  {
-    key: 'pass',
-    label: 'Boarding pass',
-    note: 'Carried to the desk. Who you are, read back from the record we hold.',
-  },
-  {
-    key: 'card',
-    label: 'Business card',
-    note: 'Kept after you leave. The lines you chose to print, on cream stock.',
-  },
+  { key: 'badge', label: 'Badge' },
+  { key: 'pass', label: 'Boarding pass' },
+  { key: 'card', label: 'Business card' },
 ];
 
 export default function CredentialsDeck({ person, template, code, rows, hasExisting, year }) {
@@ -57,8 +45,6 @@ export default function CredentialsDeck({ person, template, code, rows, hasExist
           );
         })}
       </div>
-
-      <p className="mt-2.5 font-body text-[10.5px] leading-relaxed text-editorial-navy/60">{active.note}</p>
 
       <div className="mt-3">
         {active.key === 'badge' && (
