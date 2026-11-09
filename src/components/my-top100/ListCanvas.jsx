@@ -3,6 +3,7 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { GripVertical, X, ChevronUp, ChevronDown, Lock, Plus } from 'lucide-react';
 import ListEmptyState from '@/components/my-top100/ListEmptyState';
 import { candidateName } from '@/lib/candidateName';
+import { MANIFEST_TARGET, MANIFEST_CEILING } from '@/components/my-top100/manifestTargets';
 
 // The Manifest, set as a roll.
 //
@@ -47,7 +48,7 @@ export default function ListCanvas({
     <div className="min-w-0">
       {/* The way in stands at the head of the roll, where a reader begins: adding a record
           is the first act on the list, not a footnote under a hundred names. */}
-      {!readOnly && total < 100 && (
+      {!readOnly && total < MANIFEST_CEILING && (
         <motion.button
           type="button"
           whileTap={{ scale: 0.995 }}
@@ -61,7 +62,9 @@ export default function ListCanvas({
             </span>
           </span>
           <span className="font-body text-[10px] uppercase tracking-[0.14em] text-editorial-navy/45 tabular-nums">
-            {100 - total} places open
+            {total < MANIFEST_TARGET
+              ? `${MANIFEST_TARGET - total} places open`
+              : `${MANIFEST_CEILING - total} beyond the hundred`}
           </span>
         </motion.button>
       )}

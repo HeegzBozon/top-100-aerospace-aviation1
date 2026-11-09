@@ -10,6 +10,7 @@ import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopove
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import BallotBuilderPanel from '@/components/my-top100/BallotBuilderPanel';
+import { MANIFEST_CEILING } from '@/components/my-top100/manifestTargets';
 import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import PersonalStandings from '@/components/my-top100/PersonalStandings';
@@ -416,7 +417,7 @@ export default function MyTop100({ initialTab = null } = {}) {
 
   const handleAdd = (nominee, meta = {}) => {
     if (votingClosed) return;
-    if (rankings.length >= 100) return;
+    if (rankings.length >= MANIFEST_CEILING) return;
     if (rankings.find(r => r.nominee_id === nominee.id)) return;
 
     const newItem = {

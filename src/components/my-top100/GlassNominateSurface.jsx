@@ -6,6 +6,7 @@ import { registerDigits, registerDigitLegends } from '@/components/handheld/hand
 import { useNavHint } from '@/components/handheld/faceHint';
 import GlassBallotRow from '@/components/my-top100/GlassBallotRow';
 import GlassNomineeExplorer from '@/components/my-top100/GlassNomineeExplorer';
+import { MANIFEST_CEILING } from '@/components/my-top100/manifestTargets';
 
 // A page key (the ring's forward/back zones, ▲▼ held on the pad) crosses five positions,
 // which is how far a hand expects a ballot to move at once.
@@ -243,7 +244,7 @@ export default function GlassNominateSurface({
         seasonCategory={seasonCategory}
         addedIds={addedIds}
         loading={loadingPool}
-        full={totalCount >= 100}
+        full={totalCount >= MANIFEST_CEILING}
         onAdd={onAdd}
         onClose={() => setBrowsing(false)}
       />
