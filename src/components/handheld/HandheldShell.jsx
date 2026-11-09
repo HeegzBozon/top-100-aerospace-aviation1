@@ -1,9 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import useKeyboardOpen from "@/hooks/useKeyboardOpen";
 import useFieldIntoView from "@/hooks/useFieldIntoView";
 import HandheldDeck from "./HandheldDeck";
+import DeckPowerKey from "./DeckPowerKey";
+import { blip, buzz } from "./handheldSound";
 import useOverlayPicker from "./useOverlayPicker";
 
 // The device wraps the whole app: every surface renders inside the picture
@@ -33,9 +35,23 @@ export const useInsideDevice = () => {
 export default function HandheldShell() {
   const isMobile = useIsMobile();
   const [putAway, setPutAway] = useState(false);
+  // Whether the machine's hardware is standing on the picture. The key that carries this
+  // is never put away with the case, so the state lives here rather than in the deck: the
+  // deck is what the key lowers.
+  const [hardwareOn, setHardwareOn] = useState(true);
   const keyboard = useKeyboardOpen();
   // Stable, so a surface reporting its state never re-triggers itself.
-  const api = useMemo(() => ({ inside: true, setPutAway }), []);
+  const api = useMemo(() => ({ inside: true, setPutAway, hardwareOn }), [hardwareOn]);
+  // The desk answers from the same state, without claiming to be the device.
+  const deskApi = useMemo(() => ({ inside: false, hardwareOn }), [hardwareOn]);
+
+  const toggleHardware = useCallback(() => {
+    if (isMobile) {
+      blip(hardwareOn ? "toggle" : "select");
+      buzz();
+    }
+    setHardwareOn((on) => !on);
+  }, [hardwareOn, isMobile]);
 
   // The field being typed into is kept above the keys, inside the glass.
   useFieldIntoView(keyboard.open, keyboard.height);
@@ -57,7 +73,15 @@ export default function HandheldShell() {
     };
   }, [isMobile, keyboard.open, keyboard.height]);
 
-  if (!isMobile) return <Outlet />;
+  if (!isMobile) {
+    return (
+      <DeviceContext.Provider value={deskApi}>
+        <Outlet />
+        {/* The one key on the desk's picture: it lifts the machinery away and puts it back. */}
+        <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />
+      </DeviceContext.Provider>
+    );
+  }
 
   return (
     <DeviceContext.Provider value={api}>
@@ -74,7 +98,10 @@ export default function HandheldShell() {
           </div>
         </div>
       </div>
-      {!putAway && <HandheldDeck />}
+      {!putAway && hardwareOn && (
+        <HandheldDeck deckOn={hardwareOn} />
+      )}
+      {!putAway && <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />}
     </DeviceContext.Provider>
   );
 }

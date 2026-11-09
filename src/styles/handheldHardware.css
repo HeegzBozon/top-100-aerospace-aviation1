@@ -70,6 +70,89 @@
   box-shadow: 0 0 6px var(--hh-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
 }
 
+/* ===== THE DECK KEY — THE CONSOLE'S OWN BUTTON =====
+   A handheld is a thing you put down, so the machine keeps one key on the picture that
+   is not part of the case: a round key in the corner of the glass that lowers the whole
+   deck — the chin, the wheel or the radio's keypad, the speaker with them — and lifts it
+   back. It is seated the way the case is: a ring of dark glass, a copper hairline, and
+   the light caught along its top lip. It rides the deck's own clearance, so it stands
+   above the case while the case is up and settles onto the foot of the picture once it
+   is down. Nothing about the picture's content is taken away to make room for it. The
+   same key stands on the desk's picture, riding the foot of the tube just inside the
+   chin's line: one press lowers the machine or lifts it back, on either machine. */
+.deck-power-key {
+  position: fixed;
+  z-index: 49;
+  left: 50%;
+  bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 10px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 9999px;
+  /* Struck in copper, like the wheel's centre: a dark key disappears into a dark
+     picture, and this one has to be found without looking for it. */
+  color: var(--hh-key-1);
+  background: linear-gradient(180deg, var(--hh-metal-1) 0%, var(--hh-metal) 52%, var(--hh-metal-2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--hh-ink-rgb) / 0.55),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.30),
+    0 0 0 1px rgb(var(--hh-ink-rgb) / 0.24),
+    0 8px 18px -6px rgba(3, 6, 13, 0.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.deck-power-key:hover {
+  transform: translateX(-50%) translateY(-1px);
+}
+.deck-power-key:active {
+  transform: translateX(-50%) scale(0.94);
+}
+/* While the case is down, the key is lit: it is the only thing left to press. */
+.deck-power-key[data-away="true"] {
+  box-shadow:
+    inset 0 1px 0 rgb(var(--hh-ink-rgb) / 0.55),
+    0 0 0 2px rgb(var(--hh-metal-rgb) / 0.42),
+    0 8px 18px -6px rgba(3, 6, 13, 0.72);
+}
+.deck-power-key:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--hh-key-1),
+    0 0 0 4px rgb(var(--hh-metal-rgb) / 0.85);
+}
+/* On the desk the same key rides the foot of the tube, just inside the picture the
+   machine's chin closes — the same place on the other machine. */
+@media (min-width: 768px) {
+  .deck-power-key {
+    bottom: calc(var(--imac-bottom, 24px) + 12px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-power-key {
+    transition: none;
+  }
+}
+
+/* The radio face's sound key is a cap rather than a plate, and gets the same strike. */
+.hh-sound-key,
+.hh-sound-key:focus,
+.hh-sound-key:focus-visible,
+.hh-sound-key:active {
+  outline: none;
+}
+.hh-sound-key:focus-visible {
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.90),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.30),
+    0 0 0 1px rgb(var(--hh-metal-rgb) / 0.30);
+}
+
 /* The plate the record is set in, and the two ways it can be fitted.
    The square the button would otherwise be given — the browser's own focus outline,
    which stays on the key for as long as it holds focus, so it reads as part of the

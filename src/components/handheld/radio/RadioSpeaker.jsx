@@ -64,7 +64,7 @@ export default function RadioSpeaker({ onAnnounce, onSoundOn }) {
       aria-pressed={playing}
       aria-label={playing ? `Speaker on, playing ${trackCredit(currentTrack())}. Mute the music` : "Speaker off. Play the console's music"}
       title={playing ? trackCredit(currentTrack()) : "Tap to play or mute · hold to shuffle on"}
-      className="hh-pad-key relative flex h-full w-[26px] shrink-0 items-center justify-center rounded-[7px]"
+      className="hh-pad-key hh-sound-key relative flex h-full w-[26px] shrink-0 items-center justify-center rounded-[7px]"
       style={{ color: playing ? "var(--hh-metal-1)" : "var(--hh-pad-ink)" }}
     >
       {playing ? <Volume2 className="h-[11px] w-[11px]" /> : <VolumeX className="h-[11px] w-[11px]" />}

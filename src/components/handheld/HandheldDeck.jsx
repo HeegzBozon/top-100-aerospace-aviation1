@@ -10,7 +10,6 @@ import { drawerHint } from "./faceHint";
 import ChinMenuBar from "./ChinMenuBar";
 import LandscapeGrips from "./LandscapeGrips";
 import useLandscapeHandheld from "@/hooks/useLandscapeHandheld";
-import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
 import HandheldMenu from "./HandheldMenu";
@@ -71,7 +70,10 @@ const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish
 // A surface may also take the ring itself and steer with it — the field game walks
 // on it — in which case the four zones become up, down, left and right for as long
 // as nothing of the console's own is open over the glass.
-export default function HandheldDeck() {
+// The deck is the case itself: the chin, the wheel or the radio's keypad, and the speaker.
+// Whether it stands on the picture is the shell's call, because the key that lowers it sits
+// on the glass rather than on the case — see HandheldShell.
+export default function HandheldDeck({ deckOn = true }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
@@ -94,6 +96,8 @@ export default function HandheldDeck() {
   const menuOpen = menuMode !== null;
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  // Whether the case is standing on the glass — held by the shell, which also draws the
+  // key that lowers it. Lowered, that key is the only control left on the picture.
   const [searchOpen, setSearchOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [flash, setFlash] = useState("");
@@ -257,9 +261,11 @@ export default function HandheldDeck() {
   const foot = 0;
 
   useLayoutEffect(() => {
-    applyShellVars(clearance, foot);
+    // With the case lowered the glass keeps the frame's own gutter and nothing else:
+    // the depth the chin was holding is handed back to the picture.
+    applyShellVars(deckOn ? clearance : 0, foot);
     return releaseShellVars;
-  }, [clearance, foot]);
+  }, [clearance, foot, deckOn]);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
@@ -1013,7 +1019,7 @@ export default function HandheldDeck() {
         onClose={() => setNotificationsOpen(false)}
       />
 
-      {!landscape && <nav
+      {!landscape && deckOn && <nav
         aria-label="Handheld console controls"
         className="hh-chin fixed z-40 flex select-none flex-col md:hidden"
         style={{
@@ -1152,6 +1158,7 @@ export default function HandheldDeck() {
           </>
         )}
       </nav>}
+
     </>
   );
 }

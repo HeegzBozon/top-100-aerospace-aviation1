@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useDevice } from "@/components/handheld/HandheldShell";
 import ImacHousing from "./ImacHousing";
 import DesktopDock from "./DesktopDock";
 import { standsBackOnDesk } from "@/components/shell/immersiveSurfaces";
@@ -20,8 +21,12 @@ import { standsBackOnDesk } from "@/components/shell/immersiveSurfaces";
 export default function DesktopShell() {
   const isMobile = useIsMobile();
   const { pathname } = useLocation();
+  // The one key on the picture lifts the machinery away — the same key, and the same
+  // state, as the handheld's: put the machine down and the surface stands on its own.
+  const { hardwareOn } = useDevice() || {};
 
   if (isMobile) return <Outlet />;
+  if (hardwareOn === false) return <Outlet />;
 
   const bare = standsBackOnDesk(pathname);
 
