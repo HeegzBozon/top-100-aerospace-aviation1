@@ -79,6 +79,8 @@ export default function HandheldDeck() {
   // whose keypad walks the same index by number. The surface chooses the face it is
   // written in; the plate overrules, and the overrule is remembered.
   const { mode, cycle: cycleMode, legend: modeLegend } = useConsoleMode(location.pathname);
+  // The Colony is the one surface where the speaker's record is set into a frame.
+  const inColony = /^\/colony\/?$/i.test(location.pathname);
   const radio = mode === RADIO;
   // What every legend on this machine is printed in: the face fitted to the case.
   const face = radio ? RADIO : "wheel";
@@ -1113,7 +1115,11 @@ export default function HandheldDeck() {
                   Share pill that stood under it rides the readout band now, at the left of
                   the foot of the glass (see ViewerFoot). */}
               <div className="flex items-center justify-center">
-                <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
+                <HandheldSpeaker
+                  onAnnounce={announce}
+                  onSoundOn={() => persistSound(true)}
+                  framed={inColony}
+                />
               </div>
 
               <ClickWheel
