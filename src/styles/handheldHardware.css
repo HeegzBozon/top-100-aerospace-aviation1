@@ -115,11 +115,18 @@
    the light caught along its top lip. It rides the deck's own clearance, so it stands
    above the case while the case is up and settles onto the foot of the picture once it
    is down. Nothing about the picture's content is taken away to make room for it. */
+/* ===== THE ONE KEY THAT IS NEVER PUT AWAY =====
+   A handheld is a thing you put down, and a desk is a thing you step away from: this is
+   the single control that stays on the picture when the hardware does not. It floats at
+   the foot of the glass, centred — over the picture on a phone, over the tube on a wide
+   screen — the way a phone's own assistive key sits over everything, and one press lowers
+   the machine or lifts it back. */
 .deck-power-key {
   position: fixed;
   z-index: 49;
-  right: calc(var(--hh-glass-inset, 28px) + 10px);
-  bottom: calc(var(--hh-bottom, 204px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 8px);
+  left: 50%;
+  bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 10px);
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -140,8 +147,11 @@
   backdrop-filter: blur(8px);
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
+.deck-power-key:hover {
+  transform: translateX(-50%) translateY(-1px);
+}
 .deck-power-key:active {
-  transform: scale(0.94);
+  transform: translateX(-50%) scale(0.94);
 }
 /* While the case is down, the key is lit: it is the only thing left to press. */
 .deck-power-key[data-away="true"] {
@@ -156,10 +166,11 @@
     0 0 0 2px var(--hh-key-1),
     0 0 0 4px rgb(var(--hh-metal-rgb) / 0.85);
 }
-/* The desk is a machine of its own and keeps its own controls. */
+/* On the desk the same key rides the foot of the tube, just inside the picture the
+   machine's chin closes — the same place on the other machine. */
 @media (min-width: 768px) {
   .deck-power-key {
-    display: none;
+    bottom: calc(var(--imac-bottom, 24px) + 12px);
   }
 }
 @media (prefers-reduced-motion: reduce) {

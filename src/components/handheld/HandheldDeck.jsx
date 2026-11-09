@@ -24,7 +24,6 @@ import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
 
 import HandheldSpeaker from "./HandheldSpeaker";
-import DeckPowerKey from "./DeckPowerKey";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
@@ -71,7 +70,10 @@ const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish
 // A surface may also take the ring itself and steer with it — the field game walks
 // on it — in which case the four zones become up, down, left and right for as long
 // as nothing of the console's own is open over the glass.
-export default function HandheldDeck() {
+// The deck is the case itself: the chin, the wheel or the radio's keypad, and the speaker.
+// Whether it stands on the picture is the shell's call, because the key that lowers it sits
+// on the glass rather than on the case — see HandheldShell.
+export default function HandheldDeck({ deckOn = true, onToggle }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
@@ -96,9 +98,8 @@ export default function HandheldDeck() {
   const menuOpen = menuMode !== null;
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  // Whether the case is standing on the glass. Lowered, the deck key is the only
-  // control left on the picture — which is how it is raised again.
-  const [deckOn, setDeckOn] = useState(true);
+  // Whether the case is standing on the glass — held by the shell, which also draws the
+  // key that lowers it. Lowered, that key is the only control left on the picture.
   const [searchOpen, setSearchOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [flash, setFlash] = useState("");
@@ -277,23 +278,6 @@ export default function HandheldDeck() {
   // Putting the console away stops its music: the speaker key is gone once the
   // device is off the glass, so the loop must not keep playing with no hand on it.
   useEffect(() => () => stopPlaylist(), []);
-
-  // The deck key. Lowering the case closes whatever was open on it — a drawer or a
-  // search whose keys have gone is a surface nobody could shut — and the record stops
-  // with the speaker, because a loop playing on a machine that is put down is a lie.
-  const toggleDeck = useCallback(() => {
-    if (deckOn) {
-      setMenuMode(null);
-      setSearchOpen(false);
-      setNotificationsOpen(false);
-      setShareOpen(false);
-      stopPlaylist();
-      setPlaying(false);
-    }
-    setDeckOn(!deckOn);
-    blip(deckOn ? "toggle" : "select");
-    buzz();
-  }, [deckOn]);
 
   // A number typed on one surface means nothing on the next, and a drawer that closes
   // puts the keys back on the surface.
@@ -1175,8 +1159,6 @@ export default function HandheldDeck() {
         )}
       </nav>}
 
-      {/* The one control the picture keeps when the case is lowered — and the way back. */}
-      {!landscape && <DeckPowerKey standing={deckOn} onToggle={toggleDeck} />}
     </>
   );
 }
