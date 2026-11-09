@@ -1,4 +1,4 @@
-import { Bell, BellRing, Eye, Loader2, Plus } from 'lucide-react';
+import { Bell, BellRing, Check, Eye, Loader2, Plus } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 
 // The three keys a name carries in the standings table: read the record, follow the Fellow,
@@ -22,6 +22,7 @@ export default function StandingsRowKeys({
   followed = false,
   busy = false,
   isSelf = false,
+  onBallot = false,
   onToggleFollow,
   onView,
   onAdd,
@@ -62,15 +63,21 @@ export default function StandingsRowKeys({
         )}
       </button>
 
+      {/* The ballot key reports its own state: a name already on the Fellow's ballot stands
+          in copper with a struck check, and the row stays in the standings either way. */}
       <button
         type="button"
-        onClick={() => onAdd(person)}
-        aria-label={`Add ${person.name} to your ballot`}
-        title="Add to ballot"
-        className={KEY}
-        style={QUIET}
+        onClick={() => !onBallot && onAdd(person)}
+        disabled={onBallot}
+        aria-pressed={onBallot}
+        aria-label={
+          onBallot ? `${person.name} is on your ballot` : `Add ${person.name} to your ballot`
+        }
+        title={onBallot ? 'On your ballot' : 'Add to ballot'}
+        className={`${KEY} disabled:opacity-100`}
+        style={onBallot ? HELD : QUIET}
       >
-        <Plus className="h-2.5 w-2.5" />
+        {onBallot ? <Check className="h-2.5 w-2.5" /> : <Plus className="h-2.5 w-2.5" />}
       </button>
     </div>
   );

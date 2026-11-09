@@ -31,7 +31,6 @@ export default function PersonalStandings({
     usePersonalStandings({
       user,
       pool,
-      excludeIds: addedIds,
       scope,
       seasonIds,
     });
@@ -170,6 +169,7 @@ export default function PersonalStandings({
           <StandingsTable
             standings={standings}
             viewer={user}
+            addedIds={addedIds}
             onAdd={onAdd}
             onView={onViewProfile}
           />

@@ -26,7 +26,7 @@ function contextOf(person) {
   return line || null;
 }
 
-export default function StandingsTable({ standings, viewer, onAdd, onView }) {
+export default function StandingsTable({ standings, viewer, addedIds, onAdd, onView }) {
   const [shown, setShown] = useState(FIRST);
   const rows = standings.slice(0, shown);
   // The viewer's follows, read once for the column rather than a hundred times over.
@@ -92,6 +92,7 @@ export default function StandingsTable({ standings, viewer, onAdd, onView }) {
                     onToggleFollow={toggle}
                     onView={onView}
                     onAdd={onAdd}
+                    onBallot={!!addedIds?.has(person.id)}
                   />
                 </td>
               </tr>

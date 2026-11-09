@@ -21,7 +21,6 @@ const asCount = (value) => (typeof value === 'number' ? value : value?.count || 
 export default function usePersonalStandings({
   user,
   pool,
-  excludeIds,
   scope = 'community',
   seasonIds,
 }) {
@@ -38,8 +37,6 @@ export default function usePersonalStandings({
 
   const poolRef = useRef(pool);
   poolRef.current = pool;
-  const excludeRef = useRef(excludeIds);
-  excludeRef.current = excludeIds;
 
   const poolSize = pool?.length || 0;
   const email = user?.email;
@@ -143,9 +140,9 @@ export default function usePersonalStandings({
     const markCount = asCount(marks);
     setState({
       loading: false,
-      standings: standings
-        .filter((p) => !excludeRef.current?.has(p.id))
-        .slice(0, RETURN_LIMIT),
+      // Every name the Fellow's own marks carried stays in the reading, whether or not it
+      // has since been put on their ballot: the standings are the record, not a shortlist.
+      standings: standings.slice(0, RETURN_LIMIT),
       standingCount: standings.length,
       // Every name the record carries, in this field or out of it.
       carried: tally.size,
