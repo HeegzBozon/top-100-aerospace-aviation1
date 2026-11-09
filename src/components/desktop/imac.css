@@ -78,6 +78,28 @@
     overflow: hidden;
   }
 
+  /* THE CASE IS DOWN — the surface stands on the desk itself.
+     The machinery is lifted away, so there is no tube to measure against and a surface
+     that fills its picture would collapse to its own content: the world would be drawn
+     into nothing and the controls would ride up under the head of the page. The seat is
+     still a measured one — the whole window, nothing held back — and a surface that
+     answers the tube's fill contract answers it here unchanged. */
+  .imac-bare {
+    min-height: 100dvh;
+  }
+  .imac-bare:has(> [data-tube-fill]) {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .imac-bare > [data-tube-fill] {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* The height it carried for the glass is the tube's arithmetic, not this seat's. */
+    height: auto;
+  }
+
   /* Bars that ride the bottom or the top of the desk clear the bands, so a surface
      never hides a control inside the resin. */
   body.imac-shell .imac-lift {

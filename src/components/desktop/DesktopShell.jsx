@@ -26,7 +26,15 @@ export default function DesktopShell() {
   const { hardwareOn } = useDevice() || {};
 
   if (isMobile) return <Outlet />;
-  if (hardwareOn === false) return <Outlet />;
+  // With the case down the surface stands on the desk itself, still in a measured seat
+  // of the whole window — a surface that fills its picture keeps filling it.
+  if (hardwareOn === false) {
+    return (
+      <div className="imac-bare">
+        <Outlet />
+      </div>
+    );
+  }
 
   const bare = standsBackOnDesk(pathname);
 

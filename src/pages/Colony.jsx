@@ -533,7 +533,7 @@ function ColonyRoom({ onReplayWelcome }) {
   }
 
   return (
-    <div className="hh-slide-window md:h-[calc(100%-41px)] bg-slate-950 relative flex flex-col overflow-hidden">
+    <div data-tube-fill="" className="hh-slide-window imac-fit bg-slate-950 relative flex flex-col overflow-hidden">
       {/* Header */}
       {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 [&>*]:pointer-events-auto [&>*]:bg-transparent">
