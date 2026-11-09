@@ -15,6 +15,13 @@ const HELD = {
   border: '1px solid rgb(var(--editorial-copper-rgb) / 0.45)',
   color: 'rgb(var(--editorial-copper-rgb))',
 };
+// A name already on the Fellow's manifest stands in copper outright: the key is struck, not
+// merely tinted, so the column can be read at a glance for what is still to be added.
+const STRUCK = {
+  background: 'rgb(var(--editorial-copper-rgb))',
+  border: '1px solid rgb(var(--editorial-copper-rgb))',
+  color: 'rgb(var(--editorial-cream-rgb))',
+};
 
 export default function StandingsRowKeys({
   person,
@@ -71,11 +78,11 @@ export default function StandingsRowKeys({
         disabled={onBallot}
         aria-pressed={onBallot}
         aria-label={
-          onBallot ? `${person.name} is on your ballot` : `Add ${person.name} to your ballot`
+          onBallot ? `${person.name} is on your manifest` : `Add ${person.name} to your manifest`
         }
-        title={onBallot ? 'On your ballot' : 'Add to ballot'}
+        title={onBallot ? 'On your manifest' : 'Add to manifest'}
         className={`${KEY} disabled:opacity-100`}
-        style={onBallot ? HELD : QUIET}
+        style={onBallot ? STRUCK : QUIET}
       >
         {onBallot ? <Check className="h-2.5 w-2.5" /> : <Plus className="h-2.5 w-2.5" />}
       </button>
