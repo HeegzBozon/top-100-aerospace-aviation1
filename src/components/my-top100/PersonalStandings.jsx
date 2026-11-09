@@ -15,6 +15,7 @@ export default function PersonalStandings({
   pool,
   loadingPool = false,
   addedIds,
+  addedNames,
   seasonIds,
   onAdd,
   onViewProfile,
@@ -170,6 +171,7 @@ export default function PersonalStandings({
             standings={standings}
             viewer={user}
             addedIds={addedIds}
+            addedNames={addedNames}
             onAdd={onAdd}
             onView={onViewProfile}
           />

@@ -446,6 +446,12 @@ export default function MyTop100({ initialTab = null } = {}) {
   // above, and the Share CTA on the status band replaces the publish button.
 
   const addedIds = new Set(rankings.map(r => r.nominee_id));
+  // The same person can stand in the directory twice under one name (two records, one
+  // Fellow), and the ballot is weighed against whichever record it was dealt. So the
+  // readings that report "already on your manifest" answer on the name as well as the id.
+  const addedNames = new Set(
+    rankings.map(r => (r.nominee_name || '').trim().toLowerCase()).filter(Boolean)
+  );
   const totalNominations = Object.values(hubNominations).reduce((sum, arr) => sum + arr.length, 0);
   // There is one TOP 100, and Women and Men are readings of it: the same ballot, filtered,
   // each record keeping the place it holds on the whole. Neither view is a list of its own,
@@ -542,6 +548,7 @@ export default function MyTop100({ initialTab = null } = {}) {
           pool={pool}
           loadingPool={loadingPool}
           addedIds={addedIds}
+          addedNames={addedNames}
           seasonIds={seasonIds}
           onAdd={(person) => handleAdd(person, {
             nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
