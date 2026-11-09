@@ -572,20 +572,8 @@ export default function MyTop100({ initialTab = null } = {}) {
   // suggestion is opened, followed, or added by hand, never placed for them.
   const builderPanel = (
     <BallotBuilderPanel
-      user={user}
-      pool={pool}
-      seasonIds={seasonIds}
-      loadingPool={loadingPool}
-      addedIds={addedIds}
       rankingsCount={rankings.length}
       ballotMinimum={1}
-      onAdd={(person) => handleAdd(person, {
-        nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
-      })}
-      onViewProfile={(person) => { setExplorerProfile(person); setExplorerOpen(true); }}
-      onOpenExplorer={openExplorer}
-      onNominate={() => setMobilePopoverOpen(true)}
-      onOpenVote={() => openTab('vote')}
       onOpenBriefing={() => briefing.setOpen(true)}
     />
   );

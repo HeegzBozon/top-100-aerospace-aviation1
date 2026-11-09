@@ -26,7 +26,7 @@ export default function BallotStatusBanner({
     : null;
 
   return (
-    <div className="mb-1 border-b border-editorial-navy/12 pb-2.5">
+    <div className="mb-4 border border-editorial-copper/30 bg-editorial-sand/25 px-4 py-2">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <p className="flex min-w-0 items-center gap-1.5 font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-label">
           {closesOn && !done ? (
