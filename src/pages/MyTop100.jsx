@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import HubListTabs from '@/components/my-top100/HubListTabs';
-import BallotBuilderPanel from '@/components/my-top100/BallotBuilderPanel';
+import ManifestMediaBlock from '@/components/my-top100/ManifestMediaBlock';
 import { MANIFEST_CEILING } from '@/components/my-top100/manifestTargets';
 import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
@@ -529,6 +529,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         }}
         saving={saving}
         count={rankings.length}
+        onOpenBriefing={() => briefing.setOpen(true)}
       />
       <BallotStatusBanner
         rankings={rankings}
@@ -575,16 +576,10 @@ export default function MyTop100({ initialTab = null } = {}) {
     </>
   );
 
-  // The organizing column of the ballot: the guide to the order, where the ballot stands, and
-  // the profiles drawn from this Fellow's own judging. Every act in it is theirs — a
-  // suggestion is opened, followed, or added by hand, never placed for them.
-  const builderPanel = (
-    <BallotBuilderPanel
-      rankingsCount={rankings.length}
-      ballotMinimum={1}
-      onOpenBriefing={() => briefing.setOpen(true)}
-    />
-  );
+  // The margin of the Manifest is the house's press floor: the four rooms of the Media Hub,
+  // each with the page it publishes to and the room it is stood in. Where the order stands is
+  // measured across the masthead now, so the margin carries nothing but the reading room.
+  const builderPanel = <ManifestMediaBlock />;
 
   // The step past the order, held at the right margin while the window is open. It states
   // itself only once there are two names to weigh; the shut window closes it.
