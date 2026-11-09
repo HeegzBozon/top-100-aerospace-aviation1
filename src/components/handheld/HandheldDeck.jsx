@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeftRight, Disc, Palette, Radio, Search } from "lucide-react";
+import { ArrowLeftRight, Disc, Frame, Palette, Radio, Search } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import ConsoleKeyBar from "./ConsoleKeyBar";
 import FaceButtons from "./FaceButtons";
@@ -29,6 +29,7 @@ import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
+import useSpeakerFrame from "./useSpeakerFrame";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { railHiddenOn } from "@/components/shell/immersiveSurfaces";
 import { openingPlaysNow } from "@/components/core/appOpening";
@@ -108,6 +109,7 @@ export default function HandheldDeck() {
   });
 
   const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
+  const { framed, toggleFrame } = useSpeakerFrame();
 
   // The machine's own two controls — the finish the case is wearing and the face it is
   // wearing it in — live in the Edit drawer. They were the two keys of the foot plate; the
@@ -126,11 +128,12 @@ export default function HandheldDeck() {
     () => [
       { label: `Customize · ${finish.label}`, action: "finish", icon: Palette },
       { label: `Console face · ${modeLegend}`, action: "cycleMode", icon: radio ? Disc : Radio },
+      { label: `Speaker frame · ${framed ? "On" : "Off"}`, onSelect: toggleFrame, icon: Frame },
       ...(landscape
         ? [{ label: `Click wheel · ${wheelRight ? "Right" : "Left"} hand`, onSelect: flipGrips, icon: ArrowLeftRight }]
         : []),
     ],
-    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips],
+    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips, framed, toggleFrame],
   );
 
   const menuGroups = groups;
@@ -1113,7 +1116,11 @@ export default function HandheldDeck() {
                   Share pill that stood under it rides the readout band now, at the left of
                   the foot of the glass (see ViewerFoot). */}
               <div className="flex items-center justify-center">
-                <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
+                <HandheldSpeaker
+                  onAnnounce={announce}
+                  onSoundOn={() => persistSound(true)}
+                  framed={framed}
+                />
               </div>
 
               <ClickWheel

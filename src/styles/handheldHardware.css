@@ -70,6 +70,32 @@
   box-shadow: 0 0 6px var(--hh-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
 }
 
+/* The plate the record is set in, and the two ways it can be fitted.
+   The square the button would otherwise be given — the browser's own focus outline,
+   which stays on the key for as long as it holds focus, so it reads as part of the
+   case — is taken out of the composition here and replaced with the machine's own
+   mark: a copper ring around the well, drawn only when the key is reached from a
+   keyboard. The frame itself is a fitting the Fellow chooses from the Edit drawer
+   (see useSpeakerFrame): a machined square closed around the well and its print, or
+   nothing at all, with the moulding running bare. */
+.hh-speaker-plate {
+  outline: none;
+}
+.hh-speaker-plate:focus-visible .hh-speaker {
+  outline: 2px solid rgb(var(--hh-metal-rgb) / 0.9);
+  outline-offset: 3px;
+}
+.hh-speaker-plate[data-framed="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -6px -7px;
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.22),
+    0 1px 0 var(--hh-shell-spec);
+}
+
 /* ===== THE CHASSIS FOOTER — THE MAKER'S PLATE =====
    A plaque seated INTO the case, not a band laid across it: the model mark engraved at
    the left, the key that changes what the device is wearing in the middle, and who is

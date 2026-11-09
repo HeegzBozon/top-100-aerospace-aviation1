@@ -13,7 +13,7 @@ import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying, onTrack
 // The loop's name is printed under it, where the name on a speaker's record belongs.
 const HOLD_MS = 620;
 
-export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
+export default function HandheldSpeaker({ onAnnounce, onSoundOn, framed = false }) {
   const [playing, setPlaying] = useState(() => isPlaying());
   const [track, setTrack] = useState(() => currentTrack());
   const holdTimer = useRef(0);
@@ -89,7 +89,8 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           : "Speaker off. Play the console's music"
       }
       title={playing ? trackCredit(track) : "Tap to play or mute · hold to shuffle on"}
-      className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.97]"
+      data-framed={framed ? "true" : "false"}
+      className="hh-speaker-plate group relative flex w-[66px] shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.97]"
     >
       {/* The well itself: plastic, punched through, under its resin lens. */}
       <span className="hh-speaker flex h-[54px] w-[54px] items-center justify-center">
