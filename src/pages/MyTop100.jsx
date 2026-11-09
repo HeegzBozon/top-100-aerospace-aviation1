@@ -12,6 +12,7 @@ import HubListTabs from '@/components/my-top100/HubListTabs';
 import BallotBuilderPanel from '@/components/my-top100/BallotBuilderPanel';
 import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
+import PersonalStandings from '@/components/my-top100/PersonalStandings';
 import PreFlightSurface from '@/components/my-top100/PreFlightSurface';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
@@ -125,7 +126,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   // not on the Vote surface. Afterwards it is one press away on the ballot's own key.
   const surfaceTab = glass ? glassOpen : activeTab;
   const briefing = useMissionBriefing(
-    user?.email,
+    user,
     !loading && !!user?.email && surfaceTab === 'nominate',
   );
 
@@ -521,7 +522,6 @@ export default function MyTop100({ initialTab = null } = {}) {
         }}
         saving={saving}
         count={rankings.length}
-        note="Who would you choose?"
       />
       <BallotStatusBanner
         rankings={rankings}
@@ -532,6 +532,24 @@ export default function MyTop100({ initialTab = null } = {}) {
         onShare={handleShare}
       />
       <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
+      {/* The Fellow's own Crosscheck standings read as a tab of the Manifest, so the field
+          their own judgements have carried sits beside the order they are setting rather
+          than only in the column beside it. */}
+      {listCategory === 'crosscheck' ? (
+        <PersonalStandings
+          className="mt-3"
+          user={user}
+          pool={pool}
+          loadingPool={loadingPool}
+          addedIds={addedIds}
+          seasonIds={seasonIds}
+          onAdd={(person) => handleAdd(person, {
+            nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
+          })}
+          onViewProfile={openProfileFromList}
+          onOpenVote={() => openTab('vote')}
+        />
+      ) : (
       <ListCanvas
         rankings={visibleRankings}
         totalCount={rankings.length}
@@ -545,6 +563,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         emptyTitle={listCategory === 'men' ? 'No men listed yet' : 'No women listed yet'}
         emptyNote="This is a view of your TOP 100. Nominate from All; this view follows the same order."
       />
+      )}
     </>
   );
 
@@ -553,20 +572,8 @@ export default function MyTop100({ initialTab = null } = {}) {
   // suggestion is opened, followed, or added by hand, never placed for them.
   const builderPanel = (
     <BallotBuilderPanel
-      user={user}
-      pool={pool}
-      seasonIds={seasonIds}
-      loadingPool={loadingPool}
-      addedIds={addedIds}
       rankingsCount={rankings.length}
       ballotMinimum={1}
-      onAdd={(person) => handleAdd(person, {
-        nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
-      })}
-      onViewProfile={(person) => { setExplorerProfile(person); setExplorerOpen(true); }}
-      onOpenExplorer={openExplorer}
-      onNominate={() => setMobilePopoverOpen(true)}
-      onOpenVote={() => openTab('vote')}
       onOpenBriefing={() => briefing.setOpen(true)}
     />
   );

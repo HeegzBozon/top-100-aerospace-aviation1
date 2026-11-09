@@ -3,7 +3,30 @@ import { mediaHubZones } from '@/components/media-hub/mediaRooms';
 // The Expo Hub's rooms and their buildings, in grid cells (16px of each 1024×576 plate).
 // A zone with `room` opens another map; a zone with `to` opens a surface.
 export const COLONY_ROOMS = {
-  // Where every visit begins: the main entrance, with the campus doors ahead.
+  // Where every visit begins: the station deck above the campus. The deck is a door rather
+  // than a destination — you walk the floor to the emitter on the right of the glass, and
+  // the emitter carries you down to the Main Entrance or anywhere else on the campus.
+  station: {
+    label: 'Station Deck',
+    start: { col: 31, row: 27 },
+    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/d75d4a36b_StationDeck_Top100Plate.png',
+    zones: [
+      // On the emitter itself: the lit column standing on the right of the deck, from the
+      // foot of the glass down to the floor it rises from.
+      { key: 'teleporter', label: 'The Teleporter', blurb: 'The Main Entrance, or any room and door on the campus.', panel: 'transit', col: 47, row: 19, w: 8, h: 7 },
+    ],
+    // The deck's solid parts: the window wall across the head of the room, the lounge
+    // furniture either side of it, the command console, and the foot of the deck. The
+    // floor between them is walked, and the emitter stands in the open on the right.
+    walls: [
+      { col: 0, row: 0, w: 64, h: 19 },
+      { col: 0, row: 19, w: 16, h: 6 },
+      { col: 24, row: 20, w: 15, h: 4 },
+      { col: 56, row: 19, w: 8, h: 6 },
+      { col: 0, row: 33, w: 64, h: 3 },
+    ],
+  },
+  // The main entrance, one teleport below the deck, with the campus doors ahead.
   lobby: {
     label: 'Main Entrance',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f7aa33459_FuturisticTop100VotingHubLobby.png',
@@ -132,3 +155,9 @@ export const COLONY_ROOMS = {
     ],
   },
 };
+
+// Where the back key takes you from a room. The deck is the head of the campus and has
+// nothing above it; the Main Entrance stands one step under it; everything else steps out
+// to the Main Campus, as it always has.
+export const roomBehind = (room) =>
+  room === 'station' ? null : room === 'lobby' ? 'station' : room === 'hall' ? 'lobby' : 'hall';

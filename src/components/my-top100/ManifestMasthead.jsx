@@ -2,9 +2,11 @@ import { Check, Loader2, Pencil } from 'lucide-react';
 
 // The head of the Manifest.
 //
-// The list is a publication, so its head is set like one: a small-caps label, a copper
-// rule drawn the full measure, then the Fellow's own title for the list. The name is
-// edited in place — never a modal — and the count sits in the margin of the rule.
+// Set like the masthead of a publication: a copper rule struck across the top of a sand
+// plate, the count in the plate's margin, and the Fellow's own title for the list beneath it
+// at heading size. The name is edited in place — never a modal — and the plate opens
+// straight into the line below it, so the head and its clock read as one piece rather than
+// as two bands stacked on a page.
 export default function ManifestMasthead({
   listName,
   editing,
@@ -13,22 +15,21 @@ export default function ManifestMasthead({
   onEndEdit,
   saving,
   count,
-  note,
 }) {
   return (
-    <div className="pb-4">
-      <div className="flex items-baseline justify-between gap-4">
-        <p className="font-body text-[10px] font-bold uppercase tracking-[0.22em] text-editorial-label">
-          The Manifest
+    <div className="relative overflow-hidden border border-b-0 border-editorial-copper/30 bg-editorial-sand/50 px-4 pb-3.5 pt-3.5">
+      <span className="absolute inset-x-0 top-0 h-[2px] bg-editorial-copper" aria-hidden="true" />
+
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-body text-[9px] uppercase tracking-[0.2em] text-editorial-navy/40 tabular-nums">
+          <span className="font-heading text-[13px] leading-none text-editorial-navy/70">{count}</span> of 100
         </p>
-        <p className="font-body text-[10px] uppercase tracking-[0.18em] text-editorial-navy/45 tabular-nums">
-          {count} of 100
-        </p>
+        {saving && (
+          <Loader2 className="h-3 w-3 shrink-0 animate-spin text-editorial-navy/35" aria-hidden="true" />
+        )}
       </div>
 
-      <div className="mt-2 h-[2px] w-full bg-editorial-copper" />
-
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-1.5 flex items-center gap-2">
         {editing ? (
           <>
             <input
@@ -44,28 +45,24 @@ export default function ManifestMasthead({
               }}
               maxLength={60}
               aria-label="Name of your Manifest"
-              className="min-w-0 flex-1 border-b border-editorial-copper bg-transparent pb-1 font-heading text-2xl leading-tight text-editorial-navy outline-none sm:text-[28px]"
+              className="min-w-0 flex-1 border-b border-editorial-copper bg-transparent pb-1 font-heading text-[24px] leading-tight tracking-[-0.01em] text-editorial-navy outline-none sm:text-[28px]"
             />
             <button type="button" onClick={onEndEdit} aria-label="Save the name" className="shrink-0 p-1">
               <Check className="h-4 w-4 text-editorial-copper" />
             </button>
           </>
         ) : (
-          <button type="button" onClick={onBeginEdit} className="flex min-w-0 items-center gap-2 text-left">
-            <span className="truncate font-heading text-2xl leading-tight text-editorial-navy sm:text-[28px]">
+          <button type="button" onClick={onBeginEdit} className="group flex min-w-0 items-center gap-2 text-left">
+            <span className="truncate font-heading text-[24px] leading-[1.1] tracking-[-0.01em] text-editorial-navy sm:text-[28px]">
               {listName}
             </span>
-            <Pencil className="h-3.5 w-3.5 shrink-0 text-editorial-copper/60" aria-hidden="true" />
+            <Pencil
+              className="h-3 w-3 shrink-0 text-editorial-copper/45 transition-colors group-hover:text-editorial-copper group-focus-visible:text-editorial-copper"
+              aria-hidden="true"
+            />
           </button>
         )}
-        {saving && <Loader2 className="h-3 w-3 shrink-0 animate-spin text-editorial-navy/35" aria-hidden="true" />}
       </div>
-
-      {note && (
-        <p className="mt-2 max-w-lg font-body text-[11.5px] leading-relaxed text-editorial-navy/55">
-          {note}
-        </p>
-      )}
     </div>
   );
 }

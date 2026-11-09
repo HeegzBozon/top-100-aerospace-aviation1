@@ -1,12 +1,14 @@
 const TABS = [
-  { key: 'all', label: 'All' },
+  { key: 'all', label: 'Manifest' },
+  { key: 'crosscheck', label: 'Crosscheck' },
   { key: 'women', label: 'Women' },
   { key: 'men', label: 'Men' },
 ];
 
 // The readings of the Manifest, drawn as keys on a rule rather than as pills: the count
 // sits in the margin of each label, and the one in hand is struck in copper along its foot.
-// There is one list here, and Women and Men are views of it — not lists of their own.
+// There is one list here, and Women and Men are views of it — not lists of their own — while
+// Crosscheck is the Fellow's own standings, set beside the order they are building.
 export default function ListCategoryTabs({ activeTab, onTabChange, counts = {} }) {
   return (
     <div className="mb-1 flex items-end gap-5 overflow-x-auto border-b border-editorial-navy/10 scrollbar-hide">

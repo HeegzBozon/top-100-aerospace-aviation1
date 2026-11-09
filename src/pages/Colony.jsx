@@ -13,6 +13,7 @@ import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import useColonyGamepad from '@/components/colony/useColonyGamepad';
 import ColonyDirectory from '@/components/colony/ColonyDirectory';
+import ColonyTransit from '@/components/colony/ColonyTransit';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyTheatrePanel from '@/components/colony/ColonyTheatrePanel';
 import ColonyArcadePanel from '@/components/colony/ColonyArcadePanel';
@@ -23,7 +24,7 @@ import RoomSplash from '@/components/colony/RoomSplash';
 import CampusSky from '@/components/colony/CampusSky';
 import QuestCelebration from '@/components/colony/quests/QuestCelebration';
 import { loadMissingFields } from '@/components/colony/conciergeDiscovery';
-import { COLONY_ROOMS } from '@/components/colony/colonyZones';
+import { COLONY_ROOMS, roomBehind } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
 import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
@@ -62,7 +63,7 @@ import { Loader2, Shirt } from 'lucide-react';
 // Panels that take the wheel, pad and arrow keys for themselves while open.
 // Panels that take the controls themselves while they are open. The Arcade is one: its
 // cabinets read the same keys the wheel would otherwise walk with.
-const LIST_PANELS = ['directory', 'online', 'npc', 'person', 'quest', 'passport', 'arcade', 'sponsor-lounge'];
+const LIST_PANELS = ['directory', 'transit', 'online', 'npc', 'person', 'quest', 'passport', 'arcade', 'sponsor-lounge'];
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
@@ -138,7 +139,7 @@ function ColonyRoom({ onReplayWelcome }) {
     const asked = new URLSearchParams(window.location.search).get('room');
     if (asked && COLONY_ROOMS[asked]) return asked;
     const saved = localStorage.getItem('colony-room');
-    return saved && COLONY_ROOMS[saved] ? saved : 'lobby';
+    return saved && COLONY_ROOMS[saved] ? saved : 'station';
   });
   useEffect(() => { localStorage.setItem('colony-room', room); }, [room]);
   const [zoom, setZoom] = useState(1);
@@ -265,8 +266,9 @@ function ColonyRoom({ onReplayWelcome }) {
       },
       back: () => {
         if (panel) { setPanel(null); return true; }
-        if (roomRef.current === 'lobby') return false;
-        setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
+        const behind = roomBehind(roomRef.current);
+        if (!behind) return false;
+        setZone(null); setRoom(behind);
         return true;
       },
       steer: {
@@ -282,8 +284,9 @@ function ColonyRoom({ onReplayWelcome }) {
     video: () => handleToggleCam(),
     back: () => {
       if (panel) return setPanel(null);
-      if (roomRef.current === 'lobby') return;
-      setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
+      const behind = roomBehind(roomRef.current);
+      if (!behind) return;
+      setZone(null); setRoom(behind);
     },
   }, callState === 'joined' && !LIST_PANELS.includes(panel));
 
@@ -291,7 +294,7 @@ function ColonyRoom({ onReplayWelcome }) {
   const sendPos = useCallback((to = '*') => {
     if (inCall(callRef.current) && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
   }, []);
-  const roomRef = useRef('lobby');
+  const roomRef = useRef('station');
   roomRef.current = room;
   const avatarRef = useRef(DEFAULT_AVATAR);
   avatarRef.current = avatar;
@@ -391,7 +394,7 @@ function ColonyRoom({ onReplayWelcome }) {
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
     call.on('app-message', (e) => {
-      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'lobby', facing: e.data.facing, avatar: e.data.avatar } }));
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'station', facing: e.data.facing, avatar: e.data.avatar } }));
       if (e?.data?.type === 'chat' && typeof e.data.text === 'string') {
         setChat(prev => [...prev, { id: e.data.id, text: e.data.text.slice(0, 500), name: String(e.data.name || 'Member').slice(0, 60) }].slice(-100));
       }
@@ -594,6 +597,11 @@ function ColonyRoom({ onReplayWelcome }) {
         )}
         {panel === 'directory' && (
           <ColonyDirectory current={room} onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
+        )}
+        {panel === 'transit' && (
+          <ColonyTransit current={room} onClose={() => setPanel(null)}
+            onRoom={(r) => { setPanel(null); setZone(null); setRoom(r); }}
+            onSurface={(to) => { setPanel(null); navigate(to); }} />
         )}
         {panel === 'online' && (
           <ColonyOnline participants={participantList} positions={positions} localSessionId={localSessionId} myRoom={room}

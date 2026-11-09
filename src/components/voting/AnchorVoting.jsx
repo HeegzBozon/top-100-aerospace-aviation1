@@ -169,11 +169,15 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         // spans 2021 → present). Legacy records without the index fall back to
         // a votable status on the active season.
         const prepared = Array.from(byName.values()).filter((n) => {
+          // A record rejected on its own file is never dealt, whatever its participation
+          // index says: the index can still read "pending" on a nomination that was turned
+          // down, which is how a rejected record was being weighed against the field.
+          if (!VOTABLE.includes(n.status)) return false;
           const parts = n.raw_nomination_data?.season_participation;
           if (Array.isArray(parts) && parts.length) {
             return parts.some((p) => p.status && p.status !== 'rejected');
           }
-          return activeSeason && n.season_id === activeSeason.id && VOTABLE.includes(n.status);
+          return activeSeason && n.season_id === activeSeason.id;
         });
         if (!active) return;
         setHonoreeIndex(buildHonoreeYearIndex(seasons, activeSeason.id));

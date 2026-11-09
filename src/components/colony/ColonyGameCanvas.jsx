@@ -11,6 +11,26 @@ const CELL = 16;
 const COLS = NATIVE_W / CELL;
 const ROWS = NATIVE_H / CELL;
 const START = { col: Math.floor(COLS / 2), row: Math.floor(ROWS * 0.85) };
+// Rooms drawn straight on and wide: a figure near the glass reads smaller than one at the
+// foot of the floor. The station deck is composed the same way as the lobby it stands above.
+const PERSPECTIVE = ['lobby', 'station'];
+
+// A standing figure is measured in map cells, not in pixels, so it keeps its proportions
+// at every depth and on every screen.
+const SPRITE_CELLS = 3;
+
+// Depth of field. Every floor is walked with its back wall furthest away, so a figure at
+// the foot of the plate reads larger than one at the head of it, and the whole cast sits
+// in the room rather than on a flat sheet. The rooms composed wide (the deck, and the
+// lobby it stands above) already exaggerate their floor, so they carry a stronger
+// falloff; the top-down rooms a gentler one.
+const depthAt = (room, row) => {
+  const t = Math.pow(row / (ROWS - 1), 1.2);
+  // The head of the plate is where the floor meets the back wall, so a figure there is at
+  // its smallest; every step toward the glass grows it, and the near edge of the room is
+  // where the depth is felt most.
+  return PERSPECTIVE.includes(room) ? 1.3 + 3.3 * t : 0.72 + 1.0 * t;
+};
 
 const images = {};
 const getImage = (url) => {
@@ -115,7 +135,20 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   const sc = sc0 * depth;
   const cell = CELL * sc;
   const spr = avatar?.image && getSprite(avatar.image);
-  const top = y + cell * 0.5 - cell * 2.1 * tall;
+  // Lamplight pooling on the floor at a figure's feet: the lamps find people. A warm wash,
+  // never a ring — it sits under the shadow, so the figure is lit and still grounded.
+  ctx.save();
+  ctx.translate(x, y + cell * 0.5);
+  ctx.scale(1, 0.38);
+  const pool = ctx.createRadialGradient(0, 0, 0, 0, 0, cell * 1.7);
+  pool.addColorStop(0, 'rgba(224,169,107,0.17)');
+  pool.addColorStop(1, 'rgba(224,169,107,0)');
+  ctx.fillStyle = pool;
+  ctx.beginPath();
+  ctx.arc(0, 0, cell * 1.7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  const top = y + cell * 0.5 - cell * SPRITE_CELLS * tall;
   // Stretch the figure upward from its feet.
   ctx.save();
   // Mid-stride: a step bob, a sway from side to side, and a squash on each footfall.
@@ -123,13 +156,15 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   const sway = walk === null ? 0 : Math.sin(walk) * 0.02;
   // Standing still, the cast breathes; mid-step, each footfall squashes the figure a touch.
   const t = meta.now || 0;
-  const squash = walk !== null ? 1 - Math.abs(Math.cos(walk)) * 0.035 : meta.npc ? 1 + Math.sin(t / 520 + x) * 0.012 : 1;
+  // Standing still, everyone breathes — the cast and the visitor alike — so a quiet room
+  // is never a still frame. Barely a percent: felt, never seen.
+  const squash = walk !== null ? 1 - Math.abs(Math.cos(walk)) * 0.035 : 1 + Math.sin(t / 620 + x * 0.05) * 0.011;
   ctx.translate(x, y + cell * 0.5 + bob);
   ctx.rotate(sway);
   ctx.scale(1 / squash, tall * squash);
   ctx.translate(-x, -(y + cell * 0.5 + bob));
   if (spr) {
-    const h = cell * 2.1, w = h * spr.width / spr.height;
+    const h = cell * SPRITE_CELLS, w = h * spr.width / spr.height;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     ctx.beginPath();
@@ -152,7 +187,14 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
       ctx.fillText(meta.line, bx + tw / 2, by - th / 2);
       ctx.restore();
     }
-  } else drawAvatar(ctx, x, y, avatar, facing, Math.max(1.5, sc * 1.2));
+  } else {
+    // The pixel figure is cut from the same cloth as a portrait sprite: the drawing runs
+    // fourteen units from the tip of its headgear to its feet, so it is given the same
+    // standing height and stood on the same baseline. Without this it was a quarter the
+    // height of the cast around it, and it ignored the floor's depth entirely.
+    const p = Math.max(1, Math.round((cell * SPRITE_CELLS) / 14));
+    drawAvatar(ctx, x, y + cell * 0.5 - 4 * p, avatar, facing, p);
+  }
   ctx.restore();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -200,7 +242,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
       ctx.font = `700 ${ss}px sans-serif`;
       ctx.fillText(meta.sub.toUpperCase(), Math.round(x), ly + fs + ss / 2 + 5);
     }
-    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * 2.1 * tall - ly), tag: { x: lx, y: ly, w, h } });
+    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * SPRITE_CELLS * tall - ly), tag: { x: lx, y: ly, w, h } });
   }
 }
 
@@ -220,7 +262,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   occupiedRef.current = new Set([
     ...walls.flatMap(w => Array.from({ length: w.w * w.h }, (_, i) => `${w.col + (i % w.w)},${w.row + Math.floor(i / w.w)}`)),
     ...sprites
-      .filter(p => p.session_id !== localSessionId && positions[p.session_id] && (positions[p.session_id].room ?? 'lobby') === room)
+      .filter(p => p.session_id !== localSessionId && positions[p.session_id] && (positions[p.session_id].room ?? 'station') === room)
       .map(p => `${positions[p.session_id].col},${positions[p.session_id].row}`),
   ]);
 
@@ -246,7 +288,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   const fitScale = (W, H) => {
     const cover = Math.max(H / NATIVE_H, W / NATIVE_W);
     const wide = W / (window.devicePixelRatio || 1) >= 900;
-    const close = room === 'lobby' ? (wide ? 1 : 1.2) : (wide ? 1.35 : 1.8);
+    const close = PERSPECTIVE.includes(room) ? (wide ? 1 : 1.2) : (wide ? 1.35 : 1.8);
     return cover * close * zoomRef.current * (stateRef.current.wheelZoom || 1);
   };
 
@@ -274,6 +316,44 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     ctx.imageSmoothingEnabled = true;
     const img = getImage(mapUrl);
     if (img?.complete && img.naturalWidth) ctx.drawImage(img, ox, oy, NATIVE_W * sc, NATIVE_H * sc);
+
+    // Deck hours: the plate takes the hour standing outside it — warm at dusk, cool before
+    // dawn, dimmed at night — so the room feels like somewhere real rather than a screen.
+    {
+      const d = new Date();
+      const hour = d.getHours() + d.getMinutes() / 60;
+      const dusk = Math.max(0, 1 - Math.abs(hour - 19) / 3.5);
+      const dawn = Math.max(0, 1 - Math.abs(hour - 6.5) / 2.5);
+      const night = hour >= 22.5 || hour < 4 ? 1 : 0;
+      ctx.save();
+      if (dusk > 0) { ctx.fillStyle = `rgba(184,115,51,${0.13 * dusk})`; ctx.fillRect(0, 0, W, H); }
+      if (dawn > 0) { ctx.fillStyle = `rgba(201,168,124,${0.09 * dawn})`; ctx.fillRect(0, 0, W, H); }
+      if (night) { ctx.fillStyle = 'rgba(10,18,32,0.17)'; ctx.fillRect(0, 0, W, H); }
+      ctx.restore();
+    }
+
+    // Footprints: the floor keeps where you walked for a few seconds, then forgets.
+    const stamp = performance.now();
+    if (s.stepsRoom !== room) { s.stepsRoom = room; s.steps = []; s.lastStep = null; }
+    s.steps = (s.steps || []).filter(st => stamp - st.at < 3600);
+    if (s.lastStep !== `${s.playerCol},${s.playerRow}`) {
+      s.lastStep = `${s.playerCol},${s.playerRow}`;
+      s.steps.push({ col: s.playerCol, row: s.playerRow, at: stamp });
+    }
+    s.steps.forEach(st => {
+      const age = 1 - (stamp - st.at) / 3600;
+      const c = cellCenter(st.col, st.row);
+      const d = depthAt(room, st.row);
+      ctx.save();
+      ctx.translate(ox + c.x * sc, oy + c.y * sc + CELL * sc * d * 0.42);
+      ctx.scale(1, 0.4);
+      ctx.beginPath();
+      ctx.arc(0, 0, CELL * sc * d * 0.24, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(14,24,41,${0.17 * age})`;
+      ctx.fill();
+      ctx.restore();
+    });
+
     drawHotspots(ctx, cbRef.current.zones, zoneRef.current?.key, ox, oy, sc, performance.now());
 
     const all = [
@@ -291,7 +371,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
           return { id: `npc-${n.id}`, col: b.col, row: b.row, avatar: { image: n.sprite }, facing: b.facing, label: n.name, sub: n.role, line: b.mode === 'chat' ? b.line : null, npc: true };
         });
       })(),
-      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
+      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'station') === room).map((p, i) => ({
         id: p.session_id,
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
         row: positions[p.session_id]?.row ?? clampRow(START.row),
@@ -323,14 +403,17 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       if (dist <= stepPx || dist > CELL * 4) { d.x = tgt.x; d.y = tgt.y; }
       else { d.x += (dx / dist) * stepPx; d.y += (dy / dist) * stepPx; }
       const { x, y } = d;
-      // The lobby is drawn in perspective: further back (higher up) reads smaller.
-      const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
+      // Further back (higher up the plate) reads smaller, nearer the foot reads larger.
+      const depth = depthAt(room, p.row);
+      // Standing near someone, they turn to you: the room notices who has walked in.
+      const beside = p.id !== 'me' && walk === null && Math.hypot(p.col - s.playerCol, p.row - s.playerRow) < 4;
+      const facing = beside ? (s.playerCol < p.col ? 'left' : 'right') : p.facing;
       const sx = Math.round(ox + x * sc), sy = Math.round(oy + y * sc);
       const sp = s.spawn[p.id] ? Math.min(1, (now - s.spawn[p.id]) / SPAWN_MS) : 1;
       if (sp < 1) drawBeam(ctx, sx, sy, CELL * sc * depth, 1 - sp * 0.6, now);
       s.last[p.id] = { x: sx, y: sy, cell: CELL * sc * depth };
       ctx.globalAlpha = sp;
-      drawSprite(ctx, sx, sy, p.avatar, p.facing, p.label, sc, depth, (room === 'lobby' ? 1.3 : 1) * (0.25 + 0.75 * sp), walk,
+      drawSprite(ctx, sx, sy, p.avatar, facing, p.label, sc, depth, (PERSPECTIVE.includes(room) ? 1.1 : 1) * (0.25 + 0.75 * sp), walk,
         { sub: p.sub, id: p.id, me: p.id === 'me', plates, line: p.line, npc: p.npc, now, cache: s.plateY,
           prox: p.id === 'me' ? 0.6 : Math.max(0, 1 - Math.hypot(p.col - s.playerCol, p.row - s.playerRow) / 10) });
     });
@@ -338,6 +421,64 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     s.plates = plates;
     // Whoever just left collapses back into their column of light.
     Object.values(s.gone).forEach(g => drawBeam(ctx, g.x, g.y, g.cell, 1 - (now - g.at) / SPAWN_MS, now));
+
+    // The first breath: a visitor's first minute on the deck is given one line of guidance,
+    // then the deck never says it again. Said, never scolded.
+    if (room === 'station') {
+      let said = true;
+      try { said = localStorage.getItem('colony.deckFirstBreath') === '1'; } catch { said = true; }
+      if (!said) {
+        const at = (s.firstAt = s.firstAt || now);
+        const age = now - at;
+        if (age > 9500 && !s.firstSaid) {
+          s.firstSaid = true;
+          try { localStorage.setItem('colony.deckFirstBreath', '1'); } catch { /* storage is a convenience */ }
+        }
+        const a = Math.min(1, age / 800) * Math.max(0, Math.min(1, (9500 - age) / 1800));
+        if (a > 0.02) {
+          const fs = Math.round(Math.max(12, W / 52));
+          ctx.save();
+          ctx.globalAlpha = a;
+          ctx.font = `600 ${fs}px Georgia, serif`;
+          const line = 'The emitter is lit on your right';
+          const tw = ctx.measureText(line).width;
+          const padX = Math.round(fs * 1.15), padY = Math.round(fs * 0.75);
+          const bw = Math.round(tw + padX * 2), bh = Math.round(fs + padY * 2);
+          const bx = Math.round(W / 2 - bw / 2), by = Math.round(H - bh - H * 0.1);
+          ctx.fillStyle = 'rgba(30,58,90,0.93)';
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 6); else ctx.rect(bx, by, bw, bh);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(201,168,124,0.85)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.fillStyle = '#FAF8F5';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(line, W / 2, by + bh / 2);
+          ctx.restore();
+        }
+      }
+    }
+
+    // Airborne dust in the room's light. A slow drift of pale motes that hangs exactly
+    // where it was when the wheel stands still, and slides a little with the floor when
+    // the camera moves — atmosphere, not decoration. Placed from the clock, so it holds no
+    // state and costs nothing: sixteen soft points a frame.
+    ctx.save();
+    for (let i = 0; i < 16; i++) {
+      const seed = i * 97.13;
+      const speed = 5 + (i % 5) * 2.5;
+      const spanX = W + 80, spanY = H + 80;
+      const mx = ((seed * 13.7 + (now / 1000) * speed * 0.55 - s.camX * 0.14) % spanX + spanX) % spanX - 40;
+      const my = ((seed * 31.1 - (now / 1000) * speed - s.camY * 0.14) % spanY + spanY) % spanY - 40;
+      const breathe = 0.5 + 0.5 * Math.sin(now / 1500 + i * 1.7);
+      ctx.beginPath();
+      ctx.arc(mx, my, 1 + (i % 3) * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(250,244,232,${0.05 + 0.05 * breathe})`;
+      ctx.fill();
+    }
+    ctx.restore();
 
     // Room transition: the new room opens out of a closing iris of dark.
     if (!s.born) s.born = performance.now();
