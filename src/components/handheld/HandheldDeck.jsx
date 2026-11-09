@@ -115,6 +115,18 @@ export default function HandheldDeck({ deckOn = true }) {
   const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
   const { framed, toggleFrame } = useSpeakerFrame();
 
+  // The Colony is the one room where the record is set into a frame: the fitting is part
+  // of that surface, so stepping in closes it without the Fellow having to ask. The
+  // drawer's key still lifts it while they are standing there, and the choice they have
+  // saved on the device resumes the moment they leave.
+  const inColony = location.pathname.toLowerCase().startsWith("/colony");
+  const [colonyFrameLifted, setColonyFrameLifted] = useState(false);
+  const frameOn = inColony ? !colonyFrameLifted : framed;
+  const toggleSpeakerFrame = useCallback(() => {
+    if (inColony) setColonyFrameLifted((v) => !v);
+    else toggleFrame();
+  }, [inColony, toggleFrame]);
+
   // The machine's own two controls — the finish the case is wearing and the face it is
   // wearing it in — live in the Edit drawer. They were the two keys of the foot plate; the
   // plate is gone, so the drawer that means "change something" carries them.
@@ -132,12 +144,12 @@ export default function HandheldDeck({ deckOn = true }) {
     () => [
       { label: `Customize · ${finish.label}`, action: "finish", icon: Palette },
       { label: `Console face · ${modeLegend}`, action: "cycleMode", icon: radio ? Disc : Radio },
-      { label: `Speaker frame · ${framed ? "On" : "Off"}`, onSelect: toggleFrame, icon: Frame },
+      { label: `Speaker frame · ${frameOn ? "On" : "Off"}`, onSelect: toggleSpeakerFrame, icon: Frame },
       ...(landscape
         ? [{ label: `Click wheel · ${wheelRight ? "Right" : "Left"} hand`, onSelect: flipGrips, icon: ArrowLeftRight }]
         : []),
     ],
-    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips, framed, toggleFrame],
+    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips, frameOn, toggleSpeakerFrame],
   );
 
   const menuGroups = groups;
@@ -1125,7 +1137,7 @@ export default function HandheldDeck({ deckOn = true }) {
                 <HandheldSpeaker
                   onAnnounce={announce}
                   onSoundOn={() => persistSound(true)}
-                  framed={framed}
+                  framed={frameOn}
                 />
               </div>
 
