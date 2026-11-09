@@ -99,7 +99,7 @@ export default function HandheldShell() {
         </div>
       </div>
       {!putAway && hardwareOn && (
-        <HandheldDeck deckOn={hardwareOn} onToggle={toggleHardware} />
+        <HandheldDeck deckOn={hardwareOn} />
       )}
       {!putAway && <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />}
     </DeviceContext.Provider>

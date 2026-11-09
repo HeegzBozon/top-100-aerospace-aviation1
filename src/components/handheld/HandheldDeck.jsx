@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeftRight, Disc, Palette, Radio, Search } from "lucide-react";
+import { ArrowLeftRight, Disc, Frame, Palette, Radio, Search } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import ConsoleKeyBar from "./ConsoleKeyBar";
 import FaceButtons from "./FaceButtons";
@@ -10,7 +10,6 @@ import { drawerHint } from "./faceHint";
 import ChinMenuBar from "./ChinMenuBar";
 import LandscapeGrips from "./LandscapeGrips";
 import useLandscapeHandheld from "@/hooks/useLandscapeHandheld";
-import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
 import HandheldMenu from "./HandheldMenu";
@@ -29,6 +28,7 @@ import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
+import useSpeakerFrame from "./useSpeakerFrame";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { railHiddenOn } from "@/components/shell/immersiveSurfaces";
 import { openingPlaysNow } from "@/components/core/appOpening";
@@ -73,7 +73,7 @@ const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish
 // The deck is the case itself: the chin, the wheel or the radio's keypad, and the speaker.
 // Whether it stands on the picture is the shell's call, because the key that lowers it sits
 // on the glass rather than on the case — see HandheldShell.
-export default function HandheldDeck({ deckOn = true, onToggle }) {
+export default function HandheldDeck({ deckOn = true }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
@@ -82,8 +82,6 @@ export default function HandheldDeck({ deckOn = true, onToggle }) {
   // whose keypad walks the same index by number. The surface chooses the face it is
   // written in; the plate overrules, and the overrule is remembered.
   const { mode, cycle: cycleMode, legend: modeLegend } = useConsoleMode(location.pathname);
-  // The Colony is the one surface where the speaker's record is set into a frame.
-  const inColony = /^\/colony\/?$/i.test(location.pathname);
   const radio = mode === RADIO;
   // What every legend on this machine is printed in: the face fitted to the case.
   const face = radio ? RADIO : "wheel";
@@ -115,6 +113,7 @@ export default function HandheldDeck({ deckOn = true, onToggle }) {
   });
 
   const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
+  const { framed, toggleFrame } = useSpeakerFrame();
 
   // The machine's own two controls — the finish the case is wearing and the face it is
   // wearing it in — live in the Edit drawer. They were the two keys of the foot plate; the
@@ -133,11 +132,12 @@ export default function HandheldDeck({ deckOn = true, onToggle }) {
     () => [
       { label: `Customize · ${finish.label}`, action: "finish", icon: Palette },
       { label: `Console face · ${modeLegend}`, action: "cycleMode", icon: radio ? Disc : Radio },
+      { label: `Speaker frame · ${framed ? "On" : "Off"}`, onSelect: toggleFrame, icon: Frame },
       ...(landscape
         ? [{ label: `Click wheel · ${wheelRight ? "Right" : "Left"} hand`, onSelect: flipGrips, icon: ArrowLeftRight }]
         : []),
     ],
-    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips],
+    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips, framed, toggleFrame],
   );
 
   const menuGroups = groups;
@@ -1125,7 +1125,7 @@ export default function HandheldDeck({ deckOn = true, onToggle }) {
                 <HandheldSpeaker
                   onAnnounce={announce}
                   onSoundOn={() => persistSound(true)}
-                  framed={inColony}
+                  framed={framed}
                 />
               </div>
 

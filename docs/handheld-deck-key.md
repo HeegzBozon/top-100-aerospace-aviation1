@@ -122,7 +122,7 @@ Motion is confined to the press: `transition: transform, box-shadow 160ms`, and 
 
 1. **A surface can still take the key away with the case.** `Comms.jsx` calls `device.setPutAway(composerActive)` to clear the glass while its composer is open, and the key follows that rule (`{!putAway && <DeckPowerKey …>}`). So on the Comms surface, with the composer open, neither the case nor the key is shown. If the key must be sovereign — never absent while the machine is running — the fix is to render it outside the `putAway` condition. Not done here, because it changes what the Comms composer is for.
 2. **The state is not persisted.** The case returns up on reload (see §8).
-3. **`onToggle` is passed to `HandheldDeck` but not used inside it.** The deck no longer draws a key, so the prop is currently only carried for symmetry. It can be dropped, or the speaker's own sound key can be wired through it, but nothing reads it today.
+3. **`HandheldDeck` takes `deckOn` and nothing else.** The deck no longer draws a key, so it is told whether it is standing (`deckOn`) and does not carry the press; the prop it used to carry for symmetry was removed at merge, when lint caught it dead. The speaker's own sound key still works from the deck (`onSoundOn`).
 4. **`--hh-bottom` is released to `0px` on unmount, not to the deck's own depth.** Correct while the case is away; worth knowing if any future surface expects to read the deck's clearance while the hardware is down.
 
 ---

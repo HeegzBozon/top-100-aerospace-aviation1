@@ -70,43 +70,6 @@
   box-shadow: 0 0 6px var(--hh-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
 }
 
-/* ===== THE SPEAKER PLATE — BARE, EXCEPT IN THE COLONY =====
-   The square that has been reading as part of the face was never drawn by the case: it is
-   the browser's own focus outline, left standing around a button for as long as it holds
-   focus — and on a device that is pressed rather than typed into, it holds it always. It
-   is struck out here, in every state and for every hand. The well's own metal circle is
-   the only stroke the plate carries; a keyboard reaching the speaker brightens that
-   circle rather than boxing the print. The one surface where the record IS set into a
-   frame is the Colony, where the fitting is a machined square cut into the moulding
-   (data-framed). Nothing else on this machine wears it. */
-.hh-speaker-plate,
-.hh-speaker-plate:focus,
-.hh-speaker-plate:focus-visible,
-.hh-speaker-plate:active {
-  outline: none;
-}
-
-/* Keyboard focus: the circle the face already has, lit in copper. Never a square. */
-.hh-speaker-plate:focus-visible .hh-speaker {
-  box-shadow:
-    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.90),
-    inset 0 2px 6px rgba(3, 6, 13, 0.55),
-    inset 0 -2px 4px rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgb(var(--hh-metal-rgb) / 0.35),
-    0 1px 0 var(--hh-shell-spec);
-}
-
-/* The Colony's fitting: the record closed in a square, its edge cut into the case the way
-   every other recess on the machine is. */
-.hh-speaker-plate[data-framed="true"] {
-  border-radius: 5px;
-  padding: 3px 4px 4px;
-  box-shadow:
-    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.20),
-    inset 0 1px 0 var(--hh-shell-spec),
-    inset 0 -1px 0 rgba(3, 6, 13, 0.30);
-}
-
 /* ===== THE DECK KEY — THE CONSOLE'S OWN BUTTON =====
    A handheld is a thing you put down, so the machine keeps one key on the picture that
    is not part of the case: a round key in the corner of the glass that lowers the whole
@@ -114,13 +77,9 @@
    back. It is seated the way the case is: a ring of dark glass, a copper hairline, and
    the light caught along its top lip. It rides the deck's own clearance, so it stands
    above the case while the case is up and settles onto the foot of the picture once it
-   is down. Nothing about the picture's content is taken away to make room for it. */
-/* ===== THE ONE KEY THAT IS NEVER PUT AWAY =====
-   A handheld is a thing you put down, and a desk is a thing you step away from: this is
-   the single control that stays on the picture when the hardware does not. It floats at
-   the foot of the glass, centred — over the picture on a phone, over the tube on a wide
-   screen — the way a phone's own assistive key sits over everything, and one press lowers
-   the machine or lifts it back. */
+   is down. Nothing about the picture's content is taken away to make room for it. The
+   same key stands on the desk's picture, riding the foot of the tube just inside the
+   chin's line: one press lowers the machine or lifts it back, on either machine. */
 .deck-power-key {
   position: fixed;
   z-index: 49;
@@ -192,6 +151,32 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(3, 6, 13, 0.30),
     0 0 0 1px rgb(var(--hh-metal-rgb) / 0.30);
+}
+
+/* The plate the record is set in, and the two ways it can be fitted.
+   The square the button would otherwise be given — the browser's own focus outline,
+   which stays on the key for as long as it holds focus, so it reads as part of the
+   case — is taken out of the composition here and replaced with the machine's own
+   mark: a copper ring around the well, drawn only when the key is reached from a
+   keyboard. The frame itself is a fitting the Fellow chooses from the Edit drawer
+   (see useSpeakerFrame): a machined square closed around the well and its print, or
+   nothing at all, with the moulding running bare. */
+.hh-speaker-plate {
+  outline: none;
+}
+.hh-speaker-plate:focus-visible .hh-speaker {
+  outline: 2px solid rgb(var(--hh-metal-rgb) / 0.9);
+  outline-offset: 3px;
+}
+.hh-speaker-plate[data-framed="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -6px -7px;
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.22),
+    0 1px 0 var(--hh-shell-spec);
 }
 
 /* ===== THE CHASSIS FOOTER — THE MAKER'S PLATE =====
