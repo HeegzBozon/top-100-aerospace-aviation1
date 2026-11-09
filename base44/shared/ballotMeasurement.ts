@@ -58,6 +58,10 @@ export async function listPool(service: any, seasonIds: string[]) {
   }
 
   return Array.from(byName.values()).filter((n) => {
+    // A record rejected on its own file is never a card, whatever its participation index
+    // says: the index can still read "pending" on a nomination that was turned down, which
+    // is how a rejected record was being dealt against the field.
+    if (!VOTABLE_STATUSES.includes(n.status)) return false;
     const parts = n.raw_nomination_data?.season_participation;
     if (Array.isArray(parts) && parts.length) {
       return parts.some((p: any) => p.status && p.status !== 'rejected');
