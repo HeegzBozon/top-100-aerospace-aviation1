@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import useKeyboardOpen from "@/hooks/useKeyboardOpen";
 import useFieldIntoView from "@/hooks/useFieldIntoView";
@@ -52,6 +52,14 @@ export default function HandheldShell() {
     }
     setHardwareOn((on) => !on);
   }, [hardwareOn, isMobile]);
+
+  // The Colony is the one room the machine is worn in full, so the case comes up on
+  // entering it. The key still lowers it while standing there, and whatever the reader
+  // chose travels out of the room with them.
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname.toLowerCase().startsWith("/colony")) setHardwareOn(true);
+  }, [location.pathname]);
 
   // The field being typed into is kept above the keys, inside the glass.
   useFieldIntoView(keyboard.open, keyboard.height);
