@@ -227,6 +227,32 @@ export default function NominationForm({ isPreview = false } = {}) {
       [category]: p[category].map((n, i) => (i === idx ? { ...n, [field]: value } : n)),
     }));
   };
+  // The record the house already holds, taken up in place of the identity questions: the
+  // name, role, profile address and where they are come off the record itself, so the only
+  // thing the nominator writes is why this person deserves to be recognized.
+  const takeUpNomineeRecord = (category, idx, record) => {
+    markStarted();
+    trackHubEvent('nomination_hub_record_used', { category });
+    setNominations(p => ({
+      ...p,
+      [category]: p[category].map((n, i) => (i === idx ? {
+        ...n,
+        nominee_id: record.id,
+        name: record.name || n.name,
+        role_org: [record.title, record.company].filter(Boolean).join(' at ') || n.role_org,
+        link: record.linkedin_profile_url || n.link,
+        email: record.nominee_email || n.email,
+        location: record.country || n.location,
+      } : n)),
+    }));
+  };
+  const clearNomineeRecord = (category, idx) => {
+    setNominations(p => ({
+      ...p,
+      [category]: p[category].map((n, i) => (i === idx ? { ...n, nominee_id: null } : n)),
+    }));
+  };
+
   const removeNomination = (category, idx) => {
     setNominations(p => ({
       ...p,
@@ -234,11 +260,16 @@ export default function NominationForm({ isPreview = false } = {}) {
     }));
   };
 
+  // The identity questions a record already answers. Once a nomination is standing on the
+  // record, those fields are not asked for and cannot be missing.
+  const RECORD_FIELDS = ['name', 'role_org', 'link', 'email', 'location'];
+
   // Validate a category's nominations before advancing (only if any exist)
   const validateCategory = (list, requiredFields, label) => {
     for (let i = 0; i < list.length; i++) {
       const n = list[i];
       for (const f of requiredFields) {
+        if (n.nominee_id && RECORD_FIELDS.includes(f)) continue;
         if (!n[f] || (typeof n[f] === 'string' && !n[f].trim())) {
           // Where the flow refuses to move on: recorded, never changed.
           trackNomination('submitRejected', { stage: stageRef.current, reason: 'validation' });
@@ -387,6 +418,8 @@ export default function NominationForm({ isPreview = false } = {}) {
           onAdd={() => addNomination('women', emptyPersonNomination)}
           onUpdate={(idx, f, v) => updateNomination('women', idx, f, v)}
           onRemove={(idx) => removeNomination('women', idx)}
+          onUseRecord={(idx, record) => takeUpNomineeRecord('women', idx, record)}
+          onClearRecord={(idx) => clearNomineeRecord('women', idx)}
           onNext={handleNextWomen}
           onSkip={() => goTo(STAGES.MEN)}
           onPrev={() => goTo(STAGES.ABOUT_YOU)}
@@ -412,6 +445,8 @@ export default function NominationForm({ isPreview = false } = {}) {
           onAdd={() => addNomination('men', emptyPersonNomination)}
           onUpdate={(idx, f, v) => updateNomination('men', idx, f, v)}
           onRemove={(idx) => removeNomination('men', idx)}
+          onUseRecord={(idx, record) => takeUpNomineeRecord('men', idx, record)}
+          onClearRecord={(idx) => clearNomineeRecord('men', idx)}
           onNext={handleNextMen}
           onSkip={() => goTo(STAGES.ANGELS)}
           onPrev={() => goTo(STAGES.WOMEN)}

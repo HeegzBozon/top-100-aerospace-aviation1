@@ -73,6 +73,9 @@ export default async function (req) {
     const entries = people
       .map((p) => ({
         nomination_type: TRACKS.includes(p?.type) ? p.type : 'women',
+        // When the nominator took up a record the house already holds, the filing carries it,
+        // so the desk reads the nomination against the person it is about.
+        nominee_id: clean(p?.nominee_id),
         nominee_name: clean(p?.nominee_name),
         nominee_email: clean(p?.nominee_email),
         role_org: clean(p?.role_org),

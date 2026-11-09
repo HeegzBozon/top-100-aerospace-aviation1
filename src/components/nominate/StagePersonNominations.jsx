@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Plus, Check, Trash2, SkipForward } from 'lucide-react';
 import { brand, ink, GUIDED_PROMPTS } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
+import NomineeRecordMatch, { RecordOnFile } from './NomineeRecordMatch';
 import HubMeter from './HubMeter';
 import ImpactMeter from './ImpactMeter';
 
@@ -24,6 +25,8 @@ export default function StagePersonNominations({
   onAdd,
   onUpdate,
   onRemove,
+  onUseRecord,
+  onClearRecord,
   onNext,
   onSkip,
   onPrev,
@@ -95,31 +98,39 @@ export default function StagePersonNominations({
               </button>
             </div>
 
-            <Field label={`${capitalize(pronoun === 'her' ? 'her' : 'his')} name`} required>
-              <Input
-                ref={idx === activeIdx ? firstRef : null}
-                value={nom.name}
-                onChange={e => onUpdate(idx, 'name', e.target.value)}
-                placeholder="Full name"
-                className="bg-white h-11"
-              />
-            </Field>
+            {nom.nominee_id ? (
+              <RecordOnFile nom={nom} pronoun={pronoun} onChange={() => onClearRecord(idx)} />
+            ) : (
+              <>
+                <Field label={`${capitalize(pronoun === 'her' ? 'her' : 'his')} name`} required>
+                  <Input
+                    ref={idx === activeIdx ? firstRef : null}
+                    value={nom.name}
+                    onChange={e => onUpdate(idx, 'name', e.target.value)}
+                    placeholder="Full name"
+                    className="bg-white h-11"
+                  />
+                </Field>
 
-            <Field label={`${capitalize(pronoun === 'her' ? 'her' : 'his')} current role and organization`} required hint="As specific as you can. Helps us find them.">
-              <Input value={nom.role_org} onChange={e => onUpdate(idx, 'role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className="bg-white h-11" />
-            </Field>
+                <NomineeRecordMatch nom={nom} pronoun={pronoun} onUse={(record) => onUseRecord(idx, record)} />
 
-            <Field label="LinkedIn or website" hint="Optional but helpful">
-              <Input value={nom.link} onChange={e => onUpdate(idx, 'link', e.target.value)} placeholder="https://..." className="bg-white h-11" />
-            </Field>
+                <Field label={`${capitalize(pronoun === 'her' ? 'her' : 'his')} current role and organization`} required hint="As specific as you can. Helps us find them.">
+                  <Input value={nom.role_org} onChange={e => onUpdate(idx, 'role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className="bg-white h-11" />
+                </Field>
 
-            <Field label="Email" hint="Optional">
-              <Input type="email" value={nom.email || ''} onChange={e => onUpdate(idx, 'email', e.target.value)} placeholder="name@example.com" className="bg-white h-11" />
-            </Field>
+                <Field label="LinkedIn or website" hint="Optional but helpful">
+                  <Input value={nom.link} onChange={e => onUpdate(idx, 'link', e.target.value)} placeholder="https://..." className="bg-white h-11" />
+                </Field>
 
-            <Field label="City / Country">
-              <Input value={nom.location} onChange={e => onUpdate(idx, 'location', e.target.value)} placeholder="e.g. Houston, USA" className="bg-white h-11" />
-            </Field>
+                <Field label="Email" hint="Optional">
+                  <Input type="email" value={nom.email || ''} onChange={e => onUpdate(idx, 'email', e.target.value)} placeholder="name@example.com" className="bg-white h-11" />
+                </Field>
+
+                <Field label="City / Country">
+                  <Input value={nom.location} onChange={e => onUpdate(idx, 'location', e.target.value)} placeholder="e.g. Houston, USA" className="bg-white h-11" />
+                </Field>
+              </>
+            )}
 
             <div>
               <div className="flex items-center justify-between mb-1.5">

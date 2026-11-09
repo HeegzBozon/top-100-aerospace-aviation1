@@ -22,6 +22,7 @@ export async function fileNomination({ aboutYou, nominations, challenge = null, 
   const people = [
     ...nominations.women.filter(n => n.name?.trim()).map(n => ({
       type: 'women',
+      nominee_id: n.nominee_id || '',
       nominee_name: n.name,
       nominee_email: n.email,
       role_org: n.role_org,
@@ -32,6 +33,7 @@ export async function fileNomination({ aboutYou, nominations, challenge = null, 
     })),
     ...nominations.men.filter(n => n.name?.trim()).map(n => ({
       type: 'men',
+      nominee_id: n.nominee_id || '',
       nominee_name: n.name,
       nominee_email: n.email,
       role_org: n.role_org,

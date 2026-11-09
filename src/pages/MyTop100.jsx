@@ -62,7 +62,6 @@ export default function MyTop100({ initialTab = null } = {}) {
   const [myList, setMyList] = useState(null);
   const [rankings, setRankings] = useState([]);
   const [listName, setListName] = useState('My Top 100');
-  const [isEditingName, setIsEditingName] = useState(false);
   const [shareCode, setShareCode] = useState('');
   const [season, setSeason] = useState(null);
   const [seasonIds, setSeasonIds] = useState([]);
@@ -520,13 +519,6 @@ export default function MyTop100({ initialTab = null } = {}) {
     <>
       <ManifestMasthead
         listName={listName}
-        editing={isEditingName}
-        onChange={setListName}
-        onBeginEdit={() => setIsEditingName(true)}
-        onEndEdit={() => {
-          setIsEditingName(false);
-          scheduleSave(rankings, listName);
-        }}
         saving={saving}
         count={rankings.length}
         onOpenBriefing={() => briefing.setOpen(true)}
