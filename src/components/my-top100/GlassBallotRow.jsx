@@ -1,5 +1,6 @@
 import { ChevronUp, ChevronDown, X } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import { candidateName } from '@/lib/candidateName';
 
 // One position of the ballot on the glass.
 //
@@ -21,6 +22,8 @@ export default function GlassBallotRow({
   onMove,
   onRemove,
 }) {
+  const name = candidateName(item);
+
   return (
     <div
       onPointerDown={onFocus}
@@ -52,7 +55,7 @@ export default function GlassBallotRow({
         type="button"
         onClick={onOpen}
         className="flex min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
-        aria-label={`Open the record of ${item.nominee_name}, position ${rank}`}
+        aria-label={`Open the record of ${name}, position ${rank}`}
       >
         <span
           className="flex h-[22px] w-[22px] shrink-0 items-center justify-center overflow-hidden rounded-full text-[9px] font-bold text-white"
@@ -61,7 +64,7 @@ export default function GlassBallotRow({
           {item.nominee_avatar ? (
             <img src={item.nominee_avatar} alt="" className="h-full w-full object-cover" />
           ) : (
-            item.nominee_name?.[0]?.toUpperCase()
+            name?.[0]?.toUpperCase()
           )}
         </span>
 
@@ -70,7 +73,7 @@ export default function GlassBallotRow({
             className="block truncate text-[11.5px] font-semibold leading-tight"
             style={{ color: brand.navy }}
           >
-            {item.nominee_name}
+            {name}
           </span>
           <span className="mt-[1px] flex items-center gap-1.5">
             {item.nominee_title ? (
@@ -98,7 +101,7 @@ export default function GlassBallotRow({
               type="button"
               onClick={() => onMove(-1)}
               disabled={first}
-              aria-label={`Move ${item.nominee_name} up`}
+              aria-label={`Move ${name} up`}
               className="flex h-[11px] w-[17px] items-center justify-center rounded disabled:opacity-25"
             >
               <ChevronUp className="h-[11px] w-[11px]" style={{ color: brand.navy }} />
@@ -107,7 +110,7 @@ export default function GlassBallotRow({
               type="button"
               onClick={() => onMove(1)}
               disabled={last}
-              aria-label={`Move ${item.nominee_name} down`}
+              aria-label={`Move ${name} down`}
               className="flex h-[11px] w-[17px] items-center justify-center rounded disabled:opacity-25"
             >
               <ChevronDown className="h-[11px] w-[11px]" style={{ color: brand.navy }} />
@@ -116,7 +119,7 @@ export default function GlassBallotRow({
           <button
             type="button"
             onClick={() => onRemove(item.nominee_id)}
-            aria-label={`Remove ${item.nominee_name} from the ballot`}
+            aria-label={`Remove ${name} from the ballot`}
             className="flex h-[22px] w-[22px] items-center justify-center rounded-full active:scale-90"
             style={{ background: `${brand.navy}08` }}
           >

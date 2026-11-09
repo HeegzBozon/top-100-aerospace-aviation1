@@ -3,6 +3,7 @@ import {
   MapPin, Building2, Briefcase,
 } from 'lucide-react';
 import HonoreeChips from '@/components/voting/HonoreeChips';
+import { candidateName } from '@/lib/candidateName';
 
 // One record, opened over the roll.
 //
@@ -40,7 +41,7 @@ export default function NomineeProfilePanel({ nominee, onBack, onNominate, isAdd
     <section
       role="dialog"
       aria-modal="true"
-      aria-label={`${nominee.name} — record`}
+      aria-label={`${candidateName(nominee)} — record`}
       className="relative z-10 flex max-h-full w-full max-w-[430px] flex-col overflow-hidden border border-editorial-copper/50 bg-editorial-cream shadow-[0_24px_60px_-24px_rgba(3,8,15,0.75)] md:rounded-[10px]"
     >
       <header className="flex shrink-0 items-center gap-2 border-b border-editorial-navy/10 bg-editorial-cream px-4 py-2">
@@ -68,13 +69,13 @@ export default function NomineeProfilePanel({ nominee, onBack, onNominate, isAdd
               <img src={avatar} alt="" loading="lazy" className="h-full w-full object-cover" />
             ) : (
               <span className="flex h-full w-full items-center justify-center font-heading text-xl text-editorial-cream">
-                {nominee.name?.[0]?.toUpperCase() || '·'}
+                {candidateName(nominee)?.[0]?.toUpperCase() || '·'}
               </span>
             )}
           </span>
 
           <div className="min-w-0 flex-1">
-            <h2 className="font-heading text-[19px] leading-tight text-editorial-navy">{nominee.name}</h2>
+            <h2 className="font-heading text-[19px] leading-tight text-editorial-navy">{candidateName(nominee)}</h2>
             {subtitle && (
               <p className="mt-0.5 font-body text-[11px] leading-snug text-editorial-navy/60">{subtitle}</p>
             )}

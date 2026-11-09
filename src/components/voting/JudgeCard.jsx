@@ -3,6 +3,7 @@ import { Info, Flag } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import { PLACE_LABELS } from '@/components/voting/ballotNaming';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
+import { candidateName } from '@/lib/candidateName';
 import HonoreeChip from '@/components/voting/HonoreeChip';
 
 // The pitch is held to a tweet's worth. Everything longer belongs in the card's file.
@@ -82,7 +83,7 @@ export default function JudgeCard({
   selectable, cursor = false, dense = false, honoreeVolumes = [],
   onInfo, onNote = null, onSelect,
 }) {
-  const name = nominee.name || 'Unnamed nominee';
+  const name = candidateName(nominee);
   const photo = nominee.avatar_url || nominee.photo_url || '';
   const oneWord = DISCIPLINE_LABELS[nominee.discipline] || nominee.industry || '';
   const story = nominee.six_word_story || '';

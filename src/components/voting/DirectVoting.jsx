@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Star } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { base44 } from '@/api/base44Client';
+import { candidateName } from '@/lib/candidateName';
 
 export default function DirectVoting({ nominees, activeSeason, user }) {
   const [votingFor, setVotingFor] = useState(null);
@@ -52,7 +53,7 @@ export default function DirectVoting({ nominees, activeSeason, user }) {
       {safeNominees.map((nominee) => (
         <div key={nominee.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border shadow-sm">
           <div>
-            <h4 className="font-bold">{nominee.name || nominee.nominee_email}</h4>
+            <h4 className="font-bold">{candidateName(nominee)}</h4>
             <p className="text-sm text-gray-500">{nominee.description || nominee.justification}</p>
           </div>
           <Button 

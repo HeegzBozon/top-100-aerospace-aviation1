@@ -3,6 +3,7 @@ import { ArrowUpRight, Plus, RotateCw } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import FollowButton from '@/components/fellow-home/FollowButton';
 import HonoreeChips from '@/components/voting/HonoreeChips';
+import { candidateName } from '@/lib/candidateName';
 
 // One suggested profile, read whole in the column where it is offered.
 //
@@ -67,19 +68,19 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
                   className="flex h-full w-full items-center justify-center text-[11px] font-bold"
                   style={{ color: `${brand.navy}70` }}
                 >
-                  {(person.name || '?')[0]}
+                  {(candidateName(person) || '?')[0]}
                 </div>
               )}
             </div>
 
             <p className="min-w-0 flex-1 truncate text-xs font-bold" style={{ color: brand.navy }}>
-              {person.name}
+              {candidateName(person)}
             </p>
 
             <button
               type="button"
               onClick={() => onAdd(person)}
-              aria-label={`Add ${person.name} to the ballot`}
+              aria-label={`Add ${candidateName(person)} to the ballot`}
               title="Add to ballot"
               className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-[filter] active:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
               style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: '#F4F0E7' }}
@@ -92,14 +93,14 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
               viewer={viewer}
               targetId={person.id}
               targetEmail={person.nominee_email}
-              targetName={person.name}
+              targetName={candidateName(person)}
               targetAvatar={portrait}
             />
 
             <button
               type="button"
               onClick={() => onView(person)}
-              aria-label={`Read ${person.name}'s record`}
+              aria-label={`Read ${candidateName(person)}'s record`}
               title="View profile"
               className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
               style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}12` }}
@@ -137,7 +138,7 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
             <button
               type="button"
               onClick={() => setFlipped(true)}
-              aria-label={`More on ${person.name}`}
+              aria-label={`More on ${candidateName(person)}`}
               className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.16em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
               style={{ color: `${brand.navy}55`, border: `1px solid ${brand.navy}14` }}
             >
@@ -154,7 +155,7 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
                 On the record
               </p>
               <p className="mt-0.5 truncate text-xs font-bold" style={{ color: brand.navy }}>
-                {person.name}
+                {candidateName(person)}
               </p>
               {(role || org) && (
                 <p className="truncate text-[10px]" style={{ color: `${brand.navy}55` }}>
@@ -165,7 +166,7 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
             <button
               type="button"
               onClick={() => onView(person)}
-              aria-label={`Read ${person.name}'s record`}
+              aria-label={`Read ${candidateName(person)}'s record`}
               className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
               style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}12` }}
             >
@@ -204,7 +205,7 @@ export default function BallotSuggestionCard({ person, place, viewer, onAdd, onV
             <button
               type="button"
               onClick={() => setFlipped(false)}
-              aria-label={`Turn ${person.name} back`}
+              aria-label={`Turn ${candidateName(person)} back`}
               className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.16em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
               style={{ color: `${brand.navy}55`, border: `1px solid ${brand.navy}14` }}
             >

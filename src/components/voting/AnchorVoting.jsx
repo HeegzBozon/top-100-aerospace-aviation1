@@ -5,6 +5,7 @@ import { submitAnchorVote } from '@/functions/submitAnchorVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand, ink } from '@/components/nominate/NominateConfig';
+import { candidateName } from '@/lib/candidateName';
 import {
   Loader2, Info, Check, Undo2, ArrowLeft, Bookmark, BookmarkPlus, SkipForward,
 } from 'lucide-react';
@@ -248,7 +249,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         fellow_name: user?.full_name || null,
         season_id: season?.id || null,
         nominee_ids: currentSet.map((n) => n.id),
-        labels: currentSet.map((n) => n.name || ''),
+        labels: currentSet.map((n) => candidateName(n)),
         saved_at: new Date().toISOString(),
       });
       setHolds((prev) => [saved, ...prev]);

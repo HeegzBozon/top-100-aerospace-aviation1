@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { GripVertical, X, ChevronUp, ChevronDown, Lock, Plus } from 'lucide-react';
 import ListEmptyState from '@/components/my-top100/ListEmptyState';
+import { candidateName } from '@/lib/candidateName';
 
 // The Manifest, set as a roll.
 //
@@ -116,13 +117,13 @@ export default function ListCanvas({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        item.nominee_name?.[0]?.toUpperCase()
+                        candidateName(item)?.[0]?.toUpperCase()
                       )}
                     </span>
 
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-heading text-[15px] leading-snug text-editorial-navy">
-                        {item.nominee_name}
+                        {candidateName(item)}
                       </span>
                       {item.nominee_title && (
                         <span className="mt-0.5 block truncate font-body text-[9.5px] uppercase tracking-[0.14em] text-editorial-navy/50">
@@ -148,7 +149,7 @@ export default function ListCanvas({
                             }
                           }}
                           disabled={index === 0}
-                          aria-label={`Move ${item.nominee_name} up`}
+                          aria-label={`Move ${candidateName(item)} up`}
                           className="flex h-4 w-4 items-center justify-center rounded text-editorial-navy/35 transition-colors hover:text-editorial-navy disabled:opacity-20"
                         >
                           <ChevronUp className="h-3 w-3" />
@@ -163,7 +164,7 @@ export default function ListCanvas({
                             }
                           }}
                           disabled={index === rankings.length - 1}
-                          aria-label={`Move ${item.nominee_name} down`}
+                          aria-label={`Move ${candidateName(item)} down`}
                           className="flex h-4 w-4 items-center justify-center rounded text-editorial-navy/35 transition-colors hover:text-editorial-navy disabled:opacity-20"
                         >
                           <ChevronDown className="h-3 w-3" />
@@ -175,7 +176,7 @@ export default function ListCanvas({
                       <button
                         type="button"
                         onClick={() => onRemove(item.nominee_id)}
-                        aria-label={`Remove ${item.nominee_name}`}
+                        aria-label={`Remove ${candidateName(item)}`}
                         className="flex h-7 w-7 items-center justify-center rounded-full text-editorial-navy/40 transition-colors hover:bg-editorial-copper/10 hover:text-editorial-copper"
                       >
                         <X className="h-3.5 w-3.5" />
