@@ -100,7 +100,14 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   const [step, setStep] = useState(0);
 
   const activeRef = useRef(null);
-  const stepId = STEPS[step];
+  // A name the record already carries is never asked for twice. Every question the
+  // record answers — the track, the name, the way to reach them — comes off the ladder,
+  // and it opens on the first thing only the nominator can say. A new name still walks
+  // the whole of it.
+  const steps = selectedNominee
+    ? STEPS.filter((id) => id !== 'category' && id !== 'name' && id !== 'contact')
+    : STEPS;
+  const stepId = steps[Math.min(step, steps.length - 1)];
 
   // The words the directory was being read by when this name was put forward. They travel
   // into the intake with the nomination: the desk receives the person already filed the way
@@ -112,9 +119,9 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
-  // Pre-fill from a browse-list nominee — now starts at slide 1 (category),
-  // with category auto-inferred and name/contact pre-filled so the user
-  // reviews each step and taps Continue through to submit.
+  // Pre-fill from a browse-list nominee. The record carries the identity — the track,
+  // the name, their role, their links — so the ladder opens on the question that only
+  // the nominator can answer, and nothing already on the record is asked for again.
   useEffect(() => {
     if (!initialNominee) return;
     setSelectedNominee(initialNominee);
@@ -129,7 +136,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
     const t = `${initialNominee.description || ''} ${initialNominee.industry || ''} ${initialNominee.category || ''}`.toLowerCase();
     if (t.includes('woman') || t.includes('female')) setNominationCategory('women');
     else setNominationCategory('men');
-    setStep(STEPS.indexOf('category'));
+    setStep(0);
   }, [initialNominee]);
 
   // Pre-fill from a brand-new name typed into the explorer search.
@@ -138,7 +145,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
     if (!initialName) return;
     setSelectedNominee(null);
     setForm({ ...emptyPersonNomination(), name: initialName });
-    setStep(STEPS.indexOf('category'));
+    setStep(0);
   }, [initialName]);
 
   const matches =
@@ -155,6 +162,9 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   const selectExisting = (nominee) => {
     setShowSuggestions(false);
     setSelectedNominee(nominee);
+    // The record answers the rest of the identity: the ladder reopens on the question
+    // the record cannot answer.
+    setStep(0);
     setForm({
       ...emptyPersonNomination(),
       name: nominee.name || '',
@@ -219,13 +229,13 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
 
   const goNext = useCallback(() => {
     if (done || submitting) return;
-    if (step < STEPS.length - 1) {
-      if (!canAdvance(STEPS[step])) return;
+    if (step < steps.length - 1) {
+      if (!canAdvance(stepId)) return;
       setStep((s) => s + 1);
     } else {
       handleSubmit();
     }
-  }, [step, done, submitting, canAdvance]);
+  }, [step, steps.length, stepId, done, submitting, canAdvance]);
 
   const goBack = useCallback(() => {
     setStep((s) => Math.max(0, s - 1));
@@ -280,11 +290,11 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
     return () => clearTimeout(t);
   }, [step]);
 
-  const progress = ((step + 1) / STEPS.length) * 100;
+  const progress = ((step + 1) / steps.length) * 100;
   const inputCls = 'w-full text-base rounded-2xl border p-4 bg-white outline-none transition-colors';
   const inputStyle = { borderColor: `${brand.navy}15`, color: brand.navy };
   const meta = STEP_META[stepId] || {};
-  const blocked = !canAdvance(stepId) && step < STEPS.length - 1;
+  const blocked = !canAdvance(stepId) && step < steps.length - 1;
 
   return createPortal(
     <AnimatePresence>
@@ -332,7 +342,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
               <div className="px-4 pt-3 pb-2 shrink-0" style={{ background: 'white' }}>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: `${brand.navy}50` }}>
-                    New Nomination · {step + 1} / {STEPS.length}
+                    New Nomination · {step + 1} / {steps.length}
                   </p>
                   <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center" style={{ background: `${brand.navy}08` }}>
                     <X className="w-4 h-4" style={{ color: brand.navy }} />

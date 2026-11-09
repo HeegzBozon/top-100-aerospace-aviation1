@@ -403,7 +403,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                   focusedIndex={cursor}
                   matchNoteFor={matchNoteFor}
                   onOpen={openRow}
-                  onNominate={(nominee, index) => { setCursor(index); setNominating(nominee); }}
+                  onNominate={(nominee) => setNominating(nominee)}
                 />
               ) : (
                 <ul className="border-t border-editorial-copper">
@@ -416,7 +416,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                       isAdded={addedIds.has(nominee.id)}
                       matchNote={matchNoteFor(nominee)}
                       onOpen={() => openRow(nominee)}
-                      onNominate={() => { setCursor(index); setNominating(nominee); }}
+                      onNominate={() => setNominating(nominee)}
                     />
                   ))}
                 </ul>
