@@ -10,14 +10,6 @@ import usePersonalStandings from '@/components/my-top100/usePersonalStandings';
 // ballot, and the Manifest's own tab strip opens it beside the order. It is the same record
 // and the same table in both, so a name the Fellow's marks carry cannot read one way in the
 // column and another way in the tab.
-function SectionLabel({ children }) {
-  return (
-    <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: `${brand.navy}55` }}>
-      {children}
-    </p>
-  );
-}
-
 export default function PersonalStandings({
   user,
   pool,
@@ -35,7 +27,7 @@ export default function PersonalStandings({
   const isAdmin = user?.role === 'admin';
   const [scope, setScope] = useState(isAdmin ? 'test' : 'community');
 
-  const { loading, standings, standingCount, carried, marks, sittings, otherLaneMarks, error, refresh } =
+  const { loading, standings, standingCount, carried, marks, otherLaneMarks, error, refresh } =
     usePersonalStandings({
       user,
       pool,
@@ -46,9 +38,8 @@ export default function PersonalStandings({
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between gap-2">
-        <SectionLabel>Your Crosscheck standings</SectionLabel>
-        {isAdmin && (
+      {isAdmin && (
+        <div className="flex items-center justify-end gap-2">
           <span className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Which ballot to read">
             {[
               ['community', 'Community'],
@@ -75,19 +66,12 @@ export default function PersonalStandings({
               );
             })}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* The lane's own size, so the column can be checked against the record the live
-          monitor prints rather than taken on trust. */}
-      <p className="mt-0.5 text-[10px] leading-relaxed" style={{ color: ink.soft }}>
-        {loading
-          ? 'Reading your own record…'
-          : marks > 0
-            ? `${marks.toLocaleString()} marks across ${sittings} sittings — your own ballots, in the ${
-                scope === 'test' ? 'test lane, held out of the community’s measure' : 'community lane'
-              }.`
-            : `No marks of your own in the ${scope === 'test' ? 'test' : 'community'} lane.`}
+      <p className="text-[10.5px] leading-relaxed" style={{ color: ink.soft }}>
+        This is your personal Top 100, set only by your own Crosscheck reviews, read in isolation.
+        Nothing else feeds this order.
       </p>
 
       <div className="mt-2 space-y-2">
