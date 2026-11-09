@@ -47,8 +47,8 @@ The context value the shell already published (`useDevice`) now carries `hardwar
 ### On a phone (`HandheldShell`)
 
 ```
-{!putAway && hardwareOn && <HandheldDeck deckOn={hardwareOn} onToggle={toggleHardware} />}
-{!putAway && <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />}
+{!putAway && hardwareOn && <HandheldDeck deckOn={hardwareOn} />}
+<DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />
 ```
 
 The case is **unmounted**, not hidden. That is what closes its drawers, search, notifications and readout in one movement, with nothing left behind to reopen. Playback is not lost with it: the record belongs to the sound module's own player (`consoleMusic.js`, module-level state), not to the plate, so lowering the case does not stop the music.
@@ -120,7 +120,7 @@ Motion is confined to the press: `transition: transform, box-shadow 160ms`, and 
 
 ## 9. Known limits — read before merging
 
-1. **A surface can still take the key away with the case.** `Comms.jsx` calls `device.setPutAway(composerActive)` to clear the glass while its composer is open, and the key follows that rule (`{!putAway && <DeckPowerKey …>}`). So on the Comms surface, with the composer open, neither the case nor the key is shown. If the key must be sovereign — never absent while the machine is running — the fix is to render it outside the `putAway` condition. Not done here, because it changes what the Comms composer is for.
+1. **The key is now sovereign — settled.** `Comms.jsx` calls `device.setPutAway(composerActive)` to clear the glass while its composer is open; the case still goes, but the key no longer goes with it. It is rendered outside the `putAway` condition, and the shell adds `hh-put-away` to the body while a surface is holding the glass for a field, which seats the key 62px clear of that field (and keeps it over the keyboard when the keys are up, since `--hh-bottom` is the keyboard's height by then). No content is covered, and no route is without its key.
 2. **The state is not persisted.** The case returns up on reload (see §8).
 3. **`HandheldDeck` takes `deckOn` and nothing else.** The deck no longer draws a key, so it is told whether it is standing (`deckOn`) and does not carry the press; the prop it used to carry for symmetry was removed at merge, when lint caught it dead. The speaker's own sound key still works from the deck (`onSoundOn`).
 4. **`--hh-bottom` is released to `0px` on unmount, not to the deck's own depth.** Correct while the case is away; worth knowing if any future surface expects to read the deck's clearance while the hardware is down.

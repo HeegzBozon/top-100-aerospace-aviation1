@@ -125,6 +125,16 @@
     0 0 0 2px var(--hh-key-1),
     0 0 0 4px rgb(var(--hh-metal-rgb) / 0.85);
 }
+/* While a surface is holding the glass for a field (the Comms composer), the picture's
+   own foot is taken by that field: the key rises clear of it instead of standing on it,
+   and it keeps its footing over the keyboard when the keys are up, because --hh-bottom
+   is already the keyboard's own height by then. */
+@media (max-width: 767px) {
+  body.hh-put-away .deck-power-key {
+    bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 62px);
+  }
+}
+
 /* On the desk the same key rides the foot of the tube, just inside the picture the
    machine's chin closes — the same place on the other machine. */
 @media (min-width: 768px) {

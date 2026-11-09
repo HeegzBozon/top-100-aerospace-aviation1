@@ -73,6 +73,15 @@ export default function HandheldShell() {
     };
   }, [isMobile, keyboard.open, keyboard.height]);
 
+  // A surface that clears the glass for a field (the Comms composer) still leaves the key
+  // standing — it is the machine's own control, not the surface's — so the body carries the
+  // fact and the key's own stylesheet seats it clear of the field rather than over it.
+  useEffect(() => {
+    if (!isMobile || !putAway) return undefined;
+    document.body.classList.add("hh-put-away");
+    return () => document.body.classList.remove("hh-put-away");
+  }, [isMobile, putAway]);
+
   if (!isMobile) {
     return (
       <DeviceContext.Provider value={deskApi}>
@@ -101,7 +110,8 @@ export default function HandheldShell() {
       {!putAway && hardwareOn && (
         <HandheldDeck deckOn={hardwareOn} />
       )}
-      {!putAway && <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />}
+      {/* Sovereign: the key stands whether or not the surface has cleared the glass. */}
+      <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />
     </DeviceContext.Provider>
   );
 }
