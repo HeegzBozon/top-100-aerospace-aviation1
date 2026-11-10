@@ -10,6 +10,7 @@ import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopove
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import ManifestProfileTools from '@/components/my-top100/ManifestProfileTools';
+import AnalystPathway from '@/components/my-top100/AnalystPathway';
 import { MANIFEST_CEILING } from '@/components/my-top100/manifestTargets';
 import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
@@ -517,12 +518,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   // same artifact, so it is written once.
   const listBlock = (
     <>
-      <ManifestMasthead
-        listName={listName}
-        saving={saving}
-        count={rankings.length}
-        onOpenBriefing={() => briefing.setOpen(true)}
-      />
+      <ManifestMasthead listName={listName} saving={saving} count={rankings.length} />
       <BallotStatusBanner errorMessage={saveError} />
       <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
       {/* The Fellow's own Crosscheck standings read as a tab of the Manifest, so the field
@@ -571,6 +567,17 @@ export default function MyTop100({ initialTab = null } = {}) {
   const crosscheckNode = !votingClosed ? (
     <ManifestToCrosscheck count={rankings.length} onOpenVote={() => openTab('vote')} />
   ) : null;
+
+  // The Analyst pathway, standing under the next step at the right margin: the office the
+  // Fellow holds, the one above it, and the service that carries them between the two. It is
+  // recognition only — nothing recorded here is read by discovery, ordering or scoring.
+  const pathwayNode = (
+    <AnalystPathway
+      office={office}
+      hasFirstSelection={totalNominations > 0 || rankings.length > 0}
+      onOpenFlight={() => openTab('flight')}
+    />
+  );
 
   // Pre-Flight: the letter that convened the committee and the check-in that answers it,
   // read as two keys on one desk. The surface owns the sub-key, so accepting the letter
@@ -690,6 +697,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         isPublished={isPublished}
         saving={saving}
         onShare={handleShare}
+        onOpenBriefing={() => briefing.setOpen(true)}
         votingEndDate={season?.voting_end}
       />
 
@@ -727,6 +735,7 @@ export default function MyTop100({ initialTab = null } = {}) {
                     Next · The Crosscheck
                   </p>
                 )}
+                <div className="mt-6">{pathwayNode}</div>
               </aside>
             </div>
           </div>

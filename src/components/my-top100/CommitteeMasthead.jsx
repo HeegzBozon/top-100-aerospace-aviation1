@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Archive, Clock, Home, Radio, Share2 } from 'lucide-react';
+import { Archive, BookOpen, Home, Radio, Share2 } from 'lucide-react';
 import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
-import { useCountdown, pad } from '@/components/events/useCountdown';
+import CommitteeCountdown from '@/components/my-top100/CommitteeCountdown';
 
 // The head of the committee.
 //
@@ -15,15 +15,10 @@ export default function CommitteeMasthead({
   isPublished,
   saving,
   onShare,
+  onOpenBriefing,
   votingEndDate = null,
 }) {
   const navigate = useNavigate();
-  // The cycle's own clock belongs to the office, not to the Manifest: it is read at the
-  // head of the committee, where the season is, and it is the same clock for every tab.
-  const { days, hours, mins, secs, done } = useCountdown(votingEndDate);
-  const closesOn = votingEndDate
-    ? new Date(votingEndDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
-    : null;
 
   return (
     <header className="bg-editorial-navy">
@@ -40,29 +35,28 @@ export default function CommitteeMasthead({
             set and share — and {CROSSCHECK}, where the field is measured. Analysis, never a
             ranking of record.
           </p>
-
-          {closesOn && (
-            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-body text-[9.5px] uppercase tracking-[0.16em]">
-              <Clock className="h-3 w-3 shrink-0 text-editorial-gold" aria-hidden="true" />
-              {done ? (
-                <span className="font-bold text-editorial-gold">Cycle closed</span>
-              ) : (
-                <>
-                  <span className="font-bold text-editorial-gold">Closes {closesOn}</span>
-                  <span className="tracking-normal text-editorial-cream/55 tabular-nums">
-                    {days}d {pad(hours)}h {pad(mins)}m {pad(secs)}s
-                  </span>
-                </>
-              )}
-            </p>
-          )}
         </div>
+
+        {/* The cycle's own clock belongs to the office, not to the Manifest: it is struck
+            at the head of the committee, where the season is, and it is the same clock for
+            every tab beneath it. */}
+        <CommitteeCountdown votingEndDate={votingEndDate} className="lg:mr-2" />
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           <p className="mr-1 hidden font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-cream/40 tabular-nums lg:block">
             {count} of 100 · {isPublished ? 'public' : 'draft'}
             {saving ? ' · saving' : ''}
           </p>
+
+          {/* The briefing used to sit at the margin of the Manifest alone. It belongs to the
+              office: the two duties, the ladder and the method are the committee's, and a
+              Fellow standing on any tab can read them without leaving the one they are on. */}
+          {onOpenBriefing && (
+            <button type="button" onClick={onOpenBriefing} className="desk-key">
+              <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">How it works</span>
+            </button>
+          )}
 
           <button type="button" onClick={() => navigate('/')} className="desk-key">
             <Home className="h-3.5 w-3.5" aria-hidden="true" />
