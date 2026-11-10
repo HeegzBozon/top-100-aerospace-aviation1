@@ -12,7 +12,6 @@ export const CREDENTIAL_FLAVORS = [
   {
     key: 'badge',
     label: 'Badge',
-    note: 'Worn in a room. The code hands your card over without a tap.',
   },
   {
     key: 'pass',
@@ -58,7 +57,9 @@ export default function CredentialsDeck({ person, template, code, rows, hasExist
         })}
       </div>
 
-      <p className="mt-2.5 font-body text-[10.5px] leading-relaxed text-editorial-navy/60">{active.note}</p>
+      {active.note && (
+        <p className="mt-2.5 font-body text-[10.5px] leading-relaxed text-editorial-navy/60">{active.note}</p>
+      )}
 
       <div className="mt-3">
         {active.key === 'badge' && (

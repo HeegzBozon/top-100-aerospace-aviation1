@@ -44,9 +44,11 @@ export default function ManifestProfileTools({ className = '' }) {
                       aria-hidden="true"
                     />
                   </span>
-                  <span className="mt-0.5 block truncate font-body text-[8.5px] uppercase tracking-[0.12em] text-editorial-navy/40">
-                    {surface.hint}
-                  </span>
+                  {surface.hint && (
+                    <span className="mt-0.5 block truncate font-body text-[8.5px] uppercase tracking-[0.12em] text-editorial-navy/40">
+                      {surface.hint}
+                    </span>
+                  )}
                 </span>
               </Link>
             </li>

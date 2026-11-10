@@ -29,7 +29,7 @@ export const RECORD_SURFACES = [
     key: 'credentials',
     index: '02',
     label: 'Credentials',
-    hint: 'Badge, boarding pass and card — one record, printed three ways',
+    hint: '',
     icon: BadgeCheck,
   },
   {

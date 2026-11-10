@@ -170,11 +170,6 @@ export default function RecordWorkspace() {
             />
           </div>
 
-          <p className="mt-8 max-w-lg font-body text-[11.5px] leading-relaxed text-editorial-navy/55">
-            The count is your own record and nothing else. It is never read by
-            discovery, ordering, influence tier or measurement — a line filled in here
-            never moves your standing.
-          </p>
         </main>
       </div>
     </div>

@@ -20,7 +20,9 @@ export default function RecordChecklist({ surface, onSave }) {
           >
             {surface.label}
           </h2>
-          <p className="mt-1 font-body text-[13px] text-editorial-navy/65">{surface.hint}</p>
+          {surface.hint && (
+            <p className="mt-1 font-body text-[13px] text-editorial-navy/65">{surface.hint}</p>
+          )}
         </div>
         <div className="text-right">
           <p className="font-heading text-[26px] leading-none tabular-nums text-editorial-navy">

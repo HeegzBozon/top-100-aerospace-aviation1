@@ -20,10 +20,6 @@ export default function CredentialsSurface({ account, nominee, settings, card })
   return (
     <div className="mt-8">
       <p className="pd-label">Your credentials</p>
-      <p className="mt-2 max-w-xl font-body text-[12px] leading-relaxed text-editorial-navy/65">
-        One record, printed three ways. The card lines above fill all three; nothing here is
-        asked of you twice.
-      </p>
 
       <div className="mt-4 max-w-[23rem]">
         <CredentialsDeck
