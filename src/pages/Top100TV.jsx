@@ -1,240 +1,262 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { ExternalLink, Focus, Grid3x3, Radio, RotateCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { Focus, Grid3x3, Loader2, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import StreamPlayer from '@/components/top100tv/StreamPlayer';
-import StreamContextSidecar from '@/components/top100tv/StreamContextSidecar';
 import StreamGridCard from '@/components/top100tv/StreamGridCard';
+import ChannelRail from '@/components/top100tv/ChannelRail';
 import FlightographySidecar from '@/components/top100tv/FlightographySidecar';
+import { ROW_KEYS, WALL_ROWS } from '@/components/top100tv/tvWall';
 
-const DOMAIN_COLORS = {
-  'Space Exploration & Systems': 'from-purple-600 to-purple-800',
-  'Commercial Aviation': 'from-blue-600 to-blue-800',
-  'Defense & National Security': 'from-red-600 to-red-800',
-};
-
-const DOMAIN_ACCENTS = {
-  'Space Exploration & Systems': '#a855f7',
-  'Commercial Aviation': '#3b82f6',
-  'Defense & National Security': '#ef4444',
-};
-
+// TOP 100 TV — the house's wall of live signal.
+//
+// The channels are the industry's own broadcasts, carried as they happen: the frontier,
+// the industry desk, the world desk. Nothing here is sponsored into position; a patron is
+// credited on the channel they backed, and the wall's order is the desk's alone.
 export default function Top100TV() {
-  const [viewMode, setViewMode] = useState('grid');
-  const [selectedStreamId, setSelectedStreamId] = useState(null);
+  const [viewMode, setViewMode] = useState('focus');
+  const [selectedId, setSelectedId] = useState(null);
 
-  // Fetch streams from backend API (cached 5 minutes)
-  const { data: streams = [], isLoading: streamsLoading } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['tvStreams'],
     queryFn: async () => {
       const response = await base44.functions.invoke('getTVStreams', {});
-      return response.data || [];
+      return Array.isArray(response?.data) ? response.data : [];
     },
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    retry: 1,
   });
 
-  // Set default selected stream on initial load
-  useMemo(() => {
-    if (selectedStreamId === null && streams.length > 0) {
-      setSelectedStreamId(streams[0].id);
-    }
-  }, [streams, selectedStreamId]);
+  const streams = useMemo(() => data || [], [data]);
 
-  const selectedStream = useMemo(
-    () => streams.find(s => s.id === selectedStreamId) || streams[0],
-    [selectedStreamId, streams]
+  const selected = useMemo(
+    () => streams.find((s) => s.id === selectedId) || streams[0] || null,
+    [streams, selectedId]
   );
 
-  // Group streams by row for grid layout
-  const streamsByRow = useMemo(() => {
-    const grouped = { 1: [], 2: [], 3: [] };
-    streams.forEach(stream => {
-      const row = stream.grid_row || 1;
-      if (grouped[row]) grouped[row].push(stream);
-    });
-    return grouped;
-  }, [streams]);
+  const onAir = streams.filter((s) => s.is_live).length;
 
-  if (streamsLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white flex items-center justify-center p-4">
-        <div className="text-center space-y-3">
-          <Loader2 className="w-10 h-10 animate-spin text-amber-400 mx-auto" />
-          <p className="text-slate-400">Loading TOP 100 TV...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!streams.length) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white flex items-center justify-center p-4">
-        <div className="text-center space-y-3 max-w-md">
-          <AlertCircle className="w-10 h-10 text-red-500 mx-auto" />
-          <p className="text-slate-300">No streams available</p>
-        </div>
-      </div>
-    );
-  }
+  const openChannel = (id) => {
+    setSelectedId(id);
+    setViewMode('focus');
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
-      {/* Header */}
-      <div className="border-b border-white/10 bg-black/40 backdrop-blur-sm sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
+    <div className="min-h-full bg-editorial-navy">
+      <div className="mx-auto w-full max-w-[1500px] px-4 pb-10 pt-6 md:px-8 md:pt-8">
+        <header className="border-b border-editorial-copper/40 pb-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
-                <span className="text-amber-400">⚡</span> TOP 100 TV
+              <p className="pd-label">The Wire · Broadcast</p>
+              <h1 className="mt-1 font-heading text-3xl leading-none text-editorial-cream md:text-4xl">
+                TOP 100 TV
               </h1>
-              <p className="text-sm text-slate-400 mt-1">The Aerospace Talent Graph's Operating System</p>
+              <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-editorial-cream/60">
+                The industry's own signal, carried as it happens. Channels are placed by the
+                desk, never bought into position — a patron is credited on the broadcast they
+                backed and nothing more.
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === 'focus' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('focus')}
-                className="gap-2"
-              >
-                <Focus className="w-4 h-4" />
-                Focus
-              </Button>
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="gap-2"
-              >
-                <Grid3x3 className="w-4 h-4" />
-                Grid
-              </Button>
-            </div>
-          </div>
 
-          {/* Domain legend */}
-          <div className="flex flex-wrap items-center gap-4 text-xs">
-            {Object.entries(DOMAIN_COLORS).map(([domain, colors]) => (
-              <div key={domain} className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${colors}`} />
-                <span className="text-slate-300">{domain}</span>
+            <div className="flex flex-col items-start gap-2.5 md:items-end">
+              <div className="flex items-center gap-2">
+                <span className="desk-lamp h-1.5 w-1.5" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-cream/70">
+                  {isLoading ? 'Reading the wall' : `${onAir} of ${streams.length} on air`}
+                </span>
               </div>
-            ))}
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('focus')}
+                  aria-pressed={viewMode === 'focus'}
+                  className={`desk-key ${viewMode === 'focus' ? 'desk-key-live' : ''}`}
+                >
+                  <Focus className="h-3 w-3" />
+                  Watch
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  aria-pressed={viewMode === 'grid'}
+                  className={`desk-key ${viewMode === 'grid' ? 'desk-key-live' : ''}`}
+                >
+                  <Grid3x3 className="h-3 w-3" />
+                  The wall
+                </button>
+                <button
+                  type="button"
+                  onClick={() => refetch()}
+                  aria-label="Read the wall again"
+                  className="desk-key desk-key-quiet"
+                >
+                  <RotateCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        </header>
+
+        {isLoading && <WallLoading />}
+
+        {!isLoading && isError && (
+          <WallNotice
+            title="The wall did not answer"
+            body="The desk could not reach the broadcast list. Nothing is lost — read it again."
+            action={
+              <button type="button" onClick={() => refetch()} className="desk-key desk-key-primary">
+                <RotateCw className="h-3 w-3" />
+                Read again
+              </button>
+            }
+          />
+        )}
+
+        {!isLoading && !isError && streams.length === 0 && (
+          <WallNotice
+            title="The wall is quiet"
+            body="No channel is being carried at the moment. The line-up returns as soon as a source is filed."
+          />
+        )}
+
+        {!isLoading && !isError && streams.length > 0 && viewMode === 'focus' && (
+          <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div>
+              <div className="arcade-glass relative aspect-video w-full overflow-hidden rounded-md">
+                <StreamPlayer stream={selected} />
+              </div>
+
+              {selected && (
+                <div className="desk-plate mt-3 flex flex-wrap items-center justify-between gap-3 px-3.5 py-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      {selected.is_live ? (
+                        <>
+                          <span className="desk-lamp h-1.5 w-1.5" />
+                          <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-editorial-cream/70">
+                            On air
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="h-1.5 w-1.5 rounded-full bg-editorial-cream/30" />
+                          <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-editorial-cream/45">
+                            Off air
+                          </span>
+                        </>
+                      )}
+                      {selected.region && (
+                        <span className="text-[9px] uppercase tracking-[0.14em] text-editorial-cream/35">
+                          · {selected.region}
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="mt-1 truncate font-heading text-xl text-editorial-cream">
+                      {selected.title}
+                    </h2>
+                    {selected.domain && (
+                      <p className="mt-0.5 truncate text-[11px] text-editorial-cream/45">
+                        {selected.domain}
+                        {selected.sponsorship?.is_sponsored
+                          ? ` · Presented by ${selected.sponsorship.sponsor_name}`
+                          : ''}
+                      </p>
+                    )}
+                  </div>
+
+                  {selected.watch_url && (
+                    <a
+                      href={selected.watch_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="desk-key"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Open at source
+                    </a>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-3 lg:hidden">
+                <ChannelRail streams={streams} selectedId={selected?.id} onSelect={setSelectedId} />
+              </div>
+            </div>
+
+            <aside className="hidden min-h-0 flex-col gap-3 lg:flex">
+              <ChannelRail streams={streams} selectedId={selected?.id} onSelect={setSelectedId} />
+              <FlightographySidecar stream={selected} />
+            </aside>
+          </div>
+        )}
+
+        {!isLoading && !isError && streams.length > 0 && viewMode === 'grid' && (
+          <div className="mt-6 space-y-7">
+            {ROW_KEYS.map((row) => {
+              const inRow = streams.filter((s) => (s.row || 3) === row);
+              if (!inRow.length) return null;
+              return (
+                <section key={row}>
+                  <div className="flex items-baseline gap-3 border-b border-editorial-cream/10 pb-2">
+                    <span className="font-heading text-lg text-editorial-gold">
+                      {String(row).padStart(2, '0')}
+                    </span>
+                    <div className="min-w-0">
+                      <h2 className="font-heading text-lg leading-tight text-editorial-cream">
+                        {WALL_ROWS[row].label}
+                      </h2>
+                      <p className="truncate text-[11px] text-editorial-cream/45">
+                        {WALL_ROWS[row].note}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {inRow.map((stream) => (
+                      <StreamGridCard
+                        key={stream.id}
+                        stream={stream}
+                        isSelected={selected?.id === stream.id}
+                        onClick={() => openChannel(stream.id)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
 
-      {/* Main Content */}
-      {viewMode === 'focus' ? (
-        <div className="flex h-[calc(100vh-200px)]">
-          {/* Player */}
-          <div className="flex-1 flex flex-col p-4">
-            {selectedStream && (
-              <div className="flex-1 rounded-lg overflow-hidden shadow-2xl border border-white/10">
-                <StreamPlayer
-                  stream={selectedStream}
-                  onError={(err) => console.error('Stream error:', err)}
-                />
-              </div>
-            )}
-          </div>
+function WallLoading() {
+  return (
+    <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div>
+        <div className="arcade-glass relative aspect-video w-full animate-pulse rounded-md" />
+        <div className="desk-plate mt-3 h-16 animate-pulse" />
+      </div>
+      <div className="hidden lg:block">
+        <div className="desk-plate h-64 animate-pulse" />
+      </div>
+      <p className="text-[11px] uppercase tracking-[0.18em] text-editorial-cream/40 lg:hidden">
+        Reading the wall
+      </p>
+    </div>
+  );
+}
 
-          {/* Sidecar */}
-          <div className="w-80 hidden lg:flex flex-col border-l border-white/10 overflow-hidden bg-black/20">
-            <FlightographySidecar stream={selectedStream} />
-            <div className="border-t border-white/10 pt-4">
-              <p className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Quick Access</p>
-              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-                {streams.map(stream => (
-                  <button
-                    key={stream.id}
-                    onClick={() => setSelectedStreamId(stream.id)}
-                    className={`px-2 py-1.5 rounded text-xs font-semibold transition-all ${
-                      selectedStream?.id === stream.id
-                        ? 'bg-white/20 text-white border border-white/30'
-                        : 'bg-white/5 text-slate-300 hover:bg-white/10'
-                    }`}
-                  >
-                    {stream.icon} {stream.title.split(' ')[0]}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="p-4">
-          {/* ROW 1: Space Frontier */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Space Exploration & Systems']}`} />
-              <h2 className="text-lg font-bold">Row 1: Space Frontier</h2>
-              <span className="text-xs text-slate-400">($600B Space Tech Market)</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {streamsByRow[1]?.map(stream => (
-                <StreamGridCard
-                  key={stream.id}
-                  stream={stream}
-                  isSelected={selectedStream?.id === stream.id}
-                  onClick={() => {
-                    setSelectedStreamId(stream.id);
-                    setViewMode('focus');
-                  }}
-                  accentColor={DOMAIN_ACCENTS[stream.domain]}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* ROW 2: Commercial Aviation */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Commercial Aviation']}`} />
-              <h2 className="text-lg font-bold">Row 2: Commercial Aviation Operations</h2>
-              <span className="text-xs text-slate-400">(Global Hub Traffic)</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {streamsByRow[2]?.map(stream => (
-                <StreamGridCard
-                  key={stream.id}
-                  stream={stream}
-                  isSelected={selectedStream?.id === stream.id}
-                  onClick={() => {
-                    setSelectedStreamId(stream.id);
-                    setViewMode('focus');
-                  }}
-                  accentColor={DOMAIN_ACCENTS[stream.domain]}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* ROW 3: Global Macro */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Defense & National Security']}`} />
-              <h2 className="text-lg font-bold">Row 3: Global Macro, Defense & Policy</h2>
-              <span className="text-xs text-slate-400">($2.2T Defense Spend)</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {streamsByRow[3]?.map(stream => (
-                <StreamGridCard
-                  key={stream.id}
-                  stream={stream}
-                  isSelected={selectedStream?.id === stream.id}
-                  onClick={() => {
-                    setSelectedStreamId(stream.id);
-                    setViewMode('focus');
-                  }}
-                  accentColor={DOMAIN_ACCENTS[stream.domain]}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+function WallNotice({ title, body, action }) {
+  return (
+    <div className="desk-plate mt-8 flex flex-col items-center gap-3 px-6 py-14 text-center">
+      <Radio className="h-6 w-6 text-editorial-cream/30" />
+      <h2 className="font-heading text-xl text-editorial-cream">{title}</h2>
+      <p className="max-w-md text-[12.5px] leading-relaxed text-editorial-cream/50">{body}</p>
+      {action}
     </div>
   );
 }

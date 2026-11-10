@@ -1,81 +1,78 @@
-import { Play, Volume2, MapPin } from 'lucide-react';
+import { Play } from 'lucide-react';
 
-export default function StreamGridCard({ stream, isSelected, onClick, accentColor }) {
-  const categoryColors = {
-    news: 'from-blue-500/20 to-blue-600/10',
-    aviation: 'from-green-500/20 to-green-600/10',
-    space: 'from-purple-500/20 to-purple-600/10',
-    macro: 'from-red-500/20 to-red-600/10',
-    defense: 'from-red-500/20 to-red-600/10',
-  };
+// A square on the wall. The plate carries the channel, the brass edge answers the cursor,
+// and the lamp tells the truth about whether anything is coming down the line.
+export default function StreamGridCard({ stream, isSelected, onClick }) {
+  const live = !!stream.is_live;
 
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`relative group overflow-hidden rounded-lg border-2 transition-all h-48 ${
+      aria-pressed={isSelected}
+      className={`desk-plate group relative flex flex-col overflow-hidden text-left transition-colors ${
         isSelected
-          ? `border-opacity-100 shadow-lg shadow-opacity-20`
-          : 'border-white/10 hover:border-white/30'
+          ? 'border-editorial-gold'
+          : 'border-editorial-cream/10 hover:border-editorial-copper/60'
       }`}
-      style={isSelected && accentColor ? {
-        borderColor: accentColor,
-        boxShadow: `0 0 20px ${accentColor}33`,
-      } : {}}
     >
-      {/* Thumbnail / Background */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${categoryColors[stream.category] || 'from-slate-700/20 to-slate-800/20'}`}
-      >
-        {stream.thumbnail_url && (
+      <div className="relative aspect-video w-full overflow-hidden bg-black/60">
+        {stream.thumbnail_url ? (
           <img
             src={stream.thumbnail_url}
-            alt={stream.title}
-            className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover opacity-70 transition-opacity duration-300 group-hover:opacity-95"
           />
-        )}
-      </div>
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-between p-3">
-        {/* Top Badge */}
-        <div className="flex items-start justify-between">
-          <span className="text-[10px] px-2 py-1 rounded-full bg-black/60 text-white capitalize font-semibold">
-            {stream.category}
-          </span>
-          {stream.is_active && (
-            <span className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-red-500/80 text-white font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-              LIVE
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <span className="font-heading text-2xl tracking-[0.2em] text-editorial-cream/20">
+              {stream.title?.slice(0, 2).toUpperCase()}
             </span>
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+
+        <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-sm bg-black/70 px-1.5 py-1">
+          {live ? (
+            <>
+              <span className="desk-lamp h-1.5 w-1.5" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-editorial-cream/90">
+                Live
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="h-1.5 w-1.5 rounded-full bg-editorial-cream/30" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-editorial-cream/45">
+                Off air
+              </span>
+            </>
           )}
         </div>
 
-        {/* Bottom Info */}
-        <div>
-          <h3 className="text-sm font-semibold text-white line-clamp-2 mb-2">{stream.title}</h3>
-          <div className="flex items-center gap-4 text-[10px] text-slate-300">
-            {stream.region && (
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                {stream.region}
-              </div>
-            )}
-            <div className="flex items-center gap-1">
-              <Volume2 className="w-3 h-3" />
-              {stream.source_type}
-            </div>
-          </div>
-        </div>
+        {stream.region && (
+          <span className="absolute right-2.5 top-2.5 rounded-sm bg-black/60 px-1.5 py-1 text-[9px] uppercase tracking-[0.14em] text-editorial-cream/60">
+            {stream.region}
+          </span>
+        )}
+
+        <span className="absolute bottom-2.5 right-2.5 flex h-7 w-7 items-center justify-center rounded-full border border-editorial-cream/25 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+          <Play className="h-3 w-3 fill-current text-editorial-cream" />
+        </span>
       </div>
 
-      {/* Play Button Overlay (on hover) */}
-      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="rounded-full bg-white/20 backdrop-blur-sm p-3 border border-white/30">
-          <Play className="w-6 h-6 text-white fill-white" />
-        </div>
+      <div className="flex flex-1 flex-col px-3 py-2.5">
+        {stream.domain && <p className="pd-label">{stream.domain}</p>}
+        <h3 className="mt-1 font-heading text-[15px] leading-snug text-editorial-cream">
+          {stream.title}
+        </h3>
+        {stream.subtitle && (
+          <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-editorial-cream/45">
+            {stream.subtitle}
+          </p>
+        )}
       </div>
     </button>
   );

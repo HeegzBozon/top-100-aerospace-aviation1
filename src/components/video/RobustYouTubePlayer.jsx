@@ -13,6 +13,9 @@ import { AlertCircle, ExternalLink } from 'lucide-react';
  */
 export default function RobustYouTubePlayer({
   videoId,
+  // A channel's own live window, used when no single broadcast could be named. YouTube
+  // serves the channel's current live stream here, so the frame is never a dead square.
+  channelId = null,
   title = 'Video',
   autoplay = false,
   height = '100%',
@@ -36,9 +39,9 @@ export default function RobustYouTubePlayer({
     }, 8000);
 
     return () => clearTimeout(timeoutId);
-  }, [videoId, onError]);
+  }, [videoId, channelId, onError]);
 
-  if (!videoId) {
+  if (!videoId && !channelId) {
     return (
       <div className={`relative w-full ${className} bg-black/40 border border-white/10 flex items-center justify-center aspect-video`}>
         <AlertCircle className="w-8 h-8 text-slate-400" />
@@ -46,8 +49,12 @@ export default function RobustYouTubePlayer({
     );
   }
 
-  const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?${autoplay ? 'autoplay=1' : ''}`;
+  const youtubeUrl = videoId
+    ? `https://www.youtube.com/watch?v=${videoId}`
+    : `https://www.youtube.com/channel/${channelId}/live`;
+  const embedUrl = videoId
+    ? `https://www.youtube.com/embed/${videoId}?${autoplay ? 'autoplay=1' : ''}`
+    : `https://www.youtube.com/embed/live_stream?channel=${channelId}${autoplay ? '&autoplay=1' : ''}`;
 
   // Show error state with fallback button
   if (embedError || timedOut) {

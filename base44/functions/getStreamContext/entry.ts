@@ -16,14 +16,16 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     
-    // Extract stream_id from URL (assuming format: /api/v1/tv/streams/{stream_id}/context)
+    // The id arrives in the payload — the surface calls this through the SDK, which posts a
+    // body rather than addressing a path. A path form is still read for older links.
+    const body = await req.json().catch(() => ({}));
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/');
-    const streamId = pathParts[5]; // Index of stream_id in /api/v1/tv/streams/{streamId}/context
+    const streamId = body?.stream_id || (pathParts[5] !== 'context' ? pathParts[5] : null);
 
     if (!streamId) {
       return Response.json(
-        { error: 'stream_id required in path' },
+        { error: 'stream_id required' },
         { status: 400 }
       );
     }
