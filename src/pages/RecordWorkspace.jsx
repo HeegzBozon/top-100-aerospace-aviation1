@@ -8,8 +8,8 @@ import useRecordChecklist from '@/components/record/useRecordChecklist';
 import RecordChecklist from '@/components/record/RecordChecklist';
 import RecordSurface from '@/components/record/surfaces/RecordSurface';
 
-// The Fellow's record as a working checklist: six surfaces, each one the lines it
-// needs and a way to add them. The record is the only thing measured here — nothing
+// The Fellow's own profile as a working checklist: six surfaces, each one the lines it
+// needs and a way to add them. The profile is the only thing measured here — nothing
 // on this page is weighted, ordered or compared with anyone else.
 export default function RecordWorkspace() {
   const { user, isLoadingAuth } = useAuth();
@@ -23,7 +23,7 @@ export default function RecordWorkspace() {
       : params.get('settings') === 'presentation'
         ? 'presentation'
         : null;
-  const surfaceKey = params.get('surface') || (tool ? 'account' : 'view');
+  const surfaceKey = params.get('surface') || (tool ? 'account' : 'interview');
   const surface = useMemo(
     () => record.surfaces.find((entry) => entry.key === surfaceKey) || record.surfaces[0],
     [record.surfaces, surfaceKey],
@@ -55,9 +55,9 @@ export default function RecordWorkspace() {
   if (!user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-5 px-6 text-center" style={{ background: B.cream }}>
-        <p className="pd-label">Your record</p>
+        <p className="pd-label">Your Profile</p>
         <h1 className="max-w-md font-heading text-3xl leading-tight" style={{ color: B.navy }}>
-          The record opens once you are signed in.
+          Your profile opens once you are signed in.
         </h1>
         <button
           type="button"
@@ -73,14 +73,15 @@ export default function RecordWorkspace() {
   const overall = record.overall;
   const publicId = record.nominee?.id;
   const accent = accentValue(record.settings?.domain_accent);
+  const fullName = (record.account?.full_name || user.full_name || '').trim();
 
   return (
     <div className="min-h-screen overflow-x-hidden" style={{ background: B.cream, color: B.navy }}>
       <header className="px-6 pt-9 lg:px-16 lg:pt-12">
-        <p className="pd-label">Your record</p>
+        <p className="pd-label">Your Profile</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <h1 className="font-heading text-[34px] leading-none lg:text-[42px]">
-            {(record.account?.full_name || user.full_name || 'Your name').split(' ')[0]}&rsquo;s record
+            {fullName || 'Your Profile'}
           </h1>
           <div className="flex items-center gap-5">
             <div className="text-right">
@@ -91,7 +92,7 @@ export default function RecordWorkspace() {
             </div>
             {publicId && (
               <Link to={`/profiles/${publicId}`} className="pd-acct-link !py-2.5">
-                View public record
+                See the public profile
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             )}
@@ -107,7 +108,7 @@ export default function RecordWorkspace() {
 
       <div className="mt-8 grid gap-8 px-6 pb-28 lg:grid-cols-[236px_minmax(0,1fr)] lg:gap-14 lg:px-16">
         <nav
-          aria-label="Record sections"
+          aria-label="Profile sections"
           className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-2 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0"
         >
           {record.surfaces.map((entry) => {

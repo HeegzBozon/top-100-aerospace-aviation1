@@ -57,10 +57,10 @@ export default function ManifestProfileTools({ className = '' }) {
       </ul>
 
       <Link
-        to={recordUrl('view')}
+        to={recordUrl('interview')}
         className="mt-2.5 inline-flex items-center gap-1 font-body text-[9px] font-bold uppercase tracking-[0.18em] text-editorial-navy/55 transition-colors hover:text-editorial-copper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-copper/50"
       >
-        Open my record <ArrowRight className="h-3 w-3" aria-hidden="true" />
+        Open my profile <ArrowRight className="h-3 w-3" aria-hidden="true" />
       </Link>
     </div>
   );

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import ViewSurface from './ViewSurface';
 import CredentialsSurface from './CredentialsSurface';
 import DataRoomSurface from './DataRoomSurface';
 import InterviewSurface from './InterviewSurface';
@@ -26,10 +25,6 @@ export default function RecordSurface({
     return (
       <CredentialsSurface account={account} nominee={nominee} settings={settings} card={card} />
     );
-  }
-
-  if (surfaceKey === 'view') {
-    return <ViewSurface account={account} nominee={nominee} settings={settings} />;
   }
 
   if (surfaceKey === 'dataroom') {
