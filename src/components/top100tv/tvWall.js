@@ -5,7 +5,7 @@ export const WALL_ROWS = {
     label: 'The Frontier',
     note: 'Launch, orbital and station operations, carried as they happen.',
   },
- 2: {
+  2: {
     label: 'The Industry',
     note: 'Markets, manufacturing and the business of flight.',
   },

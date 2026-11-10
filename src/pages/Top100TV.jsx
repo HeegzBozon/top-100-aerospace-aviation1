@@ -24,7 +24,6 @@ export default function Top100TV() {
       return Array.isArray(response?.data) ? response.data : [];
     },
     staleTime: 2 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
     retry: 1,
   });
 
@@ -197,6 +196,7 @@ export default function Top100TV() {
             {ROW_KEYS.map((row) => {
               const inRow = streams.filter((s) => (s.row || 3) === row);
               if (!inRow.length) return null;
+              const tier = WALL_ROWS[row];
               return (
                 <section key={row}>
                   <div className="flex items-baseline gap-3 border-b border-editorial-cream/10 pb-2">
@@ -205,11 +205,9 @@ export default function Top100TV() {
                     </span>
                     <div className="min-w-0">
                       <h2 className="font-heading text-lg leading-tight text-editorial-cream">
-                        {WALL_ROWS[row].label}
+                        {tier.label}
                       </h2>
-                      <p className="truncate text-[11px] text-editorial-cream/45">
-                        {WALL_ROWS[row].note}
-                      </p>
+                      <p className="truncate text-[11px] text-editorial-cream/45">{tier.note}</p>
                     </div>
                   </div>
 
