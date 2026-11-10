@@ -55,7 +55,7 @@ export default function AnalystPathway({
       <div className="mt-2 flex items-baseline justify-between gap-2">
         <h3 className="font-heading text-[17px] leading-tight text-editorial-navy">{held.name}</h3>
         <p className="shrink-0 font-body text-[9px] font-bold uppercase tracking-[0.12em] text-editorial-label tabular-nums">
-          {sets} sets
+          {sets} evaluations
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function AnalystPathway({
       ) : (
         <p className="mt-1.5 font-body text-[10.5px] leading-relaxed text-editorial-navy/60">
           {ahead
-            ? `${ahead.sets - sets} more measured sets to the office of ${ahead.name}.`
+            ? `${ahead.sets - sets} more Crosscheck evaluations to the office of ${ahead.name}.`
             : 'The highest office on the ladder, held on service recorded.'}
         </p>
       )}
@@ -77,7 +77,11 @@ export default function AnalystPathway({
         aria-valuenow={sets}
         aria-valuemin={0}
         aria-valuemax={ahead ? ahead.sets : held.sets || 1}
-        aria-label={ahead ? `${sets} of ${ahead.sets} sets to ${ahead.name}` : 'The top office held'}
+        aria-label={
+          ahead
+            ? `${sets} of ${ahead.sets} Crosscheck evaluations to ${ahead.name}`
+            : 'The top office held'
+        }
       >
         <span
           className="block h-full bg-gradient-to-r from-editorial-copper to-editorial-gold transition-[width] duration-700"
@@ -97,8 +101,8 @@ export default function AnalystPathway({
           <Tick done={analystTaken} />
           <p className="font-body text-[10.5px] leading-relaxed text-editorial-navy/75">
             {analystTaken
-              ? 'Take the office of Analyst — thirty measured sets recorded'
-              : `Collect ${ANALYST_SETS - Math.min(sets, ANALYST_SETS)} more measured sets to take the office of Analyst`}
+              ? 'Take the office of Analyst — thirty Crosscheck evaluations recorded'
+              : `Collect ${ANALYST_SETS - Math.min(sets, ANALYST_SETS)} more Crosscheck evaluations to take the office of Analyst`}
             <span className="mt-0.5 block font-body text-[9px] font-bold uppercase tracking-[0.14em] text-editorial-navy/35 tabular-nums">
               {Math.min(sets, ANALYST_SETS)} of {ANALYST_SETS}
             </span>
