@@ -1,21 +1,25 @@
 /**
- * GET /api/v1/tv/streams/{stream_id}/context
- * Fetch flightography context for a stream
- * 
- * System Logic:
- * 1. Look up the stream
- * 2. Find linked program(s) via StreamProgramBinding
- * 3. Query Flightography ledger for verified contributors to that program
- * 
- * Performance: Indexed queries on stream_id -> program_id -> nominee (verified)
+ * The flightography behind one channel: who is verified as having built the programme it
+ * is covering.
+ *
+ * A channel on the wall that has no record filed is not an error — it simply has nothing
+ * bound to it yet, and says so.
  */
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
-Deno.serve(async (req) => {
+const EMPTY = {
+  stream: null,
+  program: null,
+  verified_contributors: [],
+  total_contributors: 0,
+  bound: false,
+};
+
+export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
-    
+
     // The id arrives in the payload — the surface calls this through the SDK, which posts a
     // body rather than addressing a path. A path form is still read for older links.
     const body = await req.json().catch(() => ({}));
@@ -24,25 +28,16 @@ Deno.serve(async (req) => {
     const streamId = body?.stream_id || (pathParts[5] !== 'context' ? pathParts[5] : null);
 
     if (!streamId) {
-      return Response.json(
-        { error: 'stream_id required' },
-        { status: 400 }
-      );
+      return Response.json({ error: 'stream_id required' }, { status: 400 });
     }
 
-    // Fetch the stream
-    const stream = await base44.asServiceRole.entities.Stream.filter(
-      { id: streamId }
-    ).then(results => results[0]);
+    const found = await base44.asServiceRole.entities.Stream.filter({ id: streamId });
+    const stream = found[0] || null;
 
     if (!stream) {
-      return Response.json(
-        { error: 'Stream not found' },
-        { status: 404 }
-      );
+      return Response.json({ ...EMPTY, stream: { id: streamId } });
     }
 
-    // Fetch program bindings for this stream
     const bindings = await base44.asServiceRole.entities.StreamProgramBinding.filter(
       { stream_id: streamId, is_active: true },
       'created_date',
@@ -50,86 +45,58 @@ Deno.serve(async (req) => {
     );
 
     if (bindings.length === 0) {
-      return Response.json({
-        stream: {
-          id: stream.id,
-          title: stream.title,
-        },
-        program: null,
-        verified_contributors: [],
-      });
+      return Response.json({ ...EMPTY, stream: { id: stream.id, title: stream.title } });
     }
 
     const primaryBinding = bindings[0];
 
-    // Query verified contributors to this program
-    // Look for Nominees with career_history matching the program
     const contributors = await base44.asServiceRole.entities.Nominee.filter(
       {
         $or: [
-          // Match by career history company/organization
-          { 'career_history': { $elemMatch: { company_name: primaryBinding.program_name } } },
-          // Match by affiliations
-          { 'affiliations': { $in: [primaryBinding.program_name, primaryBinding.program_id] } },
-          // Match by organization field
-          { 'organization': primaryBinding.program_name },
+          { career_history: { $elemMatch: { company_name: primaryBinding.program_name } } },
+          { affiliations: { $in: [primaryBinding.program_name, primaryBinding.program_id] } },
+          { organization: primaryBinding.program_name },
         ],
-        // Only verified/self-verified profiles
-        'verified_status': { $in: ['self_verified', 'fully_verified', 'partially_verified'] },
+        verified_status: { $in: ['self_verified', 'fully_verified', 'partially_verified'] },
       },
       '-updated_date',
       8
     ).catch(() => []);
 
-    // Map to flightography response format
-    const verifiedContributors = contributors.map(contributor => {
-      const careerEntry = contributor.career_history?.find(
-        entry => entry.company_name === primaryBinding.program_name
-      ) || contributor.career_history?.[0];
+    const verifiedContributors = contributors.map((contributor) => {
+      const careerEntry =
+        contributor.career_history?.find(
+          (entry) => entry.company_name === primaryBinding.program_name
+        ) || contributor.career_history?.[0];
 
       return {
         person_id: contributor.id,
         name: contributor.name,
         role: contributor.professional_role || contributor.title || 'Contributor',
         subsystem: careerEntry?.description || contributor.industry || 'Aerospace',
-        status: contributor.verified_status === 'fully_verified' ? 'Peer Verified' : 'Self Verified',
+        status:
+          contributor.verified_status === 'fully_verified' ? 'Peer Verified' : 'Self Verified',
         avatar_url: contributor.avatar_url || contributor.photo_url,
         profile_url: `/profiles/${contributor.id}`,
       };
     });
 
-    // Build response
-    const response = {
-      stream: {
-        id: stream.id,
-        title: stream.title,
-        category: stream.category,
+    return Response.json(
+      {
+        stream: { id: stream.id, title: stream.title, category: stream.category },
+        program: {
+          program_id: primaryBinding.program_id,
+          name: primaryBinding.program_name,
+          organization: primaryBinding.organization,
+        },
+        verified_contributors: verifiedContributors,
+        total_contributors: verifiedContributors.length,
+        bound: true,
       },
-      program: {
-        program_id: primaryBinding.program_id,
-        name: primaryBinding.program_name,
-        organization: primaryBinding.organization,
-      },
-      verified_contributors: verifiedContributors,
-      total_contributors: verifiedContributors.length,
-    };
-
-    // Set cache headers (2 minutes for context—changes when contributions update)
-    const headers = new Headers({
-      'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=120',
-      'ETag': `context-${streamId}-${Date.now().toString().slice(-4)}`,
-    });
-
-    return new Response(JSON.stringify(response), {
-      status: 200,
-      headers,
-    });
+      { headers: { 'Cache-Control': 'public, max-age=120' } }
+    );
   } catch (error) {
     console.error('[getStreamContext]', error);
-    return Response.json(
-      { error: error.message, verified_contributors: [] },
-      { status: 500 }
-    );
+    return Response.json({ error: error.message, verified_contributors: [] }, { status: 500 });
   }
-});
+}
