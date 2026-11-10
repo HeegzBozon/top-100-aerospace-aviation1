@@ -31,7 +31,15 @@ export default async function (req) {
       return Response.json({ error: 'stream_id required' }, { status: 400 });
     }
 
-    const found = await base44.asServiceRole.entities.Stream.filter({ id: streamId });
+    // A channel drawn from the line-up rather than from a filed record carries a made-up id,
+    // which the database rightly refuses to read. That is simply a channel with nothing bound
+    // to it, not a fault.
+    const isRecordId = /^[a-f0-9]{24}$/i.test(String(streamId));
+    if (!isRecordId) {
+      return Response.json({ ...EMPTY, stream: { id: streamId } });
+    }
+
+    const found = await base44.asServiceRole.entities.Stream.filter({ id: streamId }).catch(() => []);
     const stream = found[0] || null;
 
     if (!stream) {
