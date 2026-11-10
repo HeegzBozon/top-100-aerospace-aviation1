@@ -66,11 +66,11 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount = 
           })}
         </div>
 
-        <p className="hidden shrink-0 pb-3 font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-navy/40 sm:block">
-          {nominationCount > 0
-            ? `${nominationCount} filed this session`
-            : 'A publication, never a vote'}
-        </p>
+        {nominationCount > 0 && (
+          <p className="hidden shrink-0 pb-3 font-body text-[9.5px] uppercase tracking-[0.16em] text-editorial-navy/40 sm:block">
+            {nominationCount} filed this session
+          </p>
+        )}
       </div>
     </div>
   );

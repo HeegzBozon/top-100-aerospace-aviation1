@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Archive, Home, Radio, Share2 } from 'lucide-react';
+import { Archive, Clock, Home, Radio, Share2 } from 'lucide-react';
 import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
+import { useCountdown, pad } from '@/components/events/useCountdown';
 
 // The head of the committee.
 //
@@ -9,8 +10,20 @@ import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
 // office, copper closing the foot. It carries the container — the Fellow's name, the
 // list and the season all belong to the surfaces beneath it — and the three doors out
 // of it: the title screen, the archive, the Media Hub, and the way the record is shared.
-export default function CommitteeMasthead({ count, isPublished, saving, onShare }) {
+export default function CommitteeMasthead({
+  count,
+  isPublished,
+  saving,
+  onShare,
+  votingEndDate = null,
+}) {
   const navigate = useNavigate();
+  // The cycle's own clock belongs to the office, not to the Manifest: it is read at the
+  // head of the committee, where the season is, and it is the same clock for every tab.
+  const { days, hours, mins, secs, done } = useCountdown(votingEndDate);
+  const closesOn = votingEndDate
+    ? new Date(votingEndDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+    : null;
 
   return (
     <header className="bg-editorial-navy">
@@ -27,6 +40,22 @@ export default function CommitteeMasthead({ count, isPublished, saving, onShare 
             set and share — and {CROSSCHECK}, where the field is measured. Analysis, never a
             ranking of record.
           </p>
+
+          {closesOn && (
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-body text-[9.5px] uppercase tracking-[0.16em]">
+              <Clock className="h-3 w-3 shrink-0 text-editorial-gold" aria-hidden="true" />
+              {done ? (
+                <span className="font-bold text-editorial-gold">Cycle closed</span>
+              ) : (
+                <>
+                  <span className="font-bold text-editorial-gold">Closes {closesOn}</span>
+                  <span className="tracking-normal text-editorial-cream/55 tabular-nums">
+                    {days}d {pad(hours)}h {pad(mins)}m {pad(secs)}s
+                  </span>
+                </>
+              )}
+            </p>
+          )}
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">

@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import HubListTabs from '@/components/my-top100/HubListTabs';
-import ManifestMediaBlock from '@/components/my-top100/ManifestMediaBlock';
+import ManifestProfileTools from '@/components/my-top100/ManifestProfileTools';
 import { MANIFEST_CEILING } from '@/components/my-top100/manifestTargets';
 import ManifestToCrosscheck from '@/components/my-top100/ManifestToCrosscheck';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
@@ -523,14 +523,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         count={rankings.length}
         onOpenBriefing={() => briefing.setOpen(true)}
       />
-      <BallotStatusBanner
-        rankings={rankings}
-        votingOpen={votingOpen}
-        votingEndDate={season?.voting_end}
-        saving={saving}
-        errorMessage={saveError}
-        onShare={handleShare}
-      />
+      <BallotStatusBanner errorMessage={saveError} />
       <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
       {/* The Fellow's own Crosscheck standings read as a tab of the Manifest, so the field
           their own judgements have carried sits beside the order they are setting rather
@@ -571,7 +564,7 @@ export default function MyTop100({ initialTab = null } = {}) {
   // The margin of the Manifest is the house's press floor: the four rooms of the Media Hub,
   // each with the page it publishes to and the room it is stood in. Where the order stands is
   // measured across the masthead now, so the margin carries nothing but the reading room.
-  const builderPanel = <ManifestMediaBlock />;
+  const builderPanel = <ManifestProfileTools />;
 
   // The step past the order, held at the right margin while the window is open. It states
   // itself only once there are two names to weigh; the shut window closes it.
@@ -697,6 +690,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         isPublished={isPublished}
         saving={saving}
         onShare={handleShare}
+        votingEndDate={season?.voting_end}
       />
 
       <HubListTabs
