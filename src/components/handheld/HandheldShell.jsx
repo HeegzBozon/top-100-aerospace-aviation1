@@ -40,11 +40,6 @@ export default function HandheldShell() {
   // deck is what the key lowers.
   const [hardwareOn, setHardwareOn] = useState(true);
   const keyboard = useKeyboardOpen();
-  // Stable, so a surface reporting its state never re-triggers itself.
-  const api = useMemo(() => ({ inside: true, setPutAway, hardwareOn }), [hardwareOn]);
-  // The desk answers from the same state, without claiming to be the device.
-  const deskApi = useMemo(() => ({ inside: false, hardwareOn }), [hardwareOn]);
-
   const toggleHardware = useCallback(() => {
     if (isMobile) {
       blip(hardwareOn ? "toggle" : "select");
@@ -52,6 +47,19 @@ export default function HandheldShell() {
     }
     setHardwareOn((on) => !on);
   }, [hardwareOn, isMobile]);
+
+  // Stable, so a surface reporting its state never re-triggers itself. The toggle is
+  // handed on, because it is now the bar's View menu that puts the machine down as well
+  // as the key that brings it back.
+  const api = useMemo(
+    () => ({ inside: true, setPutAway, hardwareOn, toggleHardware }),
+    [hardwareOn, toggleHardware],
+  );
+  // The desk answers from the same state, without claiming to be the device.
+  const deskApi = useMemo(
+    () => ({ inside: false, hardwareOn, toggleHardware }),
+    [hardwareOn, toggleHardware],
+  );
 
   // The Colony is the one room the machine is worn in full, so the case comes up on
   // entering it. The key still lowers it while standing there, and whatever the reader
@@ -94,8 +102,9 @@ export default function HandheldShell() {
     return (
       <DeviceContext.Provider value={deskApi}>
         <Outlet />
-        {/* The one key on the desk's picture: it lifts the machinery away and puts it back. */}
-        <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />
+        {/* Putting the machine down is a press in the bar's View menu; with the tube and
+            its bar gone, this key is the only thing left that can bring them back. */}
+        {hardwareOn ? null : <DeckPowerKey standing={false} onToggle={toggleHardware} />}
       </DeviceContext.Provider>
     );
   }
@@ -116,10 +125,12 @@ export default function HandheldShell() {
         </div>
       </div>
       {!putAway && hardwareOn && (
-        <HandheldDeck deckOn={hardwareOn} />
+        <HandheldDeck deckOn={hardwareOn} onPutAway={toggleHardware} />
       )}
-      {/* Sovereign: the key stands whether or not the surface has cleared the glass. */}
-      <DeckPowerKey standing={hardwareOn} onToggle={toggleHardware} />
+      {/* The case is put down from the bar's View menu, and the bar is cut into the chin —
+          so while the machine is away this key is the only control on the picture, and
+          the way back to the menu that lowered it. */}
+      {hardwareOn ? null : <DeckPowerKey standing={false} onToggle={toggleHardware} />}
     </DeviceContext.Provider>
   );
 }

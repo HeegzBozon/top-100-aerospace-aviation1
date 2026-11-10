@@ -77,7 +77,8 @@ export default function HandheldMenu({
               index += 1;
               const itemIndex = index;
               const isCursor = itemIndex === cursor;
-              const isActive = !!item.to && item.to === locationKey;
+              // The surface you are on, or the state the machine is already standing in.
+              const isActive = item.now === true || (!!item.to && item.to === locationKey);
               const Icon = item.icon;
 
               return (

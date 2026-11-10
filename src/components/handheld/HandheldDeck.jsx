@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeftRight, Disc, Frame, Palette, Radio, Search } from "lucide-react";
+import { ArrowLeftRight, Frame, Palette, Search } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import ConsoleKeyBar from "./ConsoleKeyBar";
 import FaceButtons from "./FaceButtons";
@@ -25,7 +25,7 @@ import HandheldNotifications from "./HandheldNotifications";
 import HandheldSpeaker from "./HandheldSpeaker";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
-import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
+import { menuGroups as barMenuGroups, viewGroups } from "@/components/shell/barMenus";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
 import useSpeakerFrame from "./useSpeakerFrame";
@@ -38,7 +38,7 @@ import {
   RADIO_CLEARANCE,
   releaseShellVars,
 } from "./handheldGeometry";
-import useConsoleMode, { RADIO } from "./consoleMode";
+import useConsoleMode, { RADIO, setConsoleMode } from "./consoleMode";
 import RadioChin from "./radio/RadioChin";
 
 // The device's space is measured in handheldGeometry — one set of numbers, applied
@@ -54,7 +54,7 @@ const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
 // What each drawer is called. The console's own menu is the machine itself, so it keeps
 // the OS mark; every other drawer prints the name of the menu it is holding, so the
 // press that opened it reads back on the glass — Y lands on a drawer headed Edit.
-const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish: "Customize" };
+const DRAWER_TITLES = { file: "File", edit: "Edit", view: "View", sections: "Sections", finish: "Customize" };
 
 // The handheld. One body: a viewer the content renders in, and a chin carrying the
 // machine's menu bar and the controls — the click wheel and the face buttons, or the
@@ -73,7 +73,7 @@ const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish
 // The deck is the case itself: the chin, the wheel or the radio's keypad, and the speaker.
 // Whether it stands on the picture is the shell's call, because the key that lowers it sits
 // on the glass rather than on the case — see HandheldShell.
-export default function HandheldDeck({ deckOn = true }) {
+export default function HandheldDeck({ deckOn = true, onPutAway = null }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
@@ -81,7 +81,7 @@ export default function HandheldDeck({ deckOn = true }) {
   // Which face the machine is wearing: the click wheel it was built with, or the radio,
   // whose keypad walks the same index by number. The surface chooses the face it is
   // written in; the plate overrules, and the overrule is remembered.
-  const { mode, cycle: cycleMode, legend: modeLegend } = useConsoleMode(location.pathname);
+  const { mode, chosen } = useConsoleMode(location.pathname);
   const radio = mode === RADIO;
   // What every legend on this machine is printed in: the face fitted to the case.
   const face = radio ? RADIO : "wheel";
@@ -127,9 +127,9 @@ export default function HandheldDeck({ deckOn = true }) {
     else toggleFrame();
   }, [inColony, toggleFrame]);
 
-  // The machine's own two controls — the finish the case is wearing and the face it is
-  // wearing it in — live in the Edit drawer. They were the two keys of the foot plate; the
-  // plate is gone, so the drawer that means "change something" carries them.
+  // The fittings — the finish the case is wearing, the speaker frame, and (turned
+  // sideways) which hand the wheel is on — are the machine's own, not the record's, so
+  // they stand in the View drawer beside the face and the way the case is put down.
   // Turned sideways: the PSP face, with the wheel on whichever handle the reader chose.
   const landscape = useLandscapeHandheld();
   const [wheelRight, setWheelRight] = useState(() => localStorage.getItem("hh-wheel-side") === "right");
@@ -140,16 +140,15 @@ export default function HandheldDeck({ deckOn = true }) {
     });
   }, []);
 
-  const consoleItems = useMemo(
+  const fittingItems = useMemo(
     () => [
       { label: `Customize · ${finish.label}`, action: "finish", icon: Palette },
-      { label: `Console face · ${modeLegend}`, action: "cycleMode", icon: radio ? Disc : Radio },
       { label: `Speaker frame · ${frameOn ? "On" : "Off"}`, onSelect: toggleSpeakerFrame, icon: Frame },
       ...(landscape
         ? [{ label: `Click wheel · ${wheelRight ? "Right" : "Left"} hand`, onSelect: flipGrips, icon: ArrowLeftRight }]
         : []),
     ],
-    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips, frameOn, toggleSpeakerFrame],
+    [finish.label, landscape, wheelRight, flipGrips, frameOn, toggleSpeakerFrame],
   );
 
   const menuGroups = groups;
@@ -233,6 +232,20 @@ export default function HandheldDeck({ deckOn = true }) {
     (mode) => {
       if (mode === "sections") return [{ key: "sections", label: "On this surface", items: sectionItems }];
       if (mode === "finish") return [{ key: "finish", label: "Customize", items: finishItems }];
+      // View is the machine's own list: what is standing on the picture, the face it is
+      // wearing, then the fittings the case can take.
+      if (mode === "view") {
+        return [
+          ...viewGroups({
+            // The deck only exists while the machine stands, so the press is always the
+            // one that puts it down.
+            hardwareOn: true,
+            onToggleHardware: onPutAway,
+            face: { chosen, mode, onChoose: setConsoleMode },
+          }),
+          { key: "fittings", label: "Fittings", items: fittingItems },
+        ];
+      }
       // File leads with the surface's own work — an issue being read keeps its entries
       // there — then what this surface holds (the deck's slides, the page's own modules),
       // and closes with the machine's own list. Edit leads the same way, with what the
@@ -245,15 +258,10 @@ export default function HandheldDeck({ deckOn = true }) {
             : []),
         ]);
       }
-      if (mode === "edit") {
-        return editGroupsWith([
-          ...(barDrawers.edit || []),
-          { key: "console", label: "Console", items: consoleItems },
-        ]);
-      }
+      if (mode === "edit") return editGroupsWith(barDrawers.edit || []);
       return barDrawers[mode] || menuGroups;
     },
-    [sectionItems, finishItems, barDrawers, consoleItems, menuGroups],
+    [sectionItems, finishItems, fittingItems, chosen, mode, onPutAway, barDrawers, menuGroups],
   );
 
   // What the wheel walks, per drawer it happens to be in.
@@ -396,8 +404,6 @@ export default function HandheldDeck({ deckOn = true }) {
 
       // Not a cartridge: the hardware drawer opens where you stand.
       if (destination.action === "finish") return openFinish();
-      // The face the machine wears, stepped from the drawer that also chooses its finish.
-      if (destination.action === "cycleMode") return cycleMode();
       // The way in, on the platform's own door: one page both signs a Fellow in and
       // opens the account a visitor does not have yet.
       if (destination.action === "signin" || destination.action === "join") {
@@ -413,7 +419,7 @@ export default function HandheldDeck({ deckOn = true }) {
       }
       if (destination.to) navigate(destination.to);
     },
-    [navigate, openFinish, cycleMode],
+    [navigate, openFinish],
   );
 
   const openMenu = useCallback(() => {
@@ -940,13 +946,15 @@ export default function HandheldDeck({ deckOn = true }) {
     <ChinMenuBar
       surface={surface}
       module={radio && typed ? `#${typed}` : modules[moduleIndex]?.label}
-      menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
+      menuOpen={menuOpen && !["file", "edit", "view"].includes(menuMode)}
       fileOpen={menuMode === "file"}
       editOpen={menuMode === "edit"}
+      viewOpen={menuMode === "view"}
       onHome={goHome}
       onMenu={upOneLevel}
       onFile={() => openBarDrawer("file")}
       onEdit={() => openBarDrawer("edit")}
+      onView={() => openBarDrawer("view")}
       onNotifications={openNotifications}
       fileKey="X"
       editKey="Y"
@@ -1009,7 +1017,9 @@ export default function HandheldDeck({ deckOn = true }) {
               ? drawerHint(face, { run: "Go" })
               : menuMode === "finish"
                 ? drawerHint(face, { run: "Apply" })
-                : drawerHint(face, { move: "Group", run: "Load" })
+                : menuMode === "view"
+                  ? drawerHint(face, { move: "Group", run: "Set" })
+                  : drawerHint(face, { move: "Group", run: "Load" })
           }
           onActivate={(item) => {
             if (menuMode === "finish") return applyFinish(item);
@@ -1061,13 +1071,15 @@ export default function HandheldDeck({ deckOn = true }) {
           <ChinMenuBar
             surface={surface}
             module={radio && typed ? `#${typed}` : modules[moduleIndex]?.label}
-            menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
+            menuOpen={menuOpen && !["file", "edit", "view"].includes(menuMode)}
             fileOpen={menuMode === "file"}
             editOpen={menuMode === "edit"}
+            viewOpen={menuMode === "view"}
             onHome={goHome}
             onMenu={upOneLevel}
             onFile={() => openBarDrawer("file")}
             onEdit={() => openBarDrawer("edit")}
+            onView={() => openBarDrawer("view")}
             onNotifications={openNotifications}
             fileKey={radio ? "V" : "X"}
             editKey={radio ? "A" : "Y"}
