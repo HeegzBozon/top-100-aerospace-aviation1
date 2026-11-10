@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { toggleViewingAsVisitor } from "@/lib/viewerPreview";
 import MenuBar, { KEY_CELL, MENU_CELL } from "@/components/shell/MenuBar";
 import MenuDropdown from "@/components/shell/MenuDropdown";
-import { menuGroups, viewGroups } from "@/components/shell/barMenus";
+import { barReferences, menuGroups, viewGroups } from "@/components/shell/barMenus";
 import { useDevice } from "@/components/handheld/HandheldShell";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import NotificationCenter from "@/components/notifications/NotificationCenter";
@@ -54,6 +54,10 @@ export default function DesktopMenuBar() {
   // The menu belongs to the surface it was opened on.
   useEffect(() => setOpen(null), [locationKey]);
 
+  // The reader's two keys. Bookmarks are a member's own list, so a visitor is never
+  // handed a key that opens nothing; Help stands for everyone.
+  const references = useMemo(() => barReferences({ isSignedIn }), [isSignedIn]);
+
   const toLogin = () => base44.auth.redirectToLogin(window.location.href);
 
   const go = (item) => {
@@ -99,6 +103,11 @@ export default function DesktopMenuBar() {
         onFile={() => toggle("file")}
         onEdit={() => toggle("edit")}
         onView={() => toggle("view")}
+        references={references}
+        onReference={(reference) => {
+          setOpen(null);
+          navigate(reference.to);
+        }}
         onNotifications={() => (isSignedIn ? setNotificationsOpen(true) : toLogin())}
         showClock
         showViewAs={realUser?.role === "admin"}

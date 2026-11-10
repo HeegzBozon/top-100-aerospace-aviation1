@@ -25,7 +25,7 @@ import HandheldNotifications from "./HandheldNotifications";
 import HandheldSpeaker from "./HandheldSpeaker";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
-import { menuGroups as barMenuGroups, viewGroups } from "@/components/shell/barMenus";
+import { barReferences, menuGroups as barMenuGroups, viewGroups } from "@/components/shell/barMenus";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
 import useSpeakerFrame from "./useSpeakerFrame";
@@ -955,6 +955,13 @@ export default function HandheldDeck({ deckOn = true, onPutAway = null }) {
       onFile={() => openBarDrawer("file")}
       onEdit={() => openBarDrawer("edit")}
       onView={() => openBarDrawer("view")}
+      // The two keys the reader owns. Bookmarks are a member's own list, so a visitor is
+      // never handed a key that opens nothing; Help stands for everyone.
+      references={barReferences({ isSignedIn })}
+      onReference={(reference) => {
+        setMenuMode(null);
+        navigate(reference.to);
+      }}
       onNotifications={openNotifications}
       fileKey="X"
       editKey="Y"

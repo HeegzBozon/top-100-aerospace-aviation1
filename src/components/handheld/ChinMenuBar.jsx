@@ -29,6 +29,8 @@ export default function ChinMenuBar({
   onFile,
   onEdit,
   onView,
+  references,
+  onReference,
   onNotifications,
   fileKey = "X",
   editKey = "Y",
@@ -65,6 +67,8 @@ export default function ChinMenuBar({
         onFile={onFile}
         onEdit={onEdit}
         onView={onView}
+        references={references}
+        onReference={onReference}
         onNotifications={onNotifications}
         compactView
         showRouteBack

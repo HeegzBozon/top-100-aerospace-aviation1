@@ -1,6 +1,6 @@
 import {
-  BookOpen, Briefcase, ChevronsDown, ChevronsUp, Disc, Home, LayoutGrid, ListChecks, LogIn, Radar, Radio,
-  Send, Shield, UserCog, UserPlus, Wand2,
+  Bookmark, BookOpen, Briefcase, ChevronsDown, ChevronsUp, CircleHelp, Disc, Home, LayoutGrid, ListChecks,
+  LogIn, Radar, Radio, Send, Shield, UserCog, UserPlus, Wand2,
 } from "lucide-react";
 import { START_MENU } from "@/components/start/startMenuConfig";
 import { AUTO, RADIO, WHEEL } from "@/components/handheld/consoleMode";
@@ -114,4 +114,20 @@ export function viewGroups({ hardwareOn, onToggleHardware, face = null }) {
   }
 
   return groups;
+}
+
+// Two keys the machine keeps for the reader rather than for the surface they are on: what
+// they have marked to come back to, and the desk that answers when something needs
+// explaining. Neither is a drawer — a press goes there — so they stand to the right of the
+// menus that do open, the way a browser prints them.
+//
+// Bookmarks are a member's own marks, so a visitor is not shown a key that would open a
+// list they do not have; Help is the house's, and stands for everyone.
+export const BAR_REFERENCES = [
+  { key: "bookmarks", label: "Bookmarks", to: "/MyFavorites", icon: Bookmark, membersOnly: true },
+  { key: "help", label: "Help", to: "/HelpCenter", icon: CircleHelp },
+];
+
+export function barReferences({ isSignedIn }) {
+  return BAR_REFERENCES.filter((item) => !item.membersOnly || isSignedIn);
 }

@@ -78,6 +78,24 @@ function ViewKey({ open, onClick }) {
   );
 }
 
+// A word that goes somewhere rather than dropping a list: Bookmarks and Help are one
+// press from anywhere, so they are printed in the bar and answered by the route, not by a
+// drawer. They take the width of their own word; nothing on the strip is measured from them.
+function WordKey({ label, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      role="menuitem"
+      className="mb-cell flex shrink-0 items-center whitespace-nowrap px-2.5 text-[8px] font-bold uppercase tracking-[0.20em]"
+      style={{ color: "var(--mb-ink)" }}
+    >
+      {label}
+    </button>
+  );
+}
+
 function BarKey({ label, onClick, children }) {
   return (
     <button
@@ -106,6 +124,11 @@ export default function MenuBar({
   onFile,
   onEdit,
   onView,
+  /* The reader's own keys — bookmarks and help — handed in already resolved, so a key a
+     visitor has no list behind never reaches the strip. Words on the desk, glyphs on the
+     glass, exactly like the machine's menu. */
+  references = [],
+  onReference,
   onNotifications,
   /* The machine's own menu is a word on the desk and a glyph on the glass, where the
      strip has no room for a third one. */
@@ -181,6 +204,20 @@ export default function MenuBar({
           </span>
         ) : null}
       </button>
+
+      {/* The reader's own keys, kept at the end of the strip beside the bell — what they
+          have marked to come back to, and the desk that answers when something needs
+          explaining. Both are one press from anywhere on either machine. */}
+      {references.map((reference) => {
+        const Glyph = reference.icon;
+        return compactView ? (
+          <BarKey key={reference.key} label={reference.label} onClick={() => onReference?.(reference)}>
+            <Glyph className="h-[15px] w-[15px]" strokeWidth={1.8} />
+          </BarKey>
+        ) : (
+          <WordKey key={reference.key} label={reference.label} onClick={() => onReference?.(reference)} />
+        );
+      })}
 
       {showViewAs ? (
         <ViewAsCell viewingAsVisitor={viewingAsVisitor} onToggle={onToggleViewAs} />
