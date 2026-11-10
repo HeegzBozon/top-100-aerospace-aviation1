@@ -122,9 +122,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     : Infinity;
   const mileFirst = Boolean(ahead) && mileTo <= levelSetsTo;
   const nextRung = mileFirst
-    ? `${mileTo} ${mileTo === 1 ? 'set' : 'sets'} to ${ahead.name}`
+    ? `${mileTo} ${mileTo === 1 ? 'evaluation' : 'evaluations'} to ${ahead.name}`
     : lane?.next_name
-      ? `${levelSetsTo} ${levelSetsTo === 1 ? 'set' : 'sets'} to ${lane.next_name}`
+      ? `${levelSetsTo} ${levelSetsTo === 1 ? 'evaluation' : 'evaluations'} to ${lane.next_name}`
       : null;
   const rungProgress = lane ? (mileFirst ? mileProgress : lane.progress) : 0;
 

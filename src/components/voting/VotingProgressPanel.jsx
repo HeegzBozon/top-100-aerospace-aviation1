@@ -1,18 +1,28 @@
 import React from 'react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import MilestoneRail from '@/components/voting/MilestoneRail';
+import { markAhead, markReached } from '@/components/voting/ladderMarks';
 
 // The contribution ladder, drawn from the record rather than from the session: every
-// set a Fellow has weighed is counted here, so closing the tab no longer loses the
+// evaluation a Fellow has weighed is counted here, so closing the tab no longer loses the
 // work. Progress is feedback only — nothing on this panel is read by discovery,
 // ranking, or scoring.
 export default function VotingProgressPanel({ progress, compact = false }) {
   if (!progress) return null;
 
-  const pct = Math.round((progress.progress || 0) * 100);
+  // The measure is the division, not the office: a Fellow's work should move the bar every
+  // few evaluations rather than wait out a whole office.
+  const completed = progress.sets_completed || 0;
+  const ahead = markAhead(completed);
+  const behind = markReached(completed);
+  const stretch = ahead ? ahead.sets - (behind?.sets || 0) : 0;
+  const pct = ahead && stretch
+    ? Math.round(((completed - (behind?.sets || 0)) / stretch) * 100)
+    : 100;
+  const left = ahead ? ahead.sets - completed : 0;
 
   const figures = [
-    { label: 'Sets', value: progress.sets_completed || 0 },
+    { label: 'Evaluations', value: completed },
     { label: 'Ballots', value: progress.ballots_saved || 0 },
     { label: 'Comparisons', value: progress.comparisons_recorded || 0 },
   ];
@@ -38,8 +48,8 @@ export default function VotingProgressPanel({ progress, compact = false }) {
         {progress.name}
       </p>
       <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: ink.soft }}>
-        {progress.sets_completed || 0} sets
-        {progress.next_name ? ` · next: ${progress.next_name}` : ' · Principal Analyst'}
+        {completed} {completed === 1 ? 'evaluation' : 'evaluations'}
+        {behind ? ` · ${behind.name}` : ''}
       </p>
 
       <div
@@ -52,9 +62,9 @@ export default function VotingProgressPanel({ progress, compact = false }) {
         />
       </div>
       <p className="mt-1.5 text-[10px]" style={{ color: ink.soft }}>
-        {progress.next_at
-          ? `${Math.ceil((progress.to_next || 0) / 10)} sets to ${progress.next_name}`
-          : 'Every rung climbed.'}
+        {ahead
+          ? `${left} ${left === 1 ? 'evaluation' : 'evaluations'} to ${ahead.name}`
+          : 'Every division climbed.'}
       </p>
 
       <div className="mt-3 grid grid-cols-3 gap-2">

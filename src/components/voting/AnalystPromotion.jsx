@@ -73,16 +73,16 @@ export default function AnalystPromotion({ office, email, name, hold = false, on
 
         <h2 className="mt-3 font-heading text-4xl leading-none text-editorial-cream">Analyst</h2>
         <p className="mt-3 font-body text-[13px] leading-relaxed text-editorial-cream/75">
-          {first ? `${first}, the` : 'The'} office is yours. Thirty sets of four — a hundred and
-          twenty professionals read against each other — and the desk that reads the field is
-          now on your machine.
+          {first ? `${first}, the` : 'The'} office is yours. Thirty evaluations of four — a hundred
+          and twenty professionals read against each other — and the desk that reads the field
+          is now on your machine.
         </p>
 
         <div className="mt-5 grid grid-cols-2 divide-x divide-editorial-cream/15 border-y border-editorial-cream/15 py-3">
           <div className="px-2 text-center">
             <p className="font-heading text-2xl leading-none text-editorial-cream">{ANALYST_SETS}</p>
             <p className="mt-1.5 font-body text-[8.5px] font-bold uppercase tracking-[0.2em] text-editorial-gold/80">
-              sets measured
+              evaluations measured
             </p>
           </div>
           <div className="px-2 text-center">
@@ -90,7 +90,7 @@ export default function AnalystPromotion({ office, email, name, hold = false, on
               {nextOffice ? nextOffice.sets : '—'}
             </p>
             <p className="mt-1.5 font-body text-[8.5px] font-bold uppercase tracking-[0.2em] text-editorial-gold/80">
-              next · {nextOffice ? nextOffice.name : 'the full flight'}
+              next · {nextOffice ? nextOffice.office : 'the full flight'}
             </p>
           </div>
         </div>

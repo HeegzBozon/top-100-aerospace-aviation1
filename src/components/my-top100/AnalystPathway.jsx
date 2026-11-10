@@ -12,7 +12,7 @@ import { ANALYST_SETS, LADDER_MARKS } from '@/components/voting/ladderMarks';
 // the thresholds are the shared ladder's: change them there, not here.
 const RUNGS = [
   { name: 'Associate Analyst', sets: 0 },
-  ...LADDER_MARKS.filter((mark) => mark.level).map((mark) => ({ name: mark.name, sets: mark.sets })),
+  ...LADDER_MARKS.filter((mark) => mark.level).map((mark) => ({ name: mark.office, sets: mark.sets })),
 ];
 
 const rungFor = (sets) => [...RUNGS].reverse().find((rung) => sets >= rung.sets) || RUNGS[0];
@@ -89,7 +89,7 @@ export default function AnalystPathway({
         />
       </div>
 
-      {/* The checklist: the first act, then the sets, then the desk they open. */}
+      {/* The checklist: the first act, then the evaluations, then the desk they open. */}
       <ul className="mt-3 space-y-2 border-t border-editorial-navy/10 pt-3">
         <li className="flex items-start gap-2">
           <Tick done={firstFiled} />

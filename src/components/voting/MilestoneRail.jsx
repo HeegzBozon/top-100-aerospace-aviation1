@@ -45,10 +45,10 @@ export default function MilestoneRail({ completed = 0 }) {
                 {next.name}
               </span>
               {' — '}
-              {next.sets - done} {next.sets - done === 1 ? 'set' : 'sets'} to go
+              {next.sets - done} {next.sets - done === 1 ? 'evaluation' : 'evaluations'} to go
             </>
           ) : (
-            'Every mark on the rail climbed.'
+            'Every division on the ladder climbed.'
           )}
         </p>
         <p className="shrink-0 text-[9px] font-semibold tabular-nums" style={{ color: ink.soft }}>

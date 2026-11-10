@@ -33,7 +33,7 @@ export default function ReviewProgressStrip({
         </span>
         <span className="flex shrink-0 items-baseline gap-1.5 text-[9.5px] tabular-nums text-editorial-navy/55 md:text-[10px]">
           <span>
-            {reviews} {reviews === 1 ? 'set' : 'sets'}
+            {reviews} {reviews === 1 ? 'evaluation' : 'evaluations'}
           </span>
           <span className="text-editorial-navy/25">&middot;</span>
           <span className="font-semibold text-editorial-navy/75">
