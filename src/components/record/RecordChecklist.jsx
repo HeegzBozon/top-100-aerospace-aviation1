@@ -8,7 +8,7 @@ const ADD_LINK =
 
 // One surface of the record, as a checklist. The measure is the surface's own: how
 // many lines of it are in place, never how it compares with another Fellow's.
-export default function RecordChecklist({ surface, onSave }) {
+export default function RecordChecklist({ surface, onSave, onOpenEditor }) {
   return (
     <section aria-labelledby={`record-surface-${surface.key}`}>
       <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-editorial-copper pb-3">
@@ -89,12 +89,19 @@ export default function RecordChecklist({ surface, onSave }) {
               ) : null}
 
               {!entry.done && !entry.editor && entry.to && (entry.to === recordUrl(surface.key) ? (
-                /* The editor for this line stands on this surface, under the list:
-                   the key takes the reader down to it rather than off the page. */
-                <a href={`#record-editor-${surface.key}`} className={ADD_LINK}>
-                  Add it
-                  <ArrowUpRight className="h-3 w-3" />
-                </a>
+                /* The editor for this line stands on this surface: the key takes the
+                   reader to it — down the page, or across to the block holding it. */
+                onOpenEditor ? (
+                  <button type="button" onClick={onOpenEditor} className={ADD_LINK}>
+                    Add it
+                    <ArrowUpRight className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <a href={`#record-editor-${surface.key}`} className={ADD_LINK}>
+                    Add it
+                    <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                )
               ) : (
                 <Link to={entry.to} className={ADD_LINK}>
                   Add it

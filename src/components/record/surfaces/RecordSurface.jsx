@@ -20,6 +20,7 @@ export default function RecordSurface({
   onOpenStudio,
   onReload,
   tool,
+  block,
 }) {
   if (surfaceKey === 'credentials') {
     return (
@@ -42,6 +43,7 @@ export default function RecordSurface({
         onSaveSettings={onSaveSettings}
         onOpenStudio={onOpenStudio}
         onReload={onReload}
+        block={block}
       />
     );
   }

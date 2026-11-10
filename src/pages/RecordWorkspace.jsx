@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowUpRight, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -7,6 +7,8 @@ import { B, accentValue } from '@/components/fellow-home/fellowHomeConfig';
 import useRecordChecklist from '@/components/record/useRecordChecklist';
 import RecordChecklist from '@/components/record/RecordChecklist';
 import RecordSurface from '@/components/record/surfaces/RecordSurface';
+import SurfaceBlockRail from '@/components/record/SurfaceBlockRail';
+import { editorBlock, surfaceBlocks } from '@/components/record/recordSurfaceBlocks';
 
 // The Fellow's own profile as a working checklist: six surfaces, each one the lines it
 // needs and a way to add them. The profile is the only thing measured here — nothing
@@ -28,6 +30,12 @@ export default function RecordWorkspace() {
     () => record.surfaces.find((entry) => entry.key === surfaceKey) || record.surfaces[0],
     [record.surfaces, surfaceKey],
   );
+
+  // A long surface is read one block at a time, and it always opens on its lines.
+  const blocks = useMemo(() => surfaceBlocks(surface?.key), [surface?.key]);
+  const [block, setBlock] = useState('lines');
+  useEffect(() => setBlock('lines'), [surface?.key]);
+  const activeKey = blocks ? (blocks.find((entry) => entry.key === block) || blocks[0]).key : null;
 
   // Acquisition attribution: a Fellow arriving from another publication's call to
   // action stamps the referrer once, and never overwrites one already held.
@@ -150,26 +158,55 @@ export default function RecordWorkspace() {
         </nav>
 
         <main className="min-w-0">
-          {surface && <RecordChecklist surface={surface} onSave={onSave} />}
-
-          {/* The editor for the surface, under its own checklist: the six together are
-              the profile page, and every line is written where it is counted. */}
-          <div id={`record-editor-${surface?.key}`}>
-            <RecordSurface
-              surfaceKey={surface?.key}
-              account={record.account || user}
-              nominee={record.nominee}
-              settings={record.settings}
-              card={record.card}
-              accent={accent}
-              onSaveCard={record.saveCard}
-              onSaveDossier={record.saveDossier}
-              onSaveSettings={record.saveSettings}
-              onOpenStudio={() => setParams({ surface: 'account', studio: 'open' }, { replace: true })}
-              onReload={record.reload}
-              tool={tool}
+          {/* Cut into blocks, with the rail at the head of them, so the far end of a long
+              surface is one press away rather than a scroll. */}
+          {surface && blocks && (
+            <SurfaceBlockRail
+              surface={surface}
+              blocks={blocks}
+              active={activeKey}
+              onSelect={setBlock}
             />
-          </div>
+          )}
+
+          {surface && (!blocks || activeKey === 'lines') && (
+            <div
+              role={blocks ? 'tabpanel' : undefined}
+              aria-labelledby={blocks ? `record-tab-${surface.key}-lines` : undefined}
+            >
+              <RecordChecklist
+                surface={surface}
+                onSave={onSave}
+                onOpenEditor={blocks ? () => setBlock(editorBlock(surface.key)?.key) : undefined}
+              />
+            </div>
+          )}
+
+          {/* The editor for the surface: the six together are the profile page, and every
+              line is written where it is counted. */}
+          {surface && (!blocks || activeKey !== 'lines') && (
+            <div
+              id={`record-editor-${surface.key}`}
+              role={blocks ? 'tabpanel' : undefined}
+              aria-labelledby={blocks ? `record-tab-${surface.key}-${activeKey}` : undefined}
+            >
+              <RecordSurface
+                surfaceKey={surface.key}
+                account={record.account || user}
+                nominee={record.nominee}
+                settings={record.settings}
+                card={record.card}
+                accent={accent}
+                onSaveCard={record.saveCard}
+                onSaveDossier={record.saveDossier}
+                onSaveSettings={record.saveSettings}
+                onOpenStudio={() => setParams({ surface: 'account', studio: 'open' }, { replace: true })}
+                onReload={record.reload}
+                tool={tool}
+                block={activeKey}
+              />
+            </div>
+          )}
 
         </main>
       </div>
