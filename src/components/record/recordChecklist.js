@@ -3,8 +3,10 @@ import { RECORD_SURFACES, recordUrl } from './recordMenu';
 // Where the line is actually written. The profile page is this workspace now, so a row
 // that pointed at the old editor points at the surface holding the field it names.
 const EDITOR_HOME = {
-  view: 'dataroom',
+  view: 'interview',
+  credentials: 'credentials',
   dataroom: 'dataroom',
+  interview: 'interview',
   availability: 'availability',
   inbox: 'availability',
   account: 'account',
@@ -100,6 +102,7 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
   const record = nominee || {};
   const config = settings || {};
   const businessCard = card || {};
+  const room = counts.room || {};
 
   const hireOpen = config.intent_hire_enabled === true;
   const commercialOpen = config.intent_commercial_enabled === true;
@@ -138,8 +141,46 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
         to: '/Profile',
       }),
     ],
-    card: cardRows(businessCard),
+    credentials: cardRows(businessCard),
+    // The room, counted by the reader it is filed for: one line per audience, because a
+    // folder opened for a founder is not the folder opened for an employer.
     dataroom: [
+      item({
+        key: 'founder_file',
+        label: 'A founder folder',
+        hint: 'The one-pager, the deck and the numbers a founder reads.',
+        done: (room.founder || 0) > 0,
+        value: room.founder ? `${room.founder} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+      item({
+        key: 'investor_file',
+        label: 'An investor folder',
+        hint: 'Diligence: the numbers, the legal file, the references.',
+        done: (room.investor || 0) > 0,
+        value: room.investor ? `${room.investor} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+      item({
+        key: 'employer_file',
+        label: 'An employer folder',
+        hint: 'What a hiring desk reads before the first call.',
+        done: (room.employer || 0) > 0,
+        value: room.employer ? `${room.employer} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+      item({
+        key: 'employee_file',
+        label: 'An employee folder',
+        hint: 'What someone joining your team is owed: the role and the terms.',
+        done: (room.employee || 0) > 0,
+        value: room.employee ? `${room.employee} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+    ],
+    // The Interview: the words the Fellow gives, edited where they are read. It was the
+    // Data Room's first contents and it is not a data room.
+    interview: [
       line('one_word', 'One word', 'The word a colleague would use about your work.', account.one_word, {
         placeholder: 'RELENTLESS',
         maxLength: 24,

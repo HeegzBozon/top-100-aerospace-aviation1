@@ -3,14 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Vote } from 'lucide-react';
 import useBoardingPass from '@/components/my-top100/useBoardingPass';
 import CredentialsDeck from '@/components/my-top100/credentials/CredentialsDeck';
-import { specialtyLabel } from '@/components/flight-plan/specialties';
-import { resolveBadgeTemplate } from '@/components/badge/badgeTemplates';
-import {
-  readStoredDestination,
-  readStoredProgram,
-  resolveDestination,
-  shareUrl,
-} from '@/lib/shareDestinations';
+import buildCredentialPerson from '@/components/my-top100/credentials/credentialPerson';
 
 // ── Credentials ──
 //
@@ -20,78 +13,16 @@ import {
 // they leave. Nothing is asked for here; every line is read from the record already held,
 // and every flavour carries the same code.
 
-const DISCIPLINE_WORDS = {
-  space_rd: 'Space R&D',
-  commercial_aviation: 'Commercial aviation',
-  defense: 'Defence',
-  manufacturing: 'Manufacturing',
-  operations: 'Operations',
-  engineering: 'Engineering',
-  policy: 'Policy',
-  entrepreneurship: 'Entrepreneurship',
-};
-
-const clean = (value) => String(value ?? '').trim();
-
 export default function BoardingPass({ user, hasExisting, onBegin, onVote }) {
   const { status, card, nominee, settings, error } = useBoardingPass(user);
 
-  const name = card?.card_name || nominee?.name || user?.full_name || '';
-  const roleLine = card?.role_line || nominee?.title || '';
-  const organisation = card?.organisation || nominee?.company || '';
-  const portrait = nominee?.avatar_url || '';
-  const location = card?.location || nominee?.location || nominee?.country || '';
-  const personId = nominee?.id || '';
-
-  // The pass reads what the record holds: the base they work from, the field the record
-  // names, the specialty filed on their Flight Plan, the line they are glad to be reached
-  // about. The card prints the contact lines they chose to show, and nothing they hid.
-  const rows = [
-    { label: 'Base', value: location },
-    { label: 'Field', value: DISCIPLINE_WORDS[nominee?.discipline] || nominee?.discipline },
-    { label: 'Specialty', value: specialtyLabel(settings?.specialty_key) },
-    { label: 'Reachable about', value: card?.tagline },
-  ].filter((row) => clean(row.value));
-
-  const person = {
-    name,
-    role: roleLine,
-    org: organisation,
-    portrait,
-    avatarUrl: portrait,
-    location,
-    place: location,
-    email:
-      card?.show_contact_email === false
-        ? ''
-        : clean(card?.contact_email) || nominee?.nominee_email || user?.email || '',
-    phone: card?.show_phone ? clean(card?.phone) : '',
-    website: clean(card?.website_url) || clean(nominee?.website_url),
-    tagline: clean(card?.tagline),
-    seat: 'Fellow',
-  };
-
-  const template = resolveBadgeTemplate(card?.badge_template);
-
-  // The code is the badge's code, resolved the way the badge and the title screen resolve it:
-  // a program handed over from the menu first, then the destination last chosen.
-  const code = useMemo(() => {
-    const holder = { name, role: roleLine, org: organisation, cardId: personId };
-    const program = readStoredProgram();
-    const chosen = resolveDestination(
-      readStoredDestination() || (holder.cardId ? 'card' : 'platform'),
-      holder
-    );
-    return {
-      link: program?.url || shareUrl(chosen.key, holder),
-      title: !program && chosen.key === 'card' ? 'Scan to connect' : 'Scan to open',
-      note: program
-        ? program.label || 'The program you are handing on'
-        : chosen.key === 'card'
-          ? 'The card saves as a contact'
-          : chosen.note,
-    };
-  }, [name, roleLine, organisation, personId]);
+  // The three printings are assembled from one reading of the record — the same reading the
+  // Credentials tool on the record makes — so the deck handed over here and the deck on the
+  // Fellow's own record can never print a different person.
+  const { person, rows, template, code } = useMemo(
+    () => buildCredentialPerson({ user, card, nominee, settings }),
+    [user, card, nominee, settings],
+  );
 
   return (
     <div className="mx-auto w-full max-w-[23rem] px-4 py-6 lg:py-8">

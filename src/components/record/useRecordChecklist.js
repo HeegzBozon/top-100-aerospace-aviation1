@@ -7,6 +7,15 @@ import { buildRecordSurfaces, recordOverall } from './recordChecklist';
 
 const EMPTY = { nominee: null, settings: null, card: null, counts: {} };
 
+// What the data room holds, counted by the audience each document was filed for.
+const room_by_audience = (rows) =>
+  (rows || []).reduce((acc, row) => {
+    const key = row?.audience;
+    if (!key) return acc;
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
 // One reading of a Fellow's record, shared by the title screen's keys and the
 // workspace itself, so the count on a key and the count inside it always agree.
 export default function useRecordChecklist() {
@@ -30,7 +39,7 @@ export default function useRecordChecklist() {
     const masterId = mergedIntoId(nominee || {});
     if (masterId) nominee = (await base44.entities.Nominee.get(masterId).catch(() => nominee)) || nominee;
 
-    const [found, cards, received, answered, attendance] = await Promise.all([
+    const [found, cards, received, answered, attendance, room] = await Promise.all([
       base44.entities.FellowProfileSettings.filter({ fellow_email: account.email }).catch(() => []),
       base44.entities.FellowBusinessCard.filter({ fellow_email: account.email }).catch(() => []),
       base44.entities.ProfileInquiry.count({ profile_email: account.email }).catch(() => 0),
@@ -39,6 +48,7 @@ export default function useRecordChecklist() {
         status: { $in: ['responded', 'closed'] },
       }).catch(() => 0),
       base44.entities.ConferenceAttendance.count({ fellow_email: account.email }).catch(() => 0),
+      base44.entities.DataRoomItem.filter({ fellow_email: account.email }).catch(() => []),
     ]);
 
     cardRef.current = cards?.[0] || null;
@@ -49,7 +59,12 @@ export default function useRecordChecklist() {
       nominee: nominee || null,
       settings: found?.[0] || null,
       card: cards?.[0] || null,
-      counts: { received: received || 0, answered: answered || 0, attendance: attendance || 0 },
+      counts: {
+        received: received || 0,
+        answered: answered || 0,
+        attendance: attendance || 0,
+        room: room_by_audience(room),
+      },
     });
   }, []);
 

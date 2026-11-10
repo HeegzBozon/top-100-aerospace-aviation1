@@ -1,9 +1,22 @@
-import { CalendarClock, CreditCard, Eye, Lock, Mail, Settings2 } from 'lucide-react';
+import {
+  BadgeCheck,
+  CalendarClock,
+  Eye,
+  Lock,
+  Mail,
+  MessagesSquare,
+  Settings2,
+} from 'lucide-react';
 
-// A Fellow's own record, as six surfaces. The title screen holds the keys and each
+// A Fellow's own record, as seven surfaces. The title screen holds the keys and each
 // key opens the same surface with its checklist: what is in place, what is still
 // missing, and one way to add it. Nothing here is compared with anyone else — the
 // measure is the Fellow's own record, not their standing.
+//
+// Credentials stands where the business card stood: the card is one of three printings of
+// the record, and the deck Pre-Flight hands over is the same deck, so the tool is named for
+// the three and the card's own lines live in its checklist. The words that used to sit in
+// the Data Room are the Interview; the room itself is for the four readers who open one.
 export const RECORD_SURFACES = [
   {
     key: 'view',
@@ -13,36 +26,43 @@ export const RECORD_SURFACES = [
     icon: Eye,
   },
   {
-    key: 'card',
+    key: 'credentials',
     index: '02',
-    label: 'Business Card',
-    hint: 'Your card, ready to hand over',
-    icon: CreditCard,
+    label: 'Credentials',
+    hint: 'Badge, boarding pass and card — one record, printed three ways',
+    icon: BadgeCheck,
   },
   {
     key: 'dataroom',
     index: '03',
     label: 'Data Room',
-    hint: 'Dossier, portfolio, flightography and the deck',
+    hint: 'What a founder, an investor, an employer or an employee is handed',
     icon: Lock,
   },
   {
-    key: 'availability',
+    key: 'interview',
     index: '04',
+    label: 'Interview',
+    hint: 'The dossier, the portfolio, the flightography and the deck',
+    icon: MessagesSquare,
+  },
+  {
+    key: 'availability',
+    index: '05',
     label: 'Availability',
     hint: 'What you are open to, and how you are reached',
     icon: CalendarClock,
   },
   {
     key: 'inbox',
-    index: '05',
+    index: '06',
     label: 'Inbox',
     hint: 'Who has written to you',
     icon: Mail,
   },
   {
     key: 'account',
-    index: '06',
+    index: '07',
     label: 'Account',
     hint: 'The choices the machine keeps for you',
     icon: Settings2,

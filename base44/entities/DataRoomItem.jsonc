@@ -1,0 +1,123 @@
+{
+  "name": "DataRoomItem",
+  "description": "One document or link held in a Fellow's data room, filed against the audience it was written for. Private to the Fellow who filed it; a visitor never reads this table directly.",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "The Fellow whose room holds the item. The only owner of the row."
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "investor",
+        "employer",
+        "employee"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "green",
+        "yellow"
+      ],
+      "description": "Who the item was filed for: a founder reading the venture, an investor running diligence, an employer reading the Fellow's file, or an employee joining the Fellow's team."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "one_pager",
+        "deck",
+        "numbers",
+        "legal",
+        "reference",
+        "sample",
+        "role",
+        "other"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "green",
+        "red",
+        "yellow",
+        "gray",
+        "pink",
+        "gray"
+      ],
+      "default": "one_pager",
+      "description": "What sort of document the item is, from the curated set."
+    },
+    "title": {
+      "type": "string",
+      "description": "What the document is called on the room's index."
+    },
+    "note": {
+      "type": "string",
+      "description": "One line on what the reader will find inside. Display only."
+    },
+    "url": {
+      "type": "string",
+      "description": "External address of the document, when it is held elsewhere."
+    },
+    "file_uri": {
+      "type": "string",
+      "description": "Private storage URI of the uploaded document. Read back only through a signed URL."
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original name of the uploaded file, printed on the index."
+    },
+    "ready": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the item is filed and ready to be handed over, or still being prepared."
+    }
+  },
+  "required": [
+    "fellow_email",
+    "audience",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
