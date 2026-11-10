@@ -108,7 +108,7 @@ export default function ReviewProgressStrip({
         <PopoverContent
           align="start"
           sideOffset={6}
-          className="w-[min(340px,calc(100vw-24px))] rounded-xl border-0 bg-transparent p-0 shadow-none"
+          className="w-[min(340px,calc(100vw-24px))] rounded-xl border border-editorial-copper/25 bg-editorial-cream p-0 shadow-[0_26px_52px_-20px_rgba(7,17,31,0.55)]"
         >
           <VotingProgressPanel progress={lane} />
         </PopoverContent>

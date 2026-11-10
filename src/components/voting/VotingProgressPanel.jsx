@@ -29,8 +29,8 @@ export default function VotingProgressPanel({ progress, compact = false }) {
 
   return (
     <div
-      className="rounded-xl p-4"
-      style={{ background: 'rgba(255,255,255,0.62)', border: `1px solid ${brand.navy}14` }}
+      className="rounded-xl bg-card p-4"
+      style={{ border: `1px solid ${brand.navy}14` }}
     >
       <div className="flex items-baseline justify-between gap-2">
         <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: brand.gold }}>

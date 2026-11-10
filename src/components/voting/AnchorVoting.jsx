@@ -604,8 +604,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             <button
               type="button"
               onClick={() => setGuideOpen(true)}
-              aria-label="How this works — open the briefing"
-              title="How this works"
+              aria-label="Mission Briefing — open the briefing"
+              title="Mission Briefing"
               className="flex h-7 shrink-0 items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[9.5px] font-bold uppercase tracking-[0.14em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110"
               style={{
                 background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
@@ -613,7 +613,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 10px -6px rgba(7,17,31,0.8)',
               }}
             >
-              <Info className="h-3.5 w-3.5" /> How this works
+              <Info className="h-3.5 w-3.5" /> Mission Briefing
             </button>
 
             {status && (
