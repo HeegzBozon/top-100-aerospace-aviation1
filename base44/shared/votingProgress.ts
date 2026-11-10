@@ -43,35 +43,32 @@ export const LEVELS = [
   { level: 5, name: 'Principal Analyst', sets: PRINCIPAL_SETS },
 ].map((step) => ({ ...step, at: step.sets * XP_PER_SET }));
 
-// The named marks on the ladder, in order. Four offices over a thousand sets would be a
-// grind, so the house names the ground between them: a mark a Fellow can recognise by name
-// every few sets early on, widening as the work deepens. The three offices the ladder
-// confers stand on this rail too, so a promotion is read as the same instrument turning
-// over rather than as a separate event. Each mark is recognition only — it confers no
-// influence and is never read by measurement, ordering or discovery.
+// The ladder, stated in divisions. Five offices, three divisions under each: a Fellow
+// climbs the divisions of an office before the next office is conferred — Associate I,
+// Associate II, Associate III, then Analyst I, and on to Principal III. The offices turn
+// over at the floors above; the divisions between them sit on even thirds of each office's
+// stretch, so a division is never more than a third of an office away.
+//
+// The numeral rises with the work: III stands above II, and II above I, so the III of an
+// office is that office standing — the rung a promotion is read at. Each division is
+// recognition only — it confers no influence and is never read by measurement, ordering or
+// discovery.
 export const LADDER_MARKS = [
-  { sets: 1, name: 'First Light' },
-  { sets: 3, name: 'Flight Card' },
-  { sets: 6, name: 'Clean Sweep' },
-  { sets: ANALYST_SETS, name: 'Analyst', level: 2 },
-  { sets: 10, name: 'Steady Hand' },
-  { sets: 16, name: 'Field Note' },
-  { sets: 24, name: 'Silver Eye' },
-  { sets: 34, name: 'Long Watch' },
-  { sets: 46, name: 'Brass Rule' },
-  { sets: 60, name: 'Deep Read' },
-  { sets: 78, name: 'Cool Head' },
-  { sets: 100, name: 'Broad Sheet' },
-  { sets: 125, name: 'Senior Analyst', level: 3 },
-  { sets: 150, name: 'Seasoned Read' },
-  { sets: 180, name: 'Wide Ledger' },
-  { sets: 215, name: 'Standing Watch' },
-  { sets: 250, name: 'Full Survey' },
-  { sets: 300, name: 'Lead Analyst', level: 4 },
-  { sets: 350, name: 'Long Record' },
-  { sets: 400, name: 'Sounding' },
-  { sets: 450, name: 'The Long Ledger' },
-  { sets: PRINCIPAL_SETS, name: 'Principal Analyst', level: 5 },
+  { sets: 0, name: 'Associate I', level: 1 },
+  { sets: 10, name: 'Associate II' },
+  { sets: 20, name: 'Associate III' },
+  { sets: ANALYST_SETS, name: 'Analyst I', level: 2 },
+  { sets: 62, name: 'Analyst II' },
+  { sets: 93, name: 'Analyst III' },
+  { sets: 125, name: 'Senior I', level: 3 },
+  { sets: 183, name: 'Senior II' },
+  { sets: 242, name: 'Senior III' },
+  { sets: 300, name: 'Lead I', level: 4 },
+  { sets: 367, name: 'Lead II' },
+  { sets: 433, name: 'Lead III' },
+  { sets: PRINCIPAL_SETS, name: 'Principal I', level: 5 },
+  { sets: 600, name: 'Principal II' },
+  { sets: 700, name: 'Principal III' },
 ];
 
 export const SET_MILESTONES = LADDER_MARKS.map((mark) => mark.sets);

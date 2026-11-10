@@ -1,37 +1,10 @@
-import ProfileDossier from '@/components/profile/dossier/ProfileDossier';
-import PortfolioPanel from '@/components/profile/dossier/PortfolioPanel';
+import DataRoomVault from '@/components/record/dataroom/DataRoomVault';
 
-// The Data Room: the words the Fellow gives, edited where they are read, then the
-// documents kept on the account. Everything here is written into the same record the
-// checklist above counts — nothing is duplicated, and nothing here is measured.
-export default function DataRoomSurface({
-  account,
-  nominee,
-  settings,
-  accent,
-  onSaveDossier,
-  onSaveSettings,
-  onOpenStudio,
-  onReload,
-}) {
-  return (
-    <div className="mt-8">
-      <ProfileDossier
-        user={account}
-        nominee={nominee}
-        settings={settings}
-        accent={accent}
-        saving={false}
-        saveError=""
-        onSaveField={onSaveDossier}
-        onSaveSettings={onSaveSettings}
-        onOpenStudio={onOpenStudio}
-      />
-
-      <section className="pd-sec">
-        <h2 className="pd-label mb-6">Portfolio</h2>
-        <PortfolioPanel user={account} accent={accent} onUserUpdate={onReload} />
-      </section>
-    </div>
-  );
+// The Data Room: what a founder, an investor, an employer or an employee is handed.
+//
+// The words used to live here. They are the Interview now — a reader being introduced to a
+// person, not someone checking a file — so the room is left to documents, filed under the
+// four readers who open it.
+export default function DataRoomSurface({ account }) {
+  return <DataRoomVault email={account?.email || ''} />;
 }

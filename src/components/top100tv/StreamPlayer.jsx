@@ -1,141 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { ExternalLink, Radio } from 'lucide-react';
 import RobustYouTubePlayer from '@/components/video/RobustYouTubePlayer';
 import SponsorOverlay from '@/components/top100tv/SponsorOverlay';
 
-let HlsLoaded = null;
-const loadHls = async () => {
-  if (HlsLoaded) return HlsLoaded;
-  try {
-    HlsLoaded = (await import('hls.js')).default;
-    return HlsLoaded;
-  } catch (err) {
-    console.error('[HLS] Failed to load:', err);
-    return null;
-  }
-};
-
+// One channel, played. The resolver hands over the broadcast it found — or, when a channel
+// is between broadcasts, the channel itself, which still opens on its own live window. Only
+// a channel that could not be identified at all falls through to the dark plate.
 export default function StreamPlayer({ stream, onError }) {
-  const videoRef = useRef(null);
-  const hlsRef = useRef(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  if (!stream) return null;
 
-  useEffect(() => {
-    if (!stream) return;
+  const playable = stream.video_id || stream.channel_id;
 
-    const video = videoRef.current;
-    if (!video) return;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-      setError(true);
-      setLoading(false);
-    }, 5000);
-
-    const initPlayer = async () => {
-      try {
-        if (stream.source_type === 'youtube') {
-          // Use iframe for YouTube
-          setLoading(false);
-          return;
-        }
-
-        if (stream.source_type === 'hls') {
-          const Hls = await loadHls();
-          if (!Hls) {
-            setError(true);
-            return;
-          }
-
-          if (Hls.isSupported()) {
-            const hls = new Hls({
-              enableWorker: true,
-              maxBufferLength: 30,
-            });
-
-            hls.on(Hls.Events.ERROR, (event, data) => {
-              if (data.fatal) {
-                setError(true);
-                onError?.(data);
-              }
-            });
-
-            hls.loadSource(stream.stream_url);
-            hls.attachMedia(video);
-            hlsRef.current = hls;
-
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-              clearTimeout(timeoutId);
-              setLoading(false);
-              video.play().catch(() => {});
-            });
-          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = stream.stream_url;
-            video.addEventListener('loadedmetadata', () => {
-              clearTimeout(timeoutId);
-              setLoading(false);
-            }, { once: true });
-          }
-        }
-      } catch (err) {
-        console.error('[StreamPlayer]', err);
-        setError(true);
-      }
-    };
-
-    initPlayer();
-
-    return () => {
-      clearTimeout(timeoutId);
-      controller.abort();
-      hlsRef.current?.destroy();
-    };
-  }, [stream]);
-
-  if (stream?.source_type === 'youtube') {
-    return (
-      <div className="relative w-full h-full">
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-black">
+      {playable ? (
         <RobustYouTubePlayer
-          videoId={stream.stream_url}
+          videoId={stream.video_id || null}
+          channelId={stream.video_id ? null : stream.channel_id}
           title={stream.title}
           height="100%"
           onError={onError}
-          showFallbackButton={true}
         />
-        <SponsorOverlay 
-          sponsorship={stream.sponsorship} 
-          position={stream.sponsorship?.overlay_position || 'bottom-left'}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-full h-full rounded-lg overflow-hidden bg-black">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+      ) : (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
+          <Radio className="h-7 w-7 text-editorial-cream/30" />
+          <p className="font-heading text-lg text-editorial-cream/80">Signal not carried</p>
+          <p className="max-w-sm text-xs leading-relaxed text-editorial-cream/45">
+            This channel could not be identified, so nothing is being pulled from it. The
+            desk is told, and the square returns as soon as the source is filed again.
+          </p>
+          {stream.watch_url && (
+            <a
+              href={stream.watch_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="desk-key"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Open the channel
+            </a>
+          )}
         </div>
       )}
 
-      {error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10">
-          <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
-          <p className="text-white/60 text-sm">Stream unavailable</p>
-        </div>
-      )}
-
-      <video
-        ref={videoRef}
-        controls
-        className="w-full h-full"
-        playsInline
-      />
-      <SponsorOverlay 
-        sponsorship={stream?.sponsorship} 
-        position={stream?.sponsorship?.overlay_position || 'bottom-left'}
+      <SponsorOverlay
+        sponsorship={stream.sponsorship}
+        position={stream.sponsorship?.overlay_position || 'bottom-left'}
       />
     </div>
   );

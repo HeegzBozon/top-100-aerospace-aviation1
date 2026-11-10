@@ -1,61 +1,57 @@
-// The named marks on the Analyst ladder, as the ballot reads them.
+// The Analyst ladder, read the way a division ladder is read.
 //
-// The authoritative table is base44/shared/votingProgress.ts, which is what the voting
-// functions count a Fellow's sets against. The ballot keeps its own reading of the same
-// thresholds so a mark can be named on the glass the moment it is reached, rather than
-// waiting on a context payload that may still be carrying an older table. The numbers and
-// the names below are the shared table's, in its order: change them in one place only.
+// Five offices, three divisions under each: a Fellow climbs the divisions of an office
+// before the next office is conferred — Associate I, Associate II, Associate III, then
+// Analyst I, and on to Principal III. The office floors are the shared table's
+// (base44/shared/votingProgress.ts), and the divisions sit on even thirds of each office's
+// stretch, so a division is never more than a third of an office away.
 //
-// Nothing here is measurement. A mark is a recognition of service, never a weight.
-// The graduation, and the office it confers.
+// The numeral rises with the work: III stands above II, and II above I, so the III of an
+// office is that office standing — the rung the house reads as a promotion, the one the
+// Flight Plan opens with, and the one drawn taller on the rail.
 //
-// A Fellow is seated as an Associate Analyst by the invitation; the office of Analyst is
-// graduated into at thirty measured sets, and the Flight Plan — the desk an Analyst reads
-// the field from — opens with it. The threshold is the shared table's ANALYST_SETS: change
-// it there, and here.
+// Nothing here is measurement. A division is a recognition of service, never a weight, and
+// the ladder is never read by discovery, ordering or scoring.
 export const ANALYST_SETS = 30;
 
-export const isAnalystOffice = (setsCompleted) =>
-  Math.max(0, Number(setsCompleted) || 0) >= ANALYST_SETS;
+export const isAnalystOffice = (evaluations) =>
+  Math.max(0, Number(evaluations) || 0) >= ANALYST_SETS;
 
-export const LADDER_MARKS = [
-  { sets: 1, name: 'First Light' },
-  { sets: 3, name: 'Flight Card' },
-  { sets: 6, name: 'Clean Sweep' },
-  { sets: ANALYST_SETS, name: 'Analyst', level: 2 },
-  { sets: 10, name: 'Steady Hand' },
-  { sets: 16, name: 'Field Note' },
-  { sets: 24, name: 'Silver Eye' },
-  { sets: 34, name: 'Long Watch' },
-  { sets: 46, name: 'Brass Rule' },
-  { sets: 60, name: 'Deep Read' },
-  { sets: 78, name: 'Cool Head' },
-  { sets: 100, name: 'Broad Sheet' },
-  { sets: 125, name: 'Senior Analyst', level: 3 },
-  { sets: 150, name: 'Seasoned Read' },
-  { sets: 180, name: 'Wide Ledger' },
-  { sets: 215, name: 'Standing Watch' },
-  { sets: 250, name: 'Full Survey' },
-  { sets: 300, name: 'Lead Analyst', level: 4 },
-  { sets: 350, name: 'Long Record' },
-  { sets: 400, name: 'Sounding' },
-  { sets: 450, name: 'The Long Ledger' },
-  { sets: 500, name: 'Principal Analyst', level: 5 },
+// The offices, and the floor of each of their three divisions, in evaluations.
+const OFFICES = [
+  { level: 1, office: 'Associate Analyst', tier: 'Associate', divisions: [0, 10, 20] },
+  { level: 2, office: 'Analyst', tier: 'Analyst', divisions: [ANALYST_SETS, 62, 93] },
+  { level: 3, office: 'Senior Analyst', tier: 'Senior', divisions: [125, 183, 242] },
+  { level: 4, office: 'Lead Analyst', tier: 'Lead', divisions: [300, 367, 433] },
+  { level: 5, office: 'Principal Analyst', tier: 'Principal', divisions: [500, 600, 700] },
 ];
 
-// The mark a count of sets is working towards.
-export function markAhead(setsCompleted) {
-  const done = Math.max(0, Number(setsCompleted) || 0);
+const DIVISION_NUMERALS = ['I', 'II', 'III'];
+
+export const LADDER_MARKS = OFFICES.flatMap((entry) =>
+  entry.divisions.map((sets, index) => ({
+    sets,
+    name: `${entry.tier} ${DIVISION_NUMERALS[index]}`,
+    division: DIVISION_NUMERALS[index],
+    tier: entry.tier,
+    office: entry.office,
+    level: index === 0 ? entry.level : null,
+  })),
+);
+
+// The division a count of evaluations is working towards.
+export function markAhead(evaluations) {
+  const done = Math.max(0, Number(evaluations) || 0);
   return LADDER_MARKS.find((mark) => mark.sets > done) || null;
 }
 
-// The last mark a count of sets has passed.
-export function markReached(setsCompleted) {
-  const done = Math.max(0, Number(setsCompleted) || 0);
+// The last division a count of evaluations has passed.
+export function markReached(evaluations) {
+  const done = Math.max(0, Number(evaluations) || 0);
   return [...LADDER_MARKS].reverse().find((mark) => done >= mark.sets) || null;
 }
 
-// Every mark crossed between two counts — what one recorded set turned over.
+// Every division crossed between two counts — what one recorded evaluation turned over.
 export function marksClimbedBetween(from, to) {
   const before = Math.max(0, Number(from) || 0);
   const after = Math.max(0, Number(to) || 0);

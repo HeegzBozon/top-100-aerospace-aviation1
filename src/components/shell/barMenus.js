@@ -1,7 +1,9 @@
 import {
-  BookOpen, Briefcase, Home, LayoutGrid, ListChecks, LogIn, Radar, Send, Shield, UserCog, UserPlus,
+  Bookmark, BookOpen, Briefcase, ChevronsDown, ChevronsUp, CircleHelp, Disc, Home, LayoutGrid, ListChecks,
+  LogIn, Radar, Radio, Send, Shield, UserCog, UserPlus, Wand2,
 } from "lucide-react";
 import { START_MENU } from "@/components/start/startMenuConfig";
+import { AUTO, RADIO, WHEEL } from "@/components/handheld/consoleMode";
 
 // The two menus the bar leads with, on both machines. File holds the way home and
 // the platform's surfaces — the documents this machine opens. Edit holds everything a
@@ -66,4 +68,66 @@ export function menuGroups(kind, state) {
   return groups
     .map((group) => ({ ...group, items: group.items.filter((item) => allowed(item, state)) }))
     .filter((group) => group.items.length > 0);
+}
+
+// View is the machine's own menu: what is standing on the picture, and the face it is
+// wearing while it stands there. File says where you are and Edit says what you have
+// written; View is about the apparatus itself, so the key that used to float alone on
+// the glass and the MODE key that used to be the only way to change face both live here
+// now — one list, in the bar, on both machines.
+//
+// The face is only offered where there is one to change: a desk has no wheel to turn, so
+// it is never shown the choice. Whatever the machine is already standing in carries the
+// same Now mark the lists give the surface you are reading.
+export function viewGroups({ hardwareOn, onToggleHardware, face = null }) {
+  const groups = [
+    {
+      key: "machine",
+      label: "The machine",
+      items: [
+        {
+          label: hardwareOn ? "Put the console away" : "Bring the console back",
+          icon: hardwareOn ? ChevronsDown : ChevronsUp,
+          now: !hardwareOn,
+          onSelect: onToggleHardware,
+        },
+      ],
+    },
+  ];
+
+  if (face) {
+    const options = [
+      { key: AUTO, label: `Automatic · ${face.mode === RADIO ? "Radio" : "Wheel"}`, icon: Wand2 },
+      { key: WHEEL, label: "Click wheel", icon: Disc },
+      { key: RADIO, label: "Radio keypad", icon: Radio },
+    ];
+    groups.push({
+      key: "face",
+      label: "Face",
+      items: options.map((option) => ({
+        label: option.label,
+        icon: option.icon,
+        now: face.chosen === option.key,
+        onSelect: () => face.onChoose(option.key),
+      })),
+    });
+  }
+
+  return groups;
+}
+
+// Two keys the machine keeps for the reader rather than for the surface they are on: what
+// they have marked to come back to, and the desk that answers when something needs
+// explaining. Neither is a drawer — a press goes there — so they stand to the right of the
+// menus that do open, the way a browser prints them.
+//
+// Bookmarks are a member's own marks, so a visitor is not shown a key that would open a
+// list they do not have; Help is the house's, and stands for everyone.
+export const BAR_REFERENCES = [
+  { key: "bookmarks", label: "Bookmarks", to: "/MyFavorites", icon: Bookmark, membersOnly: true },
+  { key: "help", label: "Help", to: "/HelpCenter", icon: CircleHelp },
+];
+
+export function barReferences({ isSignedIn }) {
+  return BAR_REFERENCES.filter((item) => !item.membersOnly || isSignedIn);
 }

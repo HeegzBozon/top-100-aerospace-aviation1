@@ -80,6 +80,10 @@ const choose = (next) => {
   announce();
 };
 
+// The choice made from the menu bar's View menu rather than by stepping the MODE key:
+// the same store, so the console and the surface print the face together.
+export const setConsoleMode = (next) => choose(next);
+
 const useChoice = () => {
   const [, force] = useState(0);
   useEffect(() => {

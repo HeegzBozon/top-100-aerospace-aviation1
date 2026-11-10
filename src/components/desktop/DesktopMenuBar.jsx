@@ -5,7 +5,8 @@ import { useAuth } from "@/lib/AuthContext";
 import { toggleViewingAsVisitor } from "@/lib/viewerPreview";
 import MenuBar, { KEY_CELL, MENU_CELL } from "@/components/shell/MenuBar";
 import MenuDropdown from "@/components/shell/MenuDropdown";
-import { menuGroups } from "@/components/shell/barMenus";
+import { barReferences, menuGroups, viewGroups } from "@/components/shell/barMenus";
+import { useDevice } from "@/components/handheld/HandheldShell";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import NotificationCenter from "@/components/notifications/NotificationCenter";
 import useHandheldDestinations from "@/components/handheld/useHandheldDestinations";
@@ -28,25 +29,34 @@ export default function DesktopMenuBar() {
   // machine must still be able to walk back out of it.
   const { realUser, viewingAsVisitor } = useAuth();
 
-  // Which drawer is down: the surface's own journey map, File, or Edit.
+  // The desk is put down from the bar now, so the bar has to be able to reach the state
+  // the shell holds: one machine, one answer, whichever hand lowers it.
+  const { hardwareOn, toggleHardware } = useDevice() || {};
+
+  // Which drawer is down: the surface's own journey map, File, Edit, or View.
   const [open, setOpen] = useState(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const locationKey = `${location.pathname}${location.search}`;
   const surface = useMemo(() => surfaceLabel(location, groups), [location, groups]);
 
-  const drawer = useMemo(
-    () =>
-      open === "file"
-        ? fileGroupsWith(menuGroups("file", { isSignedIn, isAdmin }))
-        : open === "edit"
-          ? editGroupsWith(menuGroups("edit", { isSignedIn, isAdmin }))
-          : groups,
-    [open, isSignedIn, isAdmin, groups],
-  );
+  const drawer = useMemo(() => {
+    if (open === "file") return fileGroupsWith(menuGroups("file", { isSignedIn, isAdmin }));
+    if (open === "edit") return editGroupsWith(menuGroups("edit", { isSignedIn, isAdmin }));
+    // The desk has no wheel to turn, so its View menu offers the machine and nothing it
+    // does not have: the face is a fitting of the glass.
+    if (open === "view") {
+      return viewGroups({ hardwareOn: hardwareOn !== false, onToggleHardware: toggleHardware });
+    }
+    return groups;
+  }, [open, isSignedIn, isAdmin, groups, hardwareOn, toggleHardware]);
 
   // The menu belongs to the surface it was opened on.
   useEffect(() => setOpen(null), [locationKey]);
+
+  // The reader's two keys. Bookmarks are a member's own list, so a visitor is never
+  // handed a key that opens nothing; Help stands for everyone.
+  const references = useMemo(() => barReferences({ isSignedIn }), [isSignedIn]);
 
   const toLogin = () => base44.auth.redirectToLogin(window.location.href);
 
@@ -74,8 +84,10 @@ export default function DesktopMenuBar() {
     navigate("/");
   };
 
-  // Which cell the open drawer hangs from.
-  const drawerOffset = open === "file" ? 0 : open === "edit" ? MENU_CELL : MENU_CELL * 2;
+  // Which cell the open drawer hangs from: File, Edit and View are the three words, and
+  // the surface's own journey map drops from the cell that names it.
+  const drawerOffset =
+    open === "file" ? 0 : open === "edit" ? MENU_CELL : open === "view" ? MENU_CELL * 2 : MENU_CELL * 3;
 
   return (
     <div className="mb-seat">
@@ -84,11 +96,18 @@ export default function DesktopMenuBar() {
         menuOpen={open === "surface"}
         fileOpen={open === "file"}
         editOpen={open === "edit"}
+        viewOpen={open === "view"}
         onHome={home}
         onBack={() => { setOpen(null); window.history.length > 1 ? navigate(-1) : navigate("/"); }}
         onMenu={() => toggle("surface")}
         onFile={() => toggle("file")}
         onEdit={() => toggle("edit")}
+        onView={() => toggle("view")}
+        references={references}
+        onReference={(reference) => {
+          setOpen(null);
+          navigate(reference.to);
+        }}
         onNotifications={() => (isSignedIn ? setNotificationsOpen(true) : toLogin())}
         showClock
         showViewAs={realUser?.role === "admin"}

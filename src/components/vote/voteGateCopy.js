@@ -28,7 +28,7 @@ export const howItWorks = {
     {
       name: CROSSCHECK,
       kind: 'Mini ranked choice',
-      steps: ['Four professionals are shuffled for you.', 'Tap your Commander, then Pilot, then Engineer.', 'The fourth takes the last seat. The set is recorded.'],
+      steps: ['Four professionals are shuffled for you.', 'Tap your Commander, then Pilot, then Engineer.', 'The fourth takes the last seat. The evaluation is recorded.'],
     },
   ],
 };
@@ -44,18 +44,18 @@ export const faq = {
     },
     {
       q: 'How are the two ballots different?',
-      a: 'The Manifest is your own list: you choose the professionals and set their order. The Crosscheck shuffles four professionals for you, and you put that set in order.',
+      a: 'The Manifest is your own list: you choose the professionals and set their order. The Crosscheck shuffles four professionals for you, and you put that evaluation in order.',
       note: 'Both are ranked choice',
     },
     {
       q: 'Can I change my order later?',
-      a: 'Your Manifest stays editable while the window is open. A Crosscheck set is final once recorded, so skip it or save it for later if you are unsure.',
+      a: 'Your Manifest stays editable while the window is open. A Crosscheck evaluation is final once recorded, so skip it or save it for later if you are unsure.',
       note: 'Edits close with the cycle',
     },
     {
       q: 'How long does it take?',
-      a: 'A Crosscheck set takes about a minute. Complete as many as you like, and return whenever you have a moment.',
-      note: 'Every set is a complete ballot',
+      a: 'A Crosscheck evaluation takes about a minute. Complete as many as you like, and return whenever you have a moment.',
+      note: 'Every evaluation is a complete ballot',
     },
     {
       q: 'Can placement be bought?',

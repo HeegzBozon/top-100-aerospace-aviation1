@@ -23,10 +23,14 @@ export default function ChinMenuBar({
   menuOpen,
   fileOpen,
   editOpen,
+  viewOpen,
   onHome,
   onMenu,
   onFile,
   onEdit,
+  onView,
+  references,
+  onReference,
   onNotifications,
   fileKey = "X",
   editKey = "Y",
@@ -57,11 +61,16 @@ export default function ChinMenuBar({
         menuOpen={menuOpen}
         fileOpen={fileOpen}
         editOpen={editOpen}
+        viewOpen={viewOpen}
         onHome={onHome}
         onMenu={onMenu}
         onFile={onFile}
         onEdit={onEdit}
+        onView={onView}
+        references={references}
+        onReference={onReference}
         onNotifications={onNotifications}
+        compactView
         showRouteBack
         showViewAs={realUser?.role === "admin"}
         viewingAsVisitor={viewingAsVisitor}

@@ -55,7 +55,7 @@ export default function LatestReviews({ data, loading, updatedAt, scope = 'commu
               </p>
               {set.is_test && !readingTests && (
                 <p className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: ink.soft }}>
-                  Test set · not measured
+                  Test evaluation · not measured
                 </p>
               )}
             </li>
@@ -69,8 +69,8 @@ export default function LatestReviews({ data, loading, updatedAt, scope = 'commu
           </p>
           <p className="mt-0.5 text-[9px] leading-snug" style={{ color: ink.soft }}>
             {readingTests
-              ? 'Walk the ballot as an administrator and the set lands here, held out of the count.'
-              : 'Sets appear here the moment a Fellow records one.'}
+              ? 'Walk the ballot as an administrator and the evaluation lands here, held out of the count.'
+              : 'Evaluations appear here the moment a Fellow records one.'}
           </p>
         </div>
       )}

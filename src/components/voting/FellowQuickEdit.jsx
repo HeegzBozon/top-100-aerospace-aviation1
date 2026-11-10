@@ -10,7 +10,7 @@ import { recordSurfaceFor, recordUrl } from '@/components/record/recordMenu';
 // ballot, so the same column offers the four surfaces a Fellow changes while reviewing —
 // each one opening the workspace on the surface that holds the field. It is a door, never a
 // second editor, and it carries nothing of the monitor's readings.
-const KEYS = ['view', 'card', 'availability', 'inbox'];
+const KEYS = ['interview', 'credentials', 'availability', 'inbox'];
 
 export default function FellowQuickEdit() {
   const keys = KEYS.map(recordSurfaceFor);
@@ -28,7 +28,7 @@ export default function FellowQuickEdit() {
           <PenLine className="h-3 w-3" style={{ color: ink.label }} />
         </span>
         <p className="text-[8.5px] font-bold uppercase tracking-[0.2em]" style={{ color: ink.label }}>
-          Your record
+          Your Profile
         </p>
       </div>
 
@@ -36,7 +36,7 @@ export default function FellowQuickEdit() {
         Something read wrong? Change it here.
       </p>
       <p className="mt-1 text-[11px] leading-relaxed" style={{ color: ink.soft }}>
-        Six surfaces, each one the lines it holds. The ballot never edits your record — the
+        Six surfaces, each one the lines it holds. The ballot never edits your profile — the
         workspace does.
       </p>
 
@@ -59,7 +59,7 @@ export default function FellowQuickEdit() {
       </ul>
 
       <Link
-        to={recordUrl('view')}
+        to={recordUrl('interview')}
         className="mt-3 inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full px-3 text-[10.5px] font-bold"
         style={{
           background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
@@ -67,7 +67,7 @@ export default function FellowQuickEdit() {
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 4px 10px -6px rgba(7,17,31,0.8)',
         }}
       >
-        Open your record <ArrowRight className="h-3 w-3" />
+        Open your profile <ArrowRight className="h-3 w-3" />
       </Link>
     </section>
   );

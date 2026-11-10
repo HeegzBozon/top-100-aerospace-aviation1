@@ -1,13 +1,13 @@
 import { createPortal } from "react-dom";
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 
-// The console's own key, floating on the picture.
+// The console's key, floating on the picture when the console is not.
 //
-// A handheld is a thing you put down. This is the one control that stays on the glass
-// when the case does not: a round key in the corner of the picture that lowers the whole
-// deck — the chin, the wheel or the radio's keypad, and the speaker with them — and lifts
-// it back. It is read like the phone's own assistive key: always there, one press, and it
-// never takes a surface's content away to do it.
+// Putting the machine down is a press in the bar's View menu; picking it up again cannot
+// be, because the bar goes with the case — on the glass it is cut into the chin, on the
+// desk it stands at the head of the tube. So this round copper key appears at the moment
+// the case does not, and is then the only control on the picture: one press, and the deck
+// and its bar come back exactly as they were.
 //
 // It is mounted on the document itself rather than inside the deck, because it has to
 // stand on the picture whatever frame, drawer or sheet the deck is drawn inside.

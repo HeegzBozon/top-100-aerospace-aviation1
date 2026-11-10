@@ -3,75 +3,48 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ArrowRight } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import useModalPicker from '@/components/handheld/useModalPicker';
-import {
-  MANIFEST,
-  CROSSCHECK,
-  BALLOT_DISTINCTION,
-  CROSSCHECK_LINE,
-} from '@/components/voting/ballotNaming';
+import { CROSSCHECK_LINE } from '@/components/voting/ballotNaming';
 
-// The committee's briefing: two surfaces, one objective each, and the method in three lines.
-// It replaces the old voter guide — which walked the
-// ballot's mechanics and read as instructions — with the work itself stated first, so a
-// new Fellow knows what the two surfaces are FOR before being told how to hold the keys.
-// It opens once, on the first pass through either surface, and is one press away after.
+// The committee's briefing, cut to the shape of the two ballots.
+//
+// It says three things and stops: what this ballot is called, what kind of ballot it is,
+// and how that kind of ballot is worked. The commission essay, the objective and the
+// method notes that used to stand here are gone — a Fellow holding the keys needs to know
+// what they are holding, not why the house keeps it.
 //
 // A surface asks for its own briefing — `section="vote"`, `section="nominate"` — and is
-// given that surface's objective alone. Nobody reading the vote is handed the nominating
-// ladder, and nobody filing a nomination is handed the ballot's.
+// given that surface's ballot alone.
 const BRIEFINGS = [
   {
     key: 'nominate',
-    kicker: MANIFEST,
-    lede: 'Your commission',
-    objective: 'Five hundred names are on your desk.',
-    body:
-      'Welcome, and thank you. This season you hold the desk of an aerospace media house: a field of more than five hundred professionals has been placed before you, and the Top 100 is yours to set. Nobody hands you a shortlist. You make one, and you say why.',
+    kicker: 'The first duty',
+    title: 'This is the Manifest.',
+    body: 'The Manifest is a ranked choice ballot.',
+    stepsTitle: 'This is how a ranked choice ballot works',
     steps: [
-      { label: 'Survey the field', line: 'Walk the season\u2019s professionals and read the records. Nothing is decided yet.' },
-      { label: 'Set your order', line: 'Add the ones you would vouch for, strongest first, each with a written reason.' },
-      { label: 'File the Manifest', line: 'Submit your order for the cycle. It stays editable while the window is open.' },
+      { label: 'Read the field', line: 'Every professional in the season, with their record.' },
+      {
+        label: 'Set your order',
+        line: 'Name them strongest first: a first, a second, a third, and on down the line.',
+      },
+      {
+        label: 'File it',
+        line: 'Submit the order for the cycle. It stays editable while the window is open.',
+      },
     ],
-    more: {
-      label: 'More on the commission',
-      lines: [
-        'Ranked choice records an order, not a favourite. Your second and third choices carry weight too, which is how a hundred seats get set from five hundred names.',
-        'Your draft keeps the order as you work. Nothing counts until you submit.',
-        'The field is yours to choose on the Manifest. In the Crosscheck, four names are shuffled and dealt to you.',
-      ],
-    },
   },
   {
     key: 'vote',
-    kicker: `${CROSSCHECK} · the weighing`,
-    lede: 'Your second duty',
-    objective: 'Four names at the table. One order.',
-    body:
-      'The Crosscheck is where the field is measured. Four professionals are shuffled and dealt to you, and you give them an order: who takes the left seat, who is next in line, who keeps the desk.',
+    kicker: 'The second duty',
+    title: 'This is the Crosscheck.',
+    body: 'The Crosscheck is a mini ranked choice ballot.',
+    stepsTitle: 'This is how the mini ranked choice ballot works',
     steps: [
-      {
-        label: 'First tap — Commander',
-        line: 'The one you would put in command.',
-      },
-      {
-        label: 'Second tap — Pilot',
-        line: 'The one next in line.',
-      },
-      {
-        label: 'Third tap — Flight Engineer',
-        line: 'The fourth takes the seat left standing. Set finished.',
-      },
+      { label: 'Four at random', line: 'You are shown four candidates at random.' },
+      { label: 'Your first', line: 'You pick your first favorite.' },
+      { label: 'Your second', line: 'Then your second.' },
+      { label: 'Your third', line: 'Then your third. Move on to the next evaluation.' },
     ],
-    more: {
-      label: 'More on the weighing',
-      lines: [
-        'The same method as the Manifest, four names deep. The names are shuffled for you, so no set is one you chose.',
-        'Every set you finish is one complete ballot. Skip a set and nothing is recorded. Hold it and it returns exactly as it was dealt.',
-      ],
-    },
-    // The measure itself, and the keys that hold it. Both stand here rather than in print
-    // laid over the set: the surface keeps the whole of its height for the four cards, and
-    // the words are one press away on every machine, glass and desk alike.
     note: CROSSCHECK_LINE,
     keys: [
       ['arrows / wheel', 'walk the four'],
@@ -82,14 +55,13 @@ const BRIEFINGS = [
   },
 ];
 
-// The method behind the manuscript: what a ranked ballot is, stated flat and in order,
-// before the ladder that says the work has been done. Nothing here names a tally or a
-// weight — a voter is owed the instrument's shape, never its arithmetic.
-function Steps({ steps }) {
+// How that kind of ballot is worked, stated flat and in order. Nothing here names a tally
+// or a weight — a voter is owed the instrument's shape, never its arithmetic.
+function Steps({ title, steps }) {
   return (
     <>
       <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}45` }}>
-        Your three moves
+        {title}
       </p>
       <ul className="mt-1">
         {steps.map((step, i) => (
@@ -117,7 +89,7 @@ function Steps({ steps }) {
 }
 
 export default function MissionBriefing({ open, onOpenChange, section = null, hasStarted = false }) {
-  // A surface's own briefing, or the whole committee's when none is named.
+  // A surface's own briefing, or both of the committee's when none is named.
   const briefs = section ? BRIEFINGS.filter((brief) => brief.key === section) : BRIEFINGS;
   const single = briefs.length === 1 ? briefs[0] : null;
   // The press that closes the briefing names the work waiting behind it: a Fellow who has
@@ -133,7 +105,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null, ha
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[440px] gap-0 overflow-hidden rounded-2xl border-0 p-0 [&>button]:right-3 [&>button]:top-3 [&>button]:opacity-60"
+        className="max-w-[420px] gap-0 overflow-hidden rounded-2xl border-0 p-0 [&>button]:right-3 [&>button]:top-3 [&>button]:opacity-60"
         style={{
           background: brand.cream,
           boxShadow: `0 0 0 1px ${brand.navy}14, 0 34px 64px -24px rgba(7,17,31,0.70)`,
@@ -146,15 +118,13 @@ export default function MissionBriefing({ open, onOpenChange, section = null, ha
 
         <div ref={bodyRef} className="max-h-[76vh] overflow-y-auto p-5">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: '#8F5C2C' }}>
-            {single?.lede || 'Mission briefing · two duties'}
+            {single?.kicker || 'The two duties'}
           </p>
           <DialogTitle className="mt-1 font-heading text-[21px] leading-tight" style={{ color: brand.navy }}>
-            {single ? single.objective : 'One season, two duties.'}
+            {single ? single.title : 'One season, two duties.'}
           </DialogTitle>
           <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
-            {single
-              ? single.body
-              : `A field to read and a field to weigh, one duty at a time. ${BALLOT_DISTINCTION} Each surface asks for one and does not borrow the other.`}
+            {single ? single.body : 'A field to set and a field to measure, one ballot each.'}
           </p>
 
           {single?.note && (
@@ -170,28 +140,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null, ha
             <section key={brief.key} className="mt-4 border-t pt-3" style={{ borderColor: `${brand.navy}14` }}>
               {single ? (
                 <>
-                  {brief.steps && <Steps steps={brief.steps} />}
-                  {brief.more && (
-                    <details className="mt-2">
-                      <summary
-                        className="cursor-pointer list-none text-[10px] font-bold uppercase tracking-[0.16em] marker:hidden"
-                        style={{ color: '#8F5C2C' }}
-                      >
-                        {brief.more.label} +
-                      </summary>
-                      <div className="mt-1.5 space-y-1.5">
-                        {brief.more.lines.map((line) => (
-                          <p
-                            key={line}
-                            className="text-[11px] leading-relaxed"
-                            style={{ color: `${brand.navy}80` }}
-                          >
-                            {line}
-                          </p>
-                        ))}
-                      </div>
-                    </details>
-                  )}
+                  {brief.steps && <Steps title={brief.stepsTitle} steps={brief.steps} />}
                   {brief.keys && (
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {brief.keys.map(([key, what]) => (
@@ -209,23 +158,14 @@ export default function MissionBriefing({ open, onOpenChange, section = null, ha
                 </>
               ) : (
                 <>
-                  <div className="flex items-baseline justify-between gap-3">
-                    <h3
-                      className="text-[9.5px] font-bold uppercase tracking-[0.2em]"
-                      style={{ color: brand.navy }}
-                    >
-                      {brief.kicker}
-                    </h3>
-                    <span
-                      className="text-[8px] font-bold uppercase tracking-[0.18em]"
-                      style={{ color: `${brand.navy}45` }}
-                    >
-                      Objective
-                    </span>
-                  </div>
-
+                  <p
+                    className="text-[9.5px] font-bold uppercase tracking-[0.2em]"
+                    style={{ color: brand.navy }}
+                  >
+                    {brief.kicker}
+                  </p>
                   <p className="mt-1 font-heading text-[16px] leading-snug" style={{ color: brand.navy }}>
-                    {brief.objective}
+                    {brief.title}
                   </p>
                   <p className="mt-1 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
                     {brief.body}

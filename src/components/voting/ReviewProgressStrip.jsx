@@ -33,7 +33,7 @@ export default function ReviewProgressStrip({
         </span>
         <span className="flex shrink-0 items-baseline gap-1.5 text-[9.5px] tabular-nums text-editorial-navy/55 md:text-[10px]">
           <span>
-            {reviews} {reviews === 1 ? 'set' : 'sets'}
+            {reviews} {reviews === 1 ? 'evaluation' : 'evaluations'}
           </span>
           <span className="text-editorial-navy/25">&middot;</span>
           <span className="font-semibold text-editorial-navy/75">
@@ -108,7 +108,7 @@ export default function ReviewProgressStrip({
         <PopoverContent
           align="start"
           sideOffset={6}
-          className="w-[min(340px,calc(100vw-24px))] rounded-xl border-0 bg-transparent p-0 shadow-none"
+          className="w-[min(340px,calc(100vw-24px))] rounded-xl border border-editorial-copper/25 bg-editorial-cream p-0 shadow-[0_26px_52px_-20px_rgba(7,17,31,0.55)]"
         >
           <VotingProgressPanel progress={lane} />
         </PopoverContent>

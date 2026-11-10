@@ -72,7 +72,7 @@ export default function LadderCelebration({ moment, onClose }) {
         <span aria-hidden className="ladder-ring" />
         <span aria-hidden className="ladder-ring ladder-ring-2" />
 
-        <p className="ladder-eyebrow">{level ? 'Office conferred' : 'Mark climbed'}</p>
+        <p className="ladder-eyebrow">{level ? 'Office conferred' : 'Division climbed'}</p>
 
         <h2 id="ladder-moment-name" className="ladder-name">
           {moment.name}
@@ -82,14 +82,16 @@ export default function LadderCelebration({ moment, onClose }) {
 
         <p className="ladder-figure">
           <span className="ladder-figure-n">{sets.toLocaleString('en-US')}</span>
-          <span className="ladder-figure-l">{sets === 1 ? 'set measured' : 'sets measured'}</span>
+          <span className="ladder-figure-l">
+            {sets === 1 ? 'evaluation measured' : 'evaluations measured'}
+          </span>
         </p>
 
         <p className="ladder-next">
           {next ? (
             <>
               Next <span className="font-semibold">{next.name}</span>, {away.toLocaleString('en-US')}{' '}
-              {away === 1 ? 'set' : 'sets'} away.
+              {away === 1 ? 'evaluation' : 'evaluations'} away.
             </>
           ) : (
             'The last office on the ladder. Nothing stands above it.'

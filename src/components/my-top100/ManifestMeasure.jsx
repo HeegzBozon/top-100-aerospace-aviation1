@@ -8,7 +8,7 @@ import { MANIFEST_TARGET, MANIFEST_CEILING, MANIFEST_MARKS } from '@/components/
 // quarter of the hundred, and anything carried past a hundred shows in a finer rose gold
 // band beneath it. The head takes a single struck pulse when the count lands on a mark —
 // the only reward it offers, and it offers it once.
-export default function ManifestMeasure({ count = 0, onOpenBriefing }) {
+export default function ManifestMeasure({ count = 0 }) {
   const total = Math.max(0, count || 0);
   const remaining = Math.max(0, MANIFEST_TARGET - total);
   const filled = Math.min(100, (total / MANIFEST_TARGET) * 100);
@@ -41,15 +41,6 @@ export default function ManifestMeasure({ count = 0, onOpenBriefing }) {
           <span className="font-heading text-[13px] leading-none text-editorial-navy/70">{total}</span> of{' '}
           {MANIFEST_TARGET}
         </p>
-        {onOpenBriefing && (
-          <button
-            type="button"
-            onClick={onOpenBriefing}
-            className="shrink-0 border border-editorial-copper/40 px-2 py-1 font-body text-[9px] font-bold uppercase tracking-[0.14em] text-editorial-navy transition-colors hover:bg-editorial-copper/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-copper/50"
-          >
-            How it works
-          </button>
-        )}
       </div>
 
       <div

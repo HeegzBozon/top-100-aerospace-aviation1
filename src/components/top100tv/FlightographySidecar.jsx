@@ -1,133 +1,89 @@
-import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, AlertCircle, Award, CheckCircle2 } from 'lucide-react';
+import { Award, CheckCircle2, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-/**
- * FlightographySidecar - Displays verified contributors to the selected program/stream
- * Fetches from getStreamContext endpoint for real-time talent graph data
- */
+// WHO IS BEHIND THE SIGNAL — the verified contributors bound to the programme a channel is
+// covering. A channel with no programme bound to it sits quiet rather than pretending.
 export default function FlightographySidecar({ stream }) {
-  // Fetch stream context from backend (indexed talent graph query)
-  const { data: contextData = null, isLoading, error } = useQuery({
+  const { data: contextData = null, isLoading } = useQuery({
     queryKey: ['streamContext', stream?.id],
     queryFn: async () => {
       if (!stream?.id) return null;
-      try {
-        const response = await base44.functions.invoke('getStreamContext', {
-          stream_id: stream.id,
-        });
-        return response.data;
-      } catch (err) {
-        console.error('[FlightographySidecar] Context fetch error:', err);
-        return null;
-      }
+      const response = await base44.functions.invoke('getStreamContext', {
+        stream_id: stream.id,
+      });
+      return response.data;
     },
     enabled: !!stream?.id,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    cacheTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60 * 1000,
+    retry: false,
   });
 
   const contributors = contextData?.verified_contributors || [];
   const program = contextData?.program;
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-black/40 to-black/60 border-t border-white/10 pt-4">
-      {/* Header */}
-      <div className="px-4 pb-3 border-b border-white/10">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-white mb-1">
-          Flightography
-        </h3>
-        {program && (
-          <p className="text-[10px] text-slate-400">
-            Contributors to {program.name}
-          </p>
-        )}
-      </div>
+    <section className="desk-plate flex min-h-0 flex-1 flex-col overflow-hidden">
+      <header className="border-b border-editorial-copper/30 px-3.5 py-2.5">
+        <p className="pd-label">Flightography</p>
+        <p className="mt-0.5 truncate text-[10.5px] text-editorial-cream/45">
+          {program ? `Contributors to ${program.name}` : 'No programme bound to this channel'}
+        </p>
+      </header>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+      <div className="min-h-0 flex-1 overflow-y-auto px-3.5 py-3">
         {isLoading && (
-          <div className="flex items-center justify-center py-8 gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
-            <span className="text-xs text-slate-400">Loading...</span>
+          <div className="flex items-center gap-2 py-6">
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-editorial-gold" />
+            <span className="text-[11px] text-editorial-cream/50">Reading the record</span>
           </div>
         )}
 
-        {error && (
-          <div className="flex items-start gap-2 p-2 rounded bg-red-500/10 border border-red-500/20">
-            <AlertCircle className="w-3 h-3 text-red-400 flex-shrink-0 mt-0.5" />
-            <span className="text-[10px] text-red-300">{error}</span>
-          </div>
-        )}
-
-        {!isLoading && !error && contributors.length === 0 && (
-          <p className="text-xs text-slate-400 text-center py-6">
-            No contributors found for this program.
+        {!isLoading && contributors.length === 0 && (
+          <p className="py-6 text-[11px] leading-relaxed text-editorial-cream/40">
+            Nothing is bound to this channel yet. When a programme is attached, the Fellows
+            who built it are listed here as the signal runs.
           </p>
         )}
 
-        {!isLoading && contributors.map(contributor => (
-          <div
-            key={contributor.person_id}
-            className="rounded-lg bg-white/5 border border-white/10 p-2.5 hover:bg-white/10 transition-colors"
-          >
-            {/* Avatar + Name */}
-            <div className="flex items-center gap-2 mb-1.5">
-              {contributor.avatar_url && (
-                <img
-                  src={contributor.avatar_url}
-                  alt={contributor.name}
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-white truncate">
+        {!isLoading &&
+          contributors.map((contributor) => (
+            <a
+              key={contributor.person_id}
+              href={contributor.profile_url || `/profiles/${contributor.person_id}`}
+              className="mb-2 block rounded-sm border border-editorial-cream/10 px-2.5 py-2 transition-colors hover:border-editorial-copper/50"
+            >
+              <div className="flex items-center gap-2">
+                {contributor.avatar_url && (
+                  <img
+                    src={contributor.avatar_url}
+                    alt=""
+                    className="h-6 w-6 rounded-full object-cover"
+                  />
+                )}
+                <p className="min-w-0 flex-1 truncate text-[12px] text-editorial-cream">
                   {contributor.name}
                 </p>
+                {contributor.status === 'Peer Verified' && (
+                  <CheckCircle2 className="h-3 w-3 flex-none text-editorial-gold" />
+                )}
               </div>
-              {contributor.status === 'Peer Verified' && (
-                <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+              {contributor.role && (
+                <p className="mt-1 truncate text-[10px] text-editorial-cream/55">
+                  {contributor.role}
+                </p>
               )}
-            </div>
-
-            {/* Role + Subsystem */}
-            {contributor.role && (
-              <p className="text-[10px] text-slate-300 mb-1">
-                {contributor.role}
-              </p>
-            )}
-
-            {contributor.subsystem && (
-              <p className="text-[9px] text-slate-500">
-                {contributor.subsystem}
-              </p>
-            )}
-
-            {/* Verified Badge */}
-            {contributor.status && (
-              <div className="mt-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-green-500/20 border border-green-500/30">
-                <Award className="w-2.5 h-2.5 text-green-400" />
-                <span className="text-[8px] font-semibold text-green-300">
-                  {contributor.status}
+              {contributor.status && (
+                <span className="mt-1.5 inline-flex items-center gap-1 border border-editorial-gold/35 px-1.5 py-0.5">
+                  <Award className="h-2.5 w-2.5 text-editorial-gold" />
+                  <span className="text-[8px] uppercase tracking-[0.14em] text-editorial-gold">
+                    {contributor.status}
+                  </span>
                 </span>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </a>
+          ))}
       </div>
-
-      {/* Footer CTA */}
-      {program && (
-        <div className="px-4 py-3 border-t border-white/10">
-          <a
-            href={`/articles/${program.program_id}`}
-            className="w-full block text-center px-3 py-1.5 rounded text-[10px] font-semibold bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 transition-colors"
-          >
-            View Full Program
-          </a>
-        </div>
-      )}
-    </div>
+    </section>
   );
 }

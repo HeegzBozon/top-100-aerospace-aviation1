@@ -1,4 +1,4 @@
-import { Bell, ChevronLeft, Home } from "lucide-react";
+import { Bell, ChevronLeft, Eye, Home } from "lucide-react";
 import RouteBackKey from "@/components/mobile/navigation/RouteBackKey";
 import ViewAsCell from "@/components/shell/ViewAsCell";
 import MenuBarClock from "@/components/shell/MenuBarClock";
@@ -58,6 +58,44 @@ function MenuCell({ label, hint, open, onClick }) {
   );
 }
 
+// The glass has no room for a third word, so the machine's own menu is reached by a
+// glyph of its own: the eye, at the width the bar's other keys take.
+function ViewKey({ open, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-open={open ? "true" : "false"}
+      aria-haspopup="menu"
+      aria-expanded={open}
+      aria-label="View menu"
+      role="menuitem"
+      className="mb-cell flex shrink-0 items-center justify-center"
+      style={{ color: open ? "var(--mb-ink-strong)" : "var(--mb-ink)", width: KEY_CELL }}
+    >
+      <Eye className="h-[15px] w-[15px]" strokeWidth={1.8} />
+    </button>
+  );
+}
+
+// A word that goes somewhere rather than dropping a list: Bookmarks and Help are one
+// press from anywhere, so they are printed in the bar and answered by the route, not by a
+// drawer. They take the width of their own word; nothing on the strip is measured from them.
+function WordKey({ label, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      role="menuitem"
+      className="mb-cell flex shrink-0 items-center whitespace-nowrap px-2.5 text-[8px] font-bold uppercase tracking-[0.20em]"
+      style={{ color: "var(--mb-ink)" }}
+    >
+      {label}
+    </button>
+  );
+}
+
 function BarKey({ label, onClick, children }) {
   return (
     <button
@@ -79,12 +117,22 @@ export default function MenuBar({
   menuOpen = false,
   fileOpen = false,
   editOpen = false,
+  viewOpen = false,
   onHome,
   onBack,
   onMenu,
   onFile,
   onEdit,
+  onView,
+  /* The reader's own keys — bookmarks and help — handed in already resolved, so a key a
+     visitor has no list behind never reaches the strip. Words on the desk, glyphs on the
+     glass, exactly like the machine's menu. */
+  references = [],
+  onReference,
   onNotifications,
+  /* The machine's own menu is a word on the desk and a glyph on the glass, where the
+     strip has no room for a third one. */
+  compactView = false,
   /* The operator's lens: drawn for an admin only, and never while the operator is
      standing in a visitor's place. */
   showViewAs = false,
@@ -123,6 +171,13 @@ export default function MenuBar({
 
       <MenuCell label="File" hint={fileHint} open={fileOpen} onClick={onFile} />
       <MenuCell label="Edit" hint={editHint} open={editOpen} onClick={onEdit} />
+      {onView ? (
+        compactView ? (
+          <ViewKey open={viewOpen} onClick={onView} />
+        ) : (
+          <MenuCell label="View" open={viewOpen} onClick={onView} />
+        )
+      ) : null}
 
       {/* Where you stand — and the journey drawer. The lamp is lit for the surface you
           are on, and the cell reads as pressed while the drawer stands. */}
@@ -149,6 +204,20 @@ export default function MenuBar({
           </span>
         ) : null}
       </button>
+
+      {/* The reader's own keys, kept at the end of the strip beside the bell — what they
+          have marked to come back to, and the desk that answers when something needs
+          explaining. Both are one press from anywhere on either machine. */}
+      {references.map((reference) => {
+        const Glyph = reference.icon;
+        return compactView ? (
+          <BarKey key={reference.key} label={reference.label} onClick={() => onReference?.(reference)}>
+            <Glyph className="h-[15px] w-[15px]" strokeWidth={1.8} />
+          </BarKey>
+        ) : (
+          <WordKey key={reference.key} label={reference.label} onClick={() => onReference?.(reference)} />
+        );
+      })}
 
       {showViewAs ? (
         <ViewAsCell viewingAsVisitor={viewingAsVisitor} onToggle={onToggleViewAs} />

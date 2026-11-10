@@ -1,12 +1,12 @@
-import BusinessCardPanel from '@/components/record/BusinessCardPanel';
 import { Link } from 'react-router-dom';
-import ViewSurface from './ViewSurface';
+import CredentialsSurface from './CredentialsSurface';
 import DataRoomSurface from './DataRoomSurface';
+import InterviewSurface from './InterviewSurface';
 import AvailabilitySurface from './AvailabilitySurface';
 import AccountSurface from './AccountSurface';
 
-// The editor for whichever of the six surfaces is open. Each one sits under its own
-// checklist, so a line that is missing is written where it is counted — and the six
+// The editor for whichever of the seven surfaces is open. Each one sits under its own
+// checklist, so a line that is missing is written where it is counted — and the seven
 // together are the profile page, not a page about it.
 export default function RecordSurface({
   surfaceKey,
@@ -15,33 +15,26 @@ export default function RecordSurface({
   settings,
   card,
   accent,
-  onSaveCard,
   onSaveDossier,
   onSaveSettings,
   onOpenStudio,
   onReload,
   tool,
+  block,
 }) {
-  if (surfaceKey === 'card') {
+  if (surfaceKey === 'credentials') {
     return (
-      <div className="mt-8">
-        <BusinessCardPanel
-          account={account}
-          card={card}
-          nominee={nominee}
-          onChange={onSaveCard}
-        />
-      </div>
+      <CredentialsSurface account={account} nominee={nominee} settings={settings} card={card} />
     );
   }
 
-  if (surfaceKey === 'view') {
-    return <ViewSurface account={account} nominee={nominee} settings={settings} />;
+  if (surfaceKey === 'dataroom') {
+    return <DataRoomSurface account={account} />;
   }
 
-  if (surfaceKey === 'dataroom') {
+  if (surfaceKey === 'interview') {
     return (
-      <DataRoomSurface
+      <InterviewSurface
         account={account}
         nominee={nominee}
         settings={settings}
@@ -50,6 +43,7 @@ export default function RecordSurface({
         onSaveSettings={onSaveSettings}
         onOpenStudio={onOpenStudio}
         onReload={onReload}
+        block={block}
       />
     );
   }

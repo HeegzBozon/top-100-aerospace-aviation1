@@ -23,7 +23,9 @@ export default function MenuDropdown({ open, groups, locationKey, onGo, onClose,
 
             {group.items.map((item) => {
               const Icon = item.icon;
-              const isActive = !!item.to && item.to === locationKey;
+              // An entry marks itself either by being the surface you are standing on or
+              // by being the state the machine is already in.
+              const isActive = item.now === true || (!!item.to && item.to === locationKey);
 
               return (
                 <button

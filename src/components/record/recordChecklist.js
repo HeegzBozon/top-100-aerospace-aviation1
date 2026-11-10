@@ -3,8 +3,9 @@ import { RECORD_SURFACES, recordUrl } from './recordMenu';
 // Where the line is actually written. The profile page is this workspace now, so a row
 // that pointed at the old editor points at the surface holding the field it names.
 const EDITOR_HOME = {
-  view: 'dataroom',
+  credentials: 'credentials',
   dataroom: 'dataroom',
+  interview: 'interview',
   availability: 'availability',
   inbox: 'availability',
   account: 'account',
@@ -100,32 +101,68 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
   const record = nominee || {};
   const config = settings || {};
   const businessCard = card || {};
+  const room = counts.room || {};
 
   const hireOpen = config.intent_hire_enabled === true;
   const commercialOpen = config.intent_commercial_enabled === true;
   const availabilityOpen = hireOpen || commercialOpen;
   const sixWord = config.six_word_story || account.six_word_story || '';
   const about = account.bio || record.bio_extended || record.bio || record.description || '';
-  const pitch = account.headline || record.title || record.professional_role || '';
   const portrait = account.avatar_url || record.avatar_url || record.photo_url || '';
 
   const rows = {
-    view: [
+    credentials: cardRows(businessCard),
+    // The room, counted by the reader it is filed for: one line per audience, because a
+    // folder opened for a founder is not the folder opened for an employer.
+    dataroom: [
+      item({
+        key: 'founder_file',
+        label: 'A founder folder',
+        hint: 'The one-pager, the deck and the numbers a founder reads.',
+        done: (room.founder || 0) > 0,
+        value: room.founder ? `${room.founder} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+      item({
+        key: 'investor_file',
+        label: 'An investor folder',
+        hint: 'Diligence: the numbers, the legal file, the references.',
+        done: (room.investor || 0) > 0,
+        value: room.investor ? `${room.investor} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+      item({
+        key: 'employer_file',
+        label: 'An employer folder',
+        hint: 'What a hiring desk reads before the first call.',
+        done: (room.employer || 0) > 0,
+        value: room.employer ? `${room.employer} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+      item({
+        key: 'employee_file',
+        label: 'An employee folder',
+        hint: 'What someone joining your team is owed: the role and the terms.',
+        done: (room.employee || 0) > 0,
+        value: room.employee ? `${room.employee} filed` : '',
+        to: recordUrl('dataroom'),
+      }),
+    ],
+    // The Interview: the profile itself. The reading a visitor is handed comes first, then
+    // the words and the documents that reading is made of — each edited where it is read.
+    interview: [
       item({ key: 'portrait', label: 'Portrait', hint: 'A clear photograph, cut square.', done: has(portrait), to: '/Profile' }),
-      item({ key: 'headline', label: 'Elevator pitch', hint: 'The line that sits under your name.', done: has(pitch), value: pitch, to: '/Profile' }),
-      item({ key: 'about', label: 'About', hint: 'What you work on and what you have shipped.', done: has(about), to: '/Profile' }),
-      item({ key: 'six_word', label: 'Six word story', hint: 'The whole record in six words.', done: has(sixWord), value: sixWord, to: '/Profile' }),
       item({
         key: 'verification',
         label: 'Verification checkpoint',
-        hint: 'A checkpoint on the record, never a score.',
+        hint: 'A checkpoint on the profile, never a score.',
         done: !!record.verified_status && record.verified_status !== 'unverified',
         value: record.verified_status ? record.verified_status.replace(/_/g, ' ') : '',
         to: '/Profile',
       }),
       item({
         key: 'eight',
-        label: 'Your TOP 100 on the record',
+        label: 'Your TOP 100 on the profile',
         hint: 'Your positions read publicly, in the order you set.',
         done: config.eight_public === true,
         to: '/selection-committee?tab=nominate',
@@ -133,13 +170,10 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
       item({
         key: 'dossier',
         label: 'Dossier available to enquirers',
-        hint: 'Lets a visitor take the one-page record with them.',
+        hint: 'Lets a visitor take the one-page profile with them.',
         done: config.dossier_enabled === true,
         to: '/Profile',
       }),
-    ],
-    card: cardRows(businessCard),
-    dataroom: [
       line('one_word', 'One word', 'The word a colleague would use about your work.', account.one_word, {
         placeholder: 'RELENTLESS',
         maxLength: 24,

@@ -8,7 +8,7 @@ import ManifestMeasure from '@/components/my-top100/ManifestMeasure';
 // the plate beneath it rather than in a card of its own. The title is the platform's — a
 // Fellow's list is named for what it is — so the head carries no rename key and opens
 // straight into the line below it.
-export default function ManifestMasthead({ listName, saving, count, onOpenBriefing }) {
+export default function ManifestMasthead({ listName, saving, count }) {
   return (
     <div className="relative overflow-hidden border border-b-0 border-editorial-copper/30 bg-editorial-sand/50 px-4 pb-3.5 pt-3.5">
       <span className="absolute inset-x-0 top-0 h-[2px] bg-editorial-copper" aria-hidden="true" />
@@ -22,7 +22,7 @@ export default function ManifestMasthead({ listName, saving, count, onOpenBriefi
         )}
       </div>
 
-      <ManifestMeasure count={count} onOpenBriefing={onOpenBriefing} />
+      <ManifestMeasure count={count} />
     </div>
   );
 }
