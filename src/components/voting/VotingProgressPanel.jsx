@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Info } from 'lucide-react';
 import { brand, ink } from '@/components/nominate/NominateConfig';
 import MilestoneRail from '@/components/voting/MilestoneRail';
+import LadderChart from '@/components/voting/LadderChart';
 import { markAhead, markReached } from '@/components/voting/ladderMarks';
 
 // The contribution ladder, drawn from the record rather than from the session: every
@@ -8,6 +10,9 @@ import { markAhead, markReached } from '@/components/voting/ladderMarks';
 // work. Progress is feedback only — nothing on this panel is read by discovery,
 // ranking, or scoring.
 export default function VotingProgressPanel({ progress, compact = false }) {
+  // The chart is asked for, never imposed: one small key opens the whole ladder beside the
+  // record, and the panel stays the size it was until a reader wants the climb.
+  const [chartOpen, setChartOpen] = useState(false);
   if (!progress) return null;
 
   // The measure is the division, not the office: a Fellow's work should move the bar every
@@ -61,11 +66,31 @@ export default function VotingProgressPanel({ progress, compact = false }) {
           style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${brand.navy}, ${brand.gold})` }}
         />
       </div>
-      <p className="mt-1.5 text-[10px]" style={{ color: ink.soft }}>
-        {ahead
-          ? `${left} ${left === 1 ? 'evaluation' : 'evaluations'} to ${ahead.name}`
-          : 'Every division climbed.'}
-      </p>
+      <div className="mt-1.5 flex items-center justify-between gap-2">
+        <p className="text-[10px]" style={{ color: ink.soft }}>
+          {ahead
+            ? `${left} ${left === 1 ? 'evaluation' : 'evaluations'} to ${ahead.name}`
+            : 'Every division climbed.'}
+        </p>
+        <button
+          type="button"
+          onClick={() => setChartOpen((open) => !open)}
+          aria-expanded={chartOpen}
+          aria-controls="analyst-ladder-chart"
+          aria-label="Ranking chart"
+          title="Ranking chart"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors"
+          style={{
+            color: chartOpen ? brand.cream : ink.soft,
+            background: chartOpen ? brand.navy : `${brand.navy}0d`,
+            border: `1px solid ${brand.navy}24`,
+          }}
+        >
+          <Info className="h-3 w-3" />
+        </button>
+      </div>
+
+      {chartOpen && <LadderChart completed={completed} currentName={behind?.name} />}
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {figures.map((f) => (

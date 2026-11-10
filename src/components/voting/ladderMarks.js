@@ -1,13 +1,14 @@
 // The Analyst ladder, read the way a division ladder is read.
 //
 // Five offices, three divisions under each: a Fellow climbs the divisions of an office
-// before the next office is conferred — Associate III, Associate II, Associate I, then
-// Analyst III, and on to Principal I. The office floors are the shared table's
+// before the next office is conferred — Associate I, Associate II, Associate III, then
+// Analyst I, and on to Principal III. The office floors are the shared table's
 // (base44/shared/votingProgress.ts), and the divisions sit on even thirds of each office's
 // stretch, so a division is never more than a third of an office away.
 //
-// The III of every office is that office standing: it is the rung the house reads as a
-// promotion, the one the Flight Plan opens with, and the one drawn taller on the rail.
+// The numeral rises with the work: III stands above II, and II above I, so the III of an
+// office is that office standing — the rung the house reads as a promotion, the one the
+// Flight Plan opens with, and the one drawn taller on the rail.
 //
 // Nothing here is measurement. A division is a recognition of service, never a weight, and
 // the ladder is never read by discovery, ordering or scoring.
@@ -25,7 +26,7 @@ const OFFICES = [
   { level: 5, office: 'Principal Analyst', tier: 'Principal', divisions: [500, 600, 700] },
 ];
 
-const DIVISION_NUMERALS = ['III', 'II', 'I'];
+const DIVISION_NUMERALS = ['I', 'II', 'III'];
 
 export const LADDER_MARKS = OFFICES.flatMap((entry) =>
   entry.divisions.map((sets, index) => ({

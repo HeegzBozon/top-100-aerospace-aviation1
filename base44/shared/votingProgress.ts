@@ -44,30 +44,31 @@ export const LEVELS = [
 ].map((step) => ({ ...step, at: step.sets * XP_PER_SET }));
 
 // The ladder, stated in divisions. Five offices, three divisions under each: a Fellow
-// climbs the divisions of an office before the next office is conferred — Associate III,
-// Associate II, Associate I, then Analyst III, and on to Principal I. The offices turn over
-// at the floors above; the divisions between them sit on even thirds of each office's
+// climbs the divisions of an office before the next office is conferred — Associate I,
+// Associate II, Associate III, then Analyst I, and on to Principal III. The offices turn
+// over at the floors above; the divisions between them sit on even thirds of each office's
 // stretch, so a division is never more than a third of an office away.
 //
-// The III of every office is that office standing: it carries the level, and it is the rung
-// a promotion is read at. Each division is recognition only — it confers no influence and is
-// never read by measurement, ordering or discovery.
+// The numeral rises with the work: III stands above II, and II above I, so the III of an
+// office is that office standing — the rung a promotion is read at. Each division is
+// recognition only — it confers no influence and is never read by measurement, ordering or
+// discovery.
 export const LADDER_MARKS = [
-  { sets: 0, name: 'Associate III', level: 1 },
+  { sets: 0, name: 'Associate I', level: 1 },
   { sets: 10, name: 'Associate II' },
-  { sets: 20, name: 'Associate I' },
-  { sets: ANALYST_SETS, name: 'Analyst III', level: 2 },
+  { sets: 20, name: 'Associate III' },
+  { sets: ANALYST_SETS, name: 'Analyst I', level: 2 },
   { sets: 62, name: 'Analyst II' },
-  { sets: 93, name: 'Analyst I' },
-  { sets: 125, name: 'Senior III', level: 3 },
+  { sets: 93, name: 'Analyst III' },
+  { sets: 125, name: 'Senior I', level: 3 },
   { sets: 183, name: 'Senior II' },
-  { sets: 242, name: 'Senior I' },
-  { sets: 300, name: 'Lead III', level: 4 },
+  { sets: 242, name: 'Senior III' },
+  { sets: 300, name: 'Lead I', level: 4 },
   { sets: 367, name: 'Lead II' },
-  { sets: 433, name: 'Lead I' },
-  { sets: PRINCIPAL_SETS, name: 'Principal III', level: 5 },
+  { sets: 433, name: 'Lead III' },
+  { sets: PRINCIPAL_SETS, name: 'Principal I', level: 5 },
   { sets: 600, name: 'Principal II' },
-  { sets: 700, name: 'Principal I' },
+  { sets: 700, name: 'Principal III' },
 ];
 
 export const SET_MILESTONES = LADDER_MARKS.map((mark) => mark.sets);
