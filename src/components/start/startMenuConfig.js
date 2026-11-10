@@ -1,4 +1,4 @@
-import { Award, BookOpen, CalendarDays, Globe, Inbox, LogIn, Newspaper, Shield, Store, UserPlus, Users } from "lucide-react";
+import { Award, BookOpen, CalendarDays, Globe, Handshake, Inbox, LogIn, Newspaper, Shield, Store, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -35,13 +35,17 @@ export const START_MENU = [
   // calendar and is asked for an account only when they stand in a room.
   { key: "review", index: "06", label: "Review", to: "/review", icon: BookOpen },
   { key: "conferences", index: "07", label: "Events", to: "/conferences", icon: CalendarDays },
-  // The house's trading floor, closing the row: the App Store and the Gift Shop under one
+  // The house's trading floor: the App Store and the Gift Shop under one
   // roof rather than as two keys on a menu that only has room for programs. It is itself a
   // menu — turn to walk its two counters, # to open one. Public: every artifact on the
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
   // The App Store now holds the Chamber of Commerce as one of its keys.
   { key: "app-store", index: "08", label: "App Store", to: "/app-store", icon: Store },
+  // The offer, on the menu rather than three presses inside it. The media kit is the one
+  // public document the institution sells patronage from — attribution, never placement —
+  // so it stands as a program of its own and closes the row.
+  { key: "media-kit", index: "09", label: "Media Kit", to: "/mediakit", icon: Handshake },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -49,7 +53,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "09",
+  index: "10",
   label: "Admin",
   to: "/Admin",
   icon: Shield,
