@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PatronHero from '@/components/patronage/PatronHero';
+import PatronDeck from '@/components/patronage/deck/PatronDeck';
 import PatronAudienceLedger from '@/components/patronage/PatronAudienceLedger';
 import PatronBundle from '@/components/patronage/PatronBundle';
 import PatronRateCard from '@/components/patronage/PatronRateCard';
@@ -29,6 +30,8 @@ export default function Patronage() {
   return (
     <div className="min-h-screen" style={{ background: P.cream }}>
       <PatronHero />
+      {/* The kit opens as a deck: the argument in six slides, before the detail below it */}
+      <PatronDeck />
       <PatronAudienceLedger />
       <PatronBundle />
       <PatronRateCard />
