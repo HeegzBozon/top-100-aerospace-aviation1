@@ -28,7 +28,7 @@ export default function NewsstandTabs({ tabs = [], activeKey, onSelect }) {
               transition: 'color 160ms ease',
             }}
           >
-            <span>{tab.label}</span>
+            <span className="min-w-0 text-center leading-tight">{tab.label}</span>
             <span
               className="font-heading text-[10px] leading-none tabular-nums"
               style={{ color: on ? C.copper : 'rgba(30,58,90,0.32)' }}

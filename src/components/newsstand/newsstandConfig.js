@@ -15,7 +15,7 @@ export const NEWSSTAND_TABS = [
       { key: 'articles', label: 'Articles' },
     ],
   },
-  { key: 'series', label: 'Series', subs: [] },
+  { key: 'series', label: 'TOP Viral Posts', subs: [] },
   {
     key: 'notes',
     label: 'Notes',
@@ -60,7 +60,7 @@ export const RACKS = [
   {
     key: 'series',
     tab: 'series',
-    label: 'The series',
+    label: 'TOP Viral Posts',
     kicker: 'Top Viral Posts',
     blurb:
       "The posts the house has staged in its Top Viral Posts series, printed in the order the series runs. Each is read on a page of its own, and the reach printed with it belongs to the post, never to a Fellow's standing.",
