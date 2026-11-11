@@ -126,9 +126,9 @@ export function useReadAlong({
   // moves a word at a time; the page is drawn towards a new standing every frame, so the two
   // never land as one visible jump.
   const targetRef = useRef(null);
-  // The word being read, readable without waiting for a render — the page resets it the
-  // moment it becomes the page being read.
-  const indexRef = useRef(0);
+  // True for the one pass that follows a page being collected: the mark has been reset to the
+  // page's first word, so that pass must not read the index the last page was left at.
+  const freshRef = useRef(true);
   const pace = typeof speed === 'number' && speed > 0 ? speed : 1;
 
   // Collect the page's copy when the page becomes the one being read, and let go of it the
@@ -136,7 +136,7 @@ export function useReadAlong({
   useEffect(() => {
     const el = containerRef.current;
     wordsRef.current = el && enabled ? wordsOf(el) : [];
-    indexRef.current = 0;
+    freshRef.current = true;
     targetRef.current = null;
     setIndex(0);
     setYielded(false);
@@ -152,16 +152,16 @@ export function useReadAlong({
   useEffect(() => {
     const el = containerRef.current;
     const words = wordsRef.current;
+    // A page that has just been collected starts at its first word, whatever the index the
+    // page before it was left at still says.
+    const fresh = freshRef.current;
+    freshRef.current = false;
     if (!el || !enabled || !words.length) {
       setCursor(null);
       targetRef.current = null;
       return;
     }
-    // Read through the ref, not the state: when the film turns to another page the mark is
-    // reset before this runs, so a new page is never read at the index the old one was left
-    // at — which used to send a fresh page hunting down to a word nobody was reading.
-    const at = Math.min(indexRef.current, words.length - 1);
-    indexRef.current = at;
+    const at = fresh ? 0 : Math.min(index, words.length - 1);
     const box = boxOf(el, words[at]);
     if (!box) {
       setCursor(null);
@@ -218,13 +218,9 @@ export function useReadAlong({
     const hand = () => setYielded(true);
     el.addEventListener('wheel', hand, { passive: true });
     el.addEventListener('touchstart', hand, { passive: true });
-    // ...and a press on the page or its scroll bar, so dragging the page by hand is never
-    // drawn back under the word while the thumb is still holding it.
-    el.addEventListener('pointerdown', hand);
     return () => {
       el.removeEventListener('wheel', hand);
       el.removeEventListener('touchstart', hand);
-      el.removeEventListener('pointerdown', hand);
     };
   }, [containerRef, enabled]);
 
