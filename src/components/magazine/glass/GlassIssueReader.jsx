@@ -3,7 +3,7 @@ import { BookOpen, List } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { useNavHint } from '@/components/handheld/faceHint';
-import { useCinematicPlayback, PLAYBACK_SPEEDS, SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
+import { useCinematicPlayback, PLAYBACK_SPEEDS, SKIM_SPEED, isTimedSpeed } from '@/components/magazine/useCinematicPlayback';
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
 import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
@@ -59,7 +59,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     const next = !readAlong;
     setReadAlong(next);
     if (next) {
-      if (speed === SKIM_SPEED) setSpeed(1);
+      if (speed === SKIM_SPEED || isTimedSpeed(speed)) setSpeed(1);
       setIsPlaying(true);
       if (view === 'contents') setView('page');
     }
@@ -195,6 +195,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     pages,
     isPlaying,
     speed,
+    readAlong,
   });
 
   useEffect(() => {
@@ -263,6 +264,8 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   positionRef.current = position;
   const playingRef = useRef(isPlaying);
   playingRef.current = isPlaying;
+  const readAlongRef = useRef(readAlong);
+  readAlongRef.current = readAlong;
   const listRef = useRef(listRows);
   listRef.current = listRows;
   const foldRef = useRef(fold);
@@ -289,7 +292,9 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
       // sections, walked on the same ring.
       step: (direction) => {
         if (viewRef.current !== 'page') return land(cursorRef.current + direction);
-        if (rollPage(direction)) return true;
+        // With read along on, the mark already draws the page after the word: the ring turns
+        // instead of rolling, so it never pulls the page out from under the word being read.
+        if (!readAlongRef.current && rollPage(direction)) return true;
         return turn(direction, direction < 0);
       },
       // Back and forward on the ring turn the pages.
@@ -348,7 +353,10 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
         speed={speed}
         onCycleSpeed={() => {
           const i = PLAYBACK_SPEEDS.indexOf(speed);
-          setSpeed(PLAYBACK_SPEEDS[(i + 1) % PLAYBACK_SPEEDS.length]);
+          const next = PLAYBACK_SPEEDS[(i + 1) % PLAYBACK_SPEEDS.length];
+          // A skim is not a pace a word can be followed at, so the mark comes off with it.
+          if (next === SKIM_SPEED || isTimedSpeed(next)) setReadAlong(false);
+          setSpeed(next);
         }}
         readAlong={readAlong}
         onToggleReadAlong={toggleReadAlong}

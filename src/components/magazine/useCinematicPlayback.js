@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { readAlongDwell } from '@/components/magazine/readAlong';
 
 // How long a page is held, so a film of the issue can be read rather than watched.
 //
@@ -139,7 +140,7 @@ export const speedLabel = (speed) => {
  * @param {number}   opts.speed           — playback speed multiplier
  * @returns {{ progress: number, dwellMs: number }}
  */
-export function useCinematicPlayback({ currentPageIndex, totalPages, goNext, pages, isPlaying, speed }) {
+export function useCinematicPlayback({ currentPageIndex, totalPages, goNext, pages, isPlaying, speed, readAlong = false }) {
   const [progress, setProgress] = useState(0);
   const goNextRef = useRef(goNext);
   goNextRef.current = goNext;
@@ -153,11 +154,18 @@ export function useCinematicPlayback({ currentPageIndex, totalPages, goNext, pag
   );
   // A timed run gives each page the beat the timeline hands it; a skimmed page is not read, so
   // it is not held for its words either — one short beat each.
-  const adjustedDwell = timed
+  const pacedDwell = timed
     ? (timeline?.[currentPageIndex] ?? MIN_TIMED_DWELL)
     : speed === SKIM_SPEED
       ? SKIM_DWELL
       : baseDwell / (speed || 1);
+  // Read along is one clock for the page, not two: the hold becomes the time its words
+  // actually take, at the pace the reader is following them (see readAlongDwell). A page
+  // with nothing to follow keeps the hold its kind deserves.
+  const followed = readAlong
+    ? readAlongDwell(page, typeof speed === 'number' && speed > 0 ? speed : 1)
+    : 0;
+  const adjustedDwell = followed > 0 ? followed : pacedDwell;
 
   useEffect(() => {
     setProgress(0);

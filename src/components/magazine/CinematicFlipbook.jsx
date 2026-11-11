@@ -170,6 +170,7 @@ export default function CinematicFlipbook({
     pages,
     isPlaying,
     speed,
+    readAlong,
   });
 
   // A timed film turns its pages on its own clock, so a page's roll is scaled to the beat it is
@@ -224,6 +225,19 @@ export default function CinematicFlipbook({
     if (carriesCopy(pages[currentPage + 1])) return currentPage + 1;
     return currentPage;
   }, [readAlong, pages, currentPage]);
+
+  // Read along moves one page. While a page in the spread is being followed, the rest of the
+  // spread stands still rather than rolling a second page under the reader: the facing page is
+  // looked at, not read, and its roll would pull the eye off the word being followed. Nothing
+  // changes when read along is off, or when the spread carries no words to follow.
+  const spreadFollowed = readAlong && carriesCopy(pages[readAlongPage]);
+
+  // A skim or a timed run is not a pace a word can be followed at, so choosing one hands the
+  // page back to the film: the mark comes off with the pace.
+  const chooseSpeed = useCallback((value) => {
+    if (value === SKIM_SPEED || isTimedSpeed(value)) setReadAlong(false);
+    setSpeed(value);
+  }, [setSpeed]);
 
   // Reading it again: this reader's pass on this issue is wiped as the issue opens, so the
   // title screen reads Start again rather than the pass just finished.
@@ -380,7 +394,7 @@ export default function CinematicFlipbook({
                 pageNumber={currentPage + 1}
                 totalPages={totalPages}
                 playing={isPlaying}
-                autoscroll
+                autoscroll={!spreadFollowed}
                 reading
                 readAlong
                 pages={pages}
@@ -443,7 +457,7 @@ export default function CinematicFlipbook({
                       pageNumber={i + 1}
                       totalPages={totalPages}
                       playing={isPlaying && open}
-                      autoscroll={open}
+                      autoscroll={open && !spreadFollowed}
                       active={open}
                       readAlong={readAlong && i === readAlongPage}
                       pages={pages}
@@ -531,7 +545,7 @@ export default function CinematicFlipbook({
         <span className="w-9 text-[10px] font-bold tabular-nums" style={{ color: P.gold }} aria-hidden={!isPlaying}>
           {isPlaying ? `${Math.round(progress * 100)}%` : ''}
         </span>
-        <SpeedSelector speed={speed} onChange={setSpeed} />
+        <SpeedSelector speed={speed} onChange={chooseSpeed} />
         <ReadAlongToggle on={readAlong} onToggle={toggleReadAlong} />
         <button
           onClick={flipNext}

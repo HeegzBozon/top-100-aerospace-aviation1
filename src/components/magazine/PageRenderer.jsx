@@ -135,18 +135,22 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   // type — the masthead mark, the issue, the rule, and the credit stack — which is how
   // an institutional publication covers an edition rather than leaving a navy blank.
   if (page.layout_type === 'cover') {
-    // A cover supplied as finished artwork carries its own type, so it is shown as printed;
-    // a cover composed here draws the masthead, the issue and the rule over the plate.
-    const drawCopy = (page.content_blocks || []).length > 0;
+    // Three covers in one. Art the composer laid on the page is drawn with the copy set over
+    // it; the issue's own cover plate — the finished artwork the edition was announced with —
+    // is printed exactly as it was designed, because it already carries the masthead, the
+    // issue and the invitation; and a cover with neither is set in type.
+    const art = bg || issue.cover_image_url || null;
+    const composed = (page.content_blocks || []).some((block) => block.type !== 'kicker');
+    const drawCopy = composed || (!art && (page.content_blocks || []).length > 0);
     return (
       <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
-        {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-        {bg && drawCopy && (
+        {art && <img src={art} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+        {art && drawCopy && (
           <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(7,15,31,0.3) 0%, rgba(7,15,31,0.7) 100%)' }} />
         )}
         <div className="relative w-full h-full flex flex-col items-center justify-center p-8 text-center">
           {!drawCopy ? null : <>
-          {!bg && (
+          {!art && (
             <>
               <span className="absolute" style={{ inset: '14px', border: `1px solid ${P.gold}45` }} />
               <span
@@ -281,21 +285,42 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   // Chapter divider: a part of the book, or one region of the index opened by its own
   // line — what the opening carries, stated before a reader turns into it.
   if (page.layout_type === 'chapter_divider') {
-    const carries = blocks[0]?.type === 'body' ? blocks[0].text : '';
+    const carries = blocks.find((block) => block.type === 'body')?.text || '';
+    // Where this part falls in the book: the dividers are counted off the issue itself, so a
+    // divider says "Part 01 of 02" without the composer having to number them by hand.
+    const parts = pages.filter((entry) => entry.layout_type === 'chapter_divider');
+    const at = parts.findIndex((entry) => entry.id === page.id);
+    const number = page.chapter_number ?? (at >= 0 ? at + 1 : null);
+    const counted = at >= 0 && parts.length > 1
+      ? `Part ${String(at + 1).padStart(2, '0')} of ${String(parts.length).padStart(2, '0')}`
+      : 'Part';
+
     return (
-      <div className="relative w-full h-full flex flex-col items-center justify-center p-8 text-center" style={{ background: P.navy }}>
-        {page.chapter_number != null && (
-          <span className="font-serif text-4xl sm:text-5xl mb-2 ppc-rise" style={{ color: P.gold, opacity: 0.45 }}>{String(page.chapter_number).padStart(2, '0')}</span>
+      <div className="relative w-full h-full overflow-hidden flex flex-col items-center justify-center p-8 text-center" style={{ background: P.navy }}>
+        <span className="text-[8px] font-bold uppercase tracking-[0.38em] ppc-rise" style={{ color: P.gold }}>
+          {counted}
+        </span>
+        {number != null && (
+          <span className="mt-4 font-serif text-6xl leading-none ppc-rise" style={{ color: P.gold, opacity: 0.34, animationDelay: '0.15s' }}>
+            {String(number).padStart(2, '0')}
+          </span>
         )}
-        <div className="w-10 h-px my-3 ppc-rise" style={{ background: P.gold, animationDelay: '0.2s' }} />
-        <h2 className="font-serif text-2xl sm:text-3xl ppc-rise" style={{ color: P.cream, animationDelay: '0.3s' }}>
+        <div className="my-5 h-px w-14 ppc-rise" style={{ background: P.copper, animationDelay: '0.25s' }} />
+        <h2 className="font-serif text-3xl leading-tight ppc-rise" style={{ color: P.cream, animationDelay: '0.3s' }}>
           {page.chapter_label || 'Chapter'}
         </h2>
         {carries && (
-          <p className="text-[11px] mt-3 ppc-rise" style={{ color: 'rgba(250,248,245,0.6)', animationDelay: '0.45s' }}>
+          <p
+            className="mt-4 max-w-[26ch] font-serif text-[12.5px] italic leading-relaxed ppc-rise"
+            style={{ color: 'rgba(250,248,245,0.68)', animationDelay: '0.45s' }}
+          >
             {carries}
           </p>
         )}
+        <div className="mt-8 h-px w-8" style={{ background: `${P.gold}45` }} />
+        <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.28em]" style={{ color: 'rgba(250,248,245,0.45)' }}>
+          {issue.title}
+        </p>
       </div>
     );
   }
@@ -309,15 +334,42 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     const read = blocks.filter((b) => b.type === 'body');
 
     if (!read.length) {
+      // The breakaway quote is the one page in the book that changes key: printed on the navy
+      // plate rather than the paper, so it reads as a full stop between two movements — the
+      // house line at its head, the quote at the size of the page, and its attribution ruled
+      // off beneath it.
       return (
-        <div className="relative w-full h-full flex flex-col items-center justify-center p-10 text-center" style={{ background: P.cream }}>
-          <div className="text-6xl font-serif leading-none mb-4" style={{ color: P.gold, opacity: 0.3 }}>“</div>
-          <p className="font-serif text-lg sm:text-xl leading-relaxed ppc-rise" style={{ color: P.navy }}>
-            {quoteBlock.text || 'A pull quote will appear here.'}
+        <div className="relative w-full h-full overflow-hidden flex flex-col justify-between p-8" style={{ background: P.navy }}>
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-[8px] font-bold uppercase tracking-[0.32em]" style={{ color: P.gold }}>TOP 100</p>
+            {kicker?.text && (
+              <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: 'rgba(201,168,124,0.72)' }}>
+                {kicker.text}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <div className="mb-3 font-serif text-5xl leading-none" style={{ color: P.gold, opacity: 0.42 }}>&ldquo;</div>
+            <p className="font-serif text-[21px] leading-[1.3] ppc-rise" style={{ color: P.cream }}>
+              {quoteBlock.text || 'A pull quote will appear here.'}
+            </p>
+            {quoteBlock.attribution && (
+              <>
+                <div className="mt-6 h-px w-10" style={{ background: P.copper }} />
+                <p
+                  className="mt-3 text-[8.5px] font-bold uppercase tracking-[0.26em] ppc-rise"
+                  style={{ color: P.gold, animationDelay: '0.2s' }}
+                >
+                  {quoteBlock.attribution}
+                </p>
+              </>
+            )}
+          </div>
+
+          <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: 'rgba(250,248,245,0.42)' }}>
+            {issue.cover_kicker || issue.title}
           </p>
-          {quoteBlock.attribution && (
-            <p className="text-xs mt-6 ppc-rise" style={{ color: P.copper, animationDelay: '0.2s' }}>— {quoteBlock.attribution}</p>
-          )}
         </div>
       );
     }
@@ -382,15 +434,83 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     );
   }
 
-  // Masthead
+  // Masthead: the issue's own front matter — what this book is, who made it, and the line it
+  // opens on. It is printed on the paper rather than on a plate: the house line and the issue
+  // ruled across the head, the title set as a title, the preface beneath it, and the men and
+  // women who made the book listed under their parts.
   if (page.layout_type === 'masthead') {
+    const contributors = issue.contributors || [];
+    const foot = [
+      issue.issue_number ? `Issue ${issue.issue_number}` : null,
+      (issue.sections || []).length ? `${(issue.sections || []).length} parts` : null,
+      `${totalPages} pages`,
+    ].filter(Boolean).join(' · ');
+
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center" style={{ background: P.cream }}>
-        <span className="text-[10px] font-bold uppercase tracking-[0.4em] mb-4" style={{ color: P.gold }}>TOP 100</span>
-        <h2 className="font-serif text-xl mb-2" style={{ color: P.navy }}>{issue.title}</h2>
-        {issue.subtitle && <p className="text-xs" style={{ color: 'rgba(30,58,90,0.5)' }}>{issue.subtitle}</p>}
-        <div className="w-10 h-px my-6" style={{ background: P.copper }} />
-        {issue.preface && <p className="text-xs leading-relaxed max-w-xs" style={{ color: 'rgba(30,58,90,0.7)' }}>{issue.preface}</p>}
+      <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
+        <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <div className="px-6 pb-7 pt-7 sm:px-8">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-[8px] font-bold uppercase tracking-[0.3em]" style={{ color: P.navy }}>
+                TOP 100 · Aerospace &amp; Aviation
+              </p>
+              {issue.cover_kicker && (
+                <p className="text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: P.copper }}>
+                  {issue.cover_kicker}
+                </p>
+              )}
+            </div>
+            <div className="mt-2 h-[2px] w-full" style={{ background: P.copper }} />
+
+            <h2 className="mt-5 font-serif text-[26px] leading-[1.06]" style={{ color: P.navy }}>
+              {issue.title}
+            </h2>
+            {issue.subtitle && (
+              <p className="mt-2 font-serif text-[13px] italic leading-snug" style={{ color: 'rgba(30,58,90,0.62)' }}>
+                {issue.subtitle}
+              </p>
+            )}
+            {issue.preface && (
+              <p className="mt-5 text-[12px] leading-[1.78]" style={{ color: 'rgba(30,58,90,0.8)' }}>
+                {issue.preface}
+              </p>
+            )}
+
+            {contributors.length > 0 && (
+              <section className="mt-6" style={{ borderTop: '1px solid rgba(30,58,90,0.18)', paddingTop: 10 }}>
+                <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: 'rgb(var(--editorial-label-rgb))' }}>
+                  Contributors
+                </p>
+                <dl className="mt-2.5 space-y-1.5">
+                  {contributors.map((person, i) => (
+                    <div key={person.name || i} className="flex items-baseline gap-2">
+                      <dt className="min-w-0 text-[11px] font-medium" style={{ color: P.navy }}>{person.name}</dt>
+                      <span
+                        className="h-px flex-1 self-center"
+                        style={{ background: 'repeating-linear-gradient(90deg, rgba(30,58,90,0.26) 0 1px, transparent 1px 4px)' }}
+                        aria-hidden="true"
+                      />
+                      {person.role && (
+                        <dd className="flex-none text-[8.5px] font-bold uppercase tracking-[0.14em]" style={{ color: 'rgba(30,58,90,0.5)' }}>
+                          {person.role}
+                        </dd>
+                      )}
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
+
+            <p className="mt-6 text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: 'rgba(30,58,90,0.4)' }}>
+              {foot}
+            </p>
+          </div>
+        </div>
+        <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
+          <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
+            {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
+          </span>
+        </div>
       </div>
     );
   }

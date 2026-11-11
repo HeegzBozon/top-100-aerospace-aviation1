@@ -29,6 +29,31 @@ const BAND_AT = 0.38;
 
 const endsSentence = (word) => /[.!?…:;]["'”’)\]]?$/.test(word);
 
+// How long a page's words take at a given pace.
+//
+// This is the film's own hold while read along is on. Pointed at the same beats the cursor
+// keeps, it means the page turns as the last word is read rather than on a second clock of
+// its own — which is what made a followed page sit still after its words had run out.
+const LEAD_MS = 700;   // a beat to find the first word
+const TAIL_MS = 900;   // ...and to take in the last one before the page turns
+const PACED_TYPES = ['body', 'pull_quote'];
+
+export function readAlongDwell(page, pace = 1) {
+  const walk = pace > 0 ? pace : 1;
+  let ms = LEAD_MS + TAIL_MS;
+  let counted = 0;
+  (page?.content_blocks || []).forEach((block) => {
+    if (!PACED_TYPES.includes(block.type)) return;
+    const words = String(block.text || '').split(/\s+/).filter(Boolean);
+    words.forEach((word, i) => {
+      counted += 1;
+      const hold = endsSentence(word) ? SENTENCE_HOLD : i === words.length - 1 ? PARAGRAPH_HOLD : 1;
+      ms += MS_PER_WORD * hold;
+    });
+  });
+  return counted ? ms / walk : 0;
+}
+
 // Every word on the page, in the order it is read, as an offset into the text node it sits
 // in. Nothing is rewritten in the DOM: the mark is drawn over the type, never into it, so
 // the set text stays exactly as it was composed.
