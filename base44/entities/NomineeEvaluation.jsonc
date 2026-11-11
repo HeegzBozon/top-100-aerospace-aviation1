@@ -74,5 +74,21 @@
     "leadership_influence",
     "community_contribution",
     "future_potential"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.evaluator_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

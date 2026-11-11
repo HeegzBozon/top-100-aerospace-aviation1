@@ -36,5 +36,28 @@
   "required": [
     "image_url",
     "uploader_email"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.uploader_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "$or": [
+        {
+          "data.uploader_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

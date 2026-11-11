@@ -39,5 +39,21 @@
     "nominee_id",
     "field_name",
     "endorsed_by"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.endorsed_by": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

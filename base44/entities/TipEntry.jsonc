@@ -72,10 +72,13 @@
     "author_email"
   ],
   "rls": {
+    "create": {
+      "data.author_email": "{{user.email}}"
+    },
     "read": {
       "$or": [
         {
-          "author_email": "{{user.email}}"
+          "data.author_email": "{{user.email}}"
         },
         {
           "user_condition": {
@@ -84,10 +87,22 @@
         }
       ]
     },
-    "write": {
+    "update": {
       "$or": [
         {
-          "author_email": "{{user.email}}"
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
         },
         {
           "user_condition": {

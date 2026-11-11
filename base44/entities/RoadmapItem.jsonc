@@ -118,5 +118,21 @@
     "title",
     "value_stream",
     "status"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.submitter_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

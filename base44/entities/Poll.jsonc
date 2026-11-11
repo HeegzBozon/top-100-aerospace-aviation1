@@ -61,5 +61,28 @@
     "creator_email",
     "question",
     "options"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.creator_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "$or": [
+        {
+          "data.creator_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

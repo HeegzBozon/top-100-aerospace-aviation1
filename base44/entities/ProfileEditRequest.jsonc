@@ -65,5 +65,21 @@
     "proposed_value",
     "reason",
     "submitted_by"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.submitted_by": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

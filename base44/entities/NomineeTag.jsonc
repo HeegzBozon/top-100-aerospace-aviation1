@@ -90,5 +90,21 @@
     "tag_name",
     "category",
     "suggested_by"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.suggested_by": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

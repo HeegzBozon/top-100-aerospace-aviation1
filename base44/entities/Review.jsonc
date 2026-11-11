@@ -52,5 +52,31 @@
     "reviewer_email",
     "provider_email",
     "rating"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.reviewer_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "$or": [
+        {
+          "data.reviewer_email": "{{user.email}}"
+        },
+        {
+          "data.provider_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

@@ -77,5 +77,64 @@
     "provider_email",
     "requester_email",
     "xc_amount"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.provider_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.provider_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.provider_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

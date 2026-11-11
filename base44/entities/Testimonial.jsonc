@@ -41,5 +41,21 @@
     "service_id",
     "client_email",
     "content"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.client_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

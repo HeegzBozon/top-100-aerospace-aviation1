@@ -22,5 +22,25 @@
   "required": [
     "nomination_id",
     "voter_email"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.voter_email": "{{user.email}}"
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }
