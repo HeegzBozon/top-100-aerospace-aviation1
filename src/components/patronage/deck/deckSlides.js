@@ -24,7 +24,7 @@ export const VERIFIED_PROMISES = ['Published calendar', 'Unbundled transparency'
 export const FIREWALL_POINTS = [
   'No sponsor reviews editorial.',
   'Zero vote weight or index influence.',
-  'Attribution as Patron of Record only.',
+  'Attribution as Sponsor of Record only.',
 ];
 
 const figure = (key) => AUDIENCE_FIGURES.find((item) => item.key === key) || AUDIENCE_FIGURES[0];

@@ -73,7 +73,7 @@ export default function LoungeComposer({ copy, onSaved, onCancel }) {
       <p className="text-[8.5px] font-bold uppercase tracking-[0.28em] text-editorial-copper">House copy</p>
       <h3 className="mt-2 font-heading text-2xl leading-tight text-editorial-navy">Edit this room</h3>
       <p className="mt-2 max-w-[48ch] text-[11.5px] leading-relaxed text-editorial-navy/65">
-        What is written here replaces the room’s defaults. Patron credit is attribution: it changes
+        What is written here replaces the room’s defaults. Sponsor credit is attribution: it changes
         no position in the index, and the firewall line stays beneath it.
       </p>
 
@@ -111,7 +111,7 @@ export default function LoungeComposer({ copy, onSaved, onCancel }) {
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className={label}>Patron of Record</span>
+          <span className={label}>Sponsor of Record</span>
           <input className={field} value={form.patron_name} onChange={set('patron_name')} placeholder="Leave empty while the room is open" />
         </label>
         <label className="block">

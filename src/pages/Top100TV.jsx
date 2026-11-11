@@ -53,7 +53,7 @@ export default function Top100TV() {
               </h1>
               <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-editorial-cream/60">
                 The industry's own signal, carried as it happens. Channels are placed by the
-                desk, never bought into position — a patron is credited on the broadcast they
+                desk, never bought into position — a sponsor is credited on the broadcast they
                 backed and nothing more.
               </p>
             </div>

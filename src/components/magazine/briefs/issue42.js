@@ -226,7 +226,7 @@ const PAGES = [
       },
       {
         type: 'body',
-        text: `And a note on the room you are voting in. Patrons support this platform. They never touch the ballot. Patronage buys attribution, and it buys nothing else — not a ballot, not an order, not a page in the Volume. Featured placement is an editorial decision and is never for sale. If you ever see that line crossed, the line is the thing worth writing to the masthead about.`,
+        text: `And a note on the room you are voting in. Sponsors support this platform. They never touch the ballot. Sponsorship buys attribution, and it buys nothing else — not a ballot, not an order, not a page in the Volume. Featured placement is an editorial decision and is never for sale. If you ever see that line crossed, the line is the thing worth writing to the masthead about.`,
       },
     ],
   },
@@ -417,7 +417,7 @@ export const ISSUE_42_BRIEF = {
     preface:
       'Seven weeks from the record. Before the Volume publishes, the institution explains itself — and hands you the ballot.',
     colophon:
-      'TOP 100 Aerospace & Aviation, Issue 42, Season 4. Editorial and measurement are kept apart by policy: patrons support the platform and never touch the ballot. Set in Playfair Display and Montserrat. Volume VIII publishes December 31.',
+      'TOP 100 Aerospace & Aviation, Issue 42, Season 4. Editorial and measurement are kept apart by policy: sponsors support the platform and never touch the ballot. Set in Playfair Display and Montserrat. Volume VIII publishes December 31.',
     contributors: [
       { name: 'Matthew Higa', role: 'Editor' },
       { name: 'TOP 100 Aerospace & Aviation', role: 'Design and masthead' },

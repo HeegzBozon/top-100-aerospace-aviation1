@@ -133,7 +133,7 @@ export default function IssueWorkspace({ issue, campaign, busy, onSave, onStage,
             <span className={LABEL} style={{ color: '#5f7488' }}>
               The one next thing
             </span>
-            <input className={`mt-1 ${FIELD}`} style={FIELD_STYLE} value={form.next_action} onChange={set('next_action')} placeholder="Clear the Patron credit with Katja" />
+            <input className={`mt-1 ${FIELD}`} style={FIELD_STYLE} value={form.next_action} onChange={set('next_action')} placeholder="Clear the Sponsor credit with Katja" />
           </label>
           <label>
             <span className={LABEL} style={{ color: '#5f7488' }}>

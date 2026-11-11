@@ -34,7 +34,7 @@ WHEN THE CONTEXT NAMES A RECENT LOSS, ACCIDENT, GROUNDING OR CONTROVERSY IN THE 
 HOUSE VOICE
 - Editorial, warm, aspirational. The register of a fashion masthead applied to a space programme: "Vogue meets NASA". Institutional, not social. Authority first, enthusiasm second.
 - This is a verified reputation graph and a measurement platform. Never call it an awards list, a competition, or a ranking app.
-- Strict language: never "followers" (write "endorsers" or "community"); never "likes" (write "endorsements"); never "rank" as a verb (individuals rank, the institution measures); never "Sponsored by" (write "Patron of Record"); never "gigs", "freelance", or star ratings.
+- Strict language: never "followers" (write "endorsers" or "community"); never "likes" (write "endorsements"); never "rank" as a verb (individuals rank, the institution measures); never "Sponsored by" (write "Sponsor of Record"); never "gigs", "freelance", or star ratings.
 - No exclamation marks anywhere. No em dashes: use a comma, a full stop, or rewrite the sentence.
 - No emoji except in the Instagram and YouTube assets, where a few are allowed.
 - Use the tagline "Higher, Further, Faster." sparingly, at most once per asset.

@@ -59,7 +59,7 @@ export const faq = {
     },
     {
       q: 'Can placement be bought?',
-      a: 'Never. Placement is measured from the orders Fellows leave. Patronage, sponsorship and availability carry no weight in selection.',
+      a: 'Never. Placement is measured from the orders Fellows leave. Sponsorship and availability carry no weight in selection.',
       note: 'Governance, not commerce',
     },
   ],

@@ -44,7 +44,7 @@ measurement rather than ranking.
 - [Top Viral Posts, 2026](https://top100aero.space/viralpost2026) and
   [2022](https://top100aero.space/viralpost2022)
 - [Solutions](https://top100aero.space/solutions)
-- [Patronage](https://top100aero.space/mediakit) — Patron of Record attribution
+- [Sponsorship](https://top100aero.space/mediakit) — Sponsor of Record attribution
 
 ## Crawler guidance
 

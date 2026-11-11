@@ -61,11 +61,11 @@ export const STREAMS = [
   {
     id: "commercial",
     name: "Commercial",
-    house: "The Patronage · Mission Rooms · The Gate",
+    house: "The Sponsorship · Mission Rooms · The Gate",
     objective:
-      "A patron or partner who reaches for the house is answered by a person, not by a form.",
+      "A sponsor or partner who reaches for the house is answered by a person, not by a form.",
     guardrail:
-      "Sponsorship attributes and confers no selection weight. Attribution is Patron of Record and is never read by discovery, measurement or scoring.",
+      "Sponsorship attributes and confers no selection weight. Attribution is Sponsor of Record and is never read by discovery, measurement or scoring.",
     funnels: ["patronage", "conferences", "ground-control"],
   },
 ];

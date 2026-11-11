@@ -10,7 +10,7 @@ export default function SlideHook() {
         We built a governance-first firewall instead.
       </p>
       <p className="mt-5 max-w-[52ch] text-[12px] leading-relaxed text-editorial-cream/70 md:text-[13.5px]">
-        A patron buys attribution on a dated, published calendar. Nothing a patron pays for
+        A sponsor buys attribution on a dated, published calendar. Nothing a sponsor pays for
         reaches the index, the measurement, or a single line of editorial.
       </p>
     </div>

@@ -74,7 +74,7 @@ export default function LoungeRoom({ copy, isAdmin, onIntent, onPay, onEdit, onG
       )}
 
       <div className="border-t border-editorial-copper/30 px-5 py-5 md:px-8">
-        <p className={`${LABEL} text-editorial-gold`}>Patron of Record</p>
+        <p className={`${LABEL} text-editorial-gold`}>Sponsor of Record</p>
         {copy.patron_name ? (
           <>
             <p className="mt-2 font-heading text-[1.15rem] text-editorial-cream">{copy.patron_name}</p>
@@ -85,8 +85,8 @@ export default function LoungeRoom({ copy, isAdmin, onIntent, onPay, onEdit, onG
         ) : (
           <p className="mt-2 max-w-[52ch] text-[12px] leading-relaxed text-editorial-cream/70">
             {selling
-              ? 'The patronage of this room is open for the season. A patron’s name is credited here — never a position, a Fellow, or a vote.'
-              : 'The patronage of this room is open for the season. Ask below, and the credit carries the patron’s name — never a position, a Fellow, or a vote.'}
+              ? 'The sponsorship of this room is open for the season. A sponsor’s name is credited here — never a position, a Fellow, or a vote.'
+              : 'The sponsorship of this room is open for the season. Ask below, and the credit carries the sponsor’s name — never a position, a Fellow, or a vote.'}
           </p>
         )}
         <p className="mt-2 max-w-[56ch] text-[10.5px] leading-relaxed text-editorial-cream/45">{FIREWALL}</p>

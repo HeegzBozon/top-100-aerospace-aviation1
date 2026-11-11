@@ -169,8 +169,8 @@ export const FUNNELS = [
   },
   {
     id: "patronage",
-    name: "Patron of Record",
-    house: "The Patronage",
+    name: "Sponsor of Record",
+    house: "The Sponsorship",
     gist: "A sponsor asks for attribution against a room or an issue.",
     doors: ["/mediakit", "the inquiry form on the rate card"],
     records: ["PatronDeal", "PatronReport"],

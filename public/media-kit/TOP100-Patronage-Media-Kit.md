@@ -1,6 +1,6 @@
 # TOP 100 Aerospace & Aviation
 
-## Patronage &amp; Media Kit — 2027
+## Sponsorship &amp; Media Kit — 2027
 
 _Pulled 5 November 2026. Every figure below carries the month it was read. If a number moves, this document is dated again rather than quietly corrected._
 
@@ -12,7 +12,7 @@ TOP 100 Aerospace &amp; Aviation is a governance-first publication and index, wi
 
 A sponsorship is **attribution, never placement**. It buys a named, labelled surface and a written report. It does not buy a position in the index, a word in the editorial, or a vote.
 
-Credit is given as **Patron of Record**. We do not say "sponsored by".
+Credit is given as **Sponsor of Record**, set beside a plain paid label wherever the sponsor writes the words.
 
 ---
 

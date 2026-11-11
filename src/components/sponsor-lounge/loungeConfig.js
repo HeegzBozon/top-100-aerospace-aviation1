@@ -9,7 +9,7 @@
 // SponsorLounge row per room); a room with no row reads exactly as it is written below.
 
 export const FIREWALL =
-  'Attribution, never placement. No patron reviews the editorial, chooses a Fellow, or moves a position in the index.';
+  'Attribution, never placement. No sponsor reviews the editorial, chooses a Fellow, or moves a position in the index.';
 
 // The three ways a visitor can leave this room with something.
 export const INTENTS = [
@@ -39,15 +39,15 @@ export const LOUNGES = {
   summit: {
     key: 'summit',
     room: 'leadership-summit',
-    label: 'The Patrons’ Lounge',
+    label: 'The Sponsors’ Lounge',
     eyebrow: 'Leadership Summit · the briefing room',
     headline: 'The conversation after the panel',
     welcome:
-      'A room kept off the hall floor for the exchange that never fits on a stage: what the record is worth, who reads it, and how attribution is carried. Fellows and patrons sit at the same table, and nothing here is sold at the door.',
+      'A room kept off the hall floor for the exchange that never fits on a stage: what the record is worth, who reads it, and how attribution is carried. Fellows and sponsors sit at the same table, and nothing here is sold at the door.',
     agenda: [
       { key: 'record', label: 'The record', text: 'What is measured, what is verified, and what never enters a measurement at all.' },
       { key: 'reach', label: 'The reach', text: 'Who reads the index and the Volume, and how a reader becomes a Fellow.' },
-      { key: 'attribution', label: 'The attribution', text: 'What a Patron of Record is credited with, and the firewall that keeps it out of the index.' },
+      { key: 'attribution', label: 'The attribution', text: 'What a Sponsor of Record is credited with, and the firewall that keeps it out of the index.' },
     ],
     prompts: [
       { key: 'p1', label: 'Before a cycle', text: 'Which part of the record would your organisation need to see before it commits to a season?' },

@@ -100,14 +100,14 @@ export const JOURNEYS = [
   },
   {
     id: 'patron',
-    title: 'Patron Journey',
+    title: 'Sponsor Journey',
     status: 'suggested',
-    actor: 'A patron reading the media kit',
-    promise: 'Attribution, never placement — a patron of record, agreed and reported.',
+    actor: 'A sponsor reading the media kit',
+    promise: 'Attribution, never placement — a sponsor of record, agreed and reported.',
     steps: [
       'The media kit read at the offer',
       'The rate card and the enquiry',
-      'The slot released to the patron',
+      'The slot released to the sponsor',
       'The cadence and the report due',
     ],
     surfaces: ['/mediakit', 'PatronDeal', 'patronIntake', 'patronReports'],

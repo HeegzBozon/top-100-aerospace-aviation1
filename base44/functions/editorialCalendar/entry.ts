@@ -68,7 +68,7 @@ const STANDARD_V1 = {
     { section: 'Masthead', words: '1 line', byline: 'None', job: 'No. 48 | The Talent Issue | February 2027' },
     { section: "Editor's Note", words: '50 to 100', byline: 'Matthew Higa', job: 'Why this issue matters now' },
     { section: 'The Briefing', words: '80 to 120', byline: 'TOP 100 Editorial', job: 'One lead story' },
-    { section: 'Patron credit', words: 'Up to 60', byline: 'None', job: 'Paid label and firewall line, below The Briefing' },
+    { section: 'Sponsor credit', words: 'Up to 60', byline: 'None', job: 'Paid label and firewall line, below The Briefing' },
     { section: 'Across the field', words: '60 to 80 per item', byline: 'TOP 100 Editorial', job: 'Three or four items from at least three domains' },
     { section: 'From the Record', words: '100 to 150', byline: 'TOP 100 Editorial', job: 'A Fellow or index data nobody else has' },
     { section: 'One more thing...', words: '30 to 50', byline: 'Matthew Higa', job: 'One ask' },
@@ -99,7 +99,7 @@ const STANDARD_V1 = {
     'Rank, crown winners, or hype',
     'Force jokes',
   ],
-  use_words: ['Fellows', 'index', 'record', 'index position', 'Patron of Record'],
+  use_words: ['Fellows', 'index', 'record', 'index position', 'Sponsor of Record'],
   never_words: ['honorees', 'winners', 'list', 'directory', 'rank', 'ranking', 'competition'],
   banned_words: [
     'leverage',
@@ -124,7 +124,7 @@ const STANDARD_V1 = {
   ],
   gates: [
     { gate: 'Editorial and public-facing', owner: 'Matthew', covers: 'Every issue before send' },
-    { gate: 'Legal and compliance', owner: 'Katja', covers: 'Firewall wording, Patron copy, offering-adjacent language, data use' },
+    { gate: 'Legal and compliance', owner: 'Katja', covers: 'Firewall wording, Sponsor copy, offering-adjacent language, data use' },
     { gate: 'Release timing', owner: 'Perry', covers: 'Timing of major releases, including the Annual' },
   ],
   open_decisions: [

@@ -26,7 +26,7 @@ export default function SlideAsk() {
 
       <div className="mt-5">
         <button type="button" onClick={toDesk} className="desk-key desk-key-primary px-4 py-2.5 text-[9.5px]">
-          Claim your Patron of Record slot
+          Claim your Sponsor of Record slot
           <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>

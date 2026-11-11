@@ -117,7 +117,7 @@ export default function DealPlacement({ deal, user, onChanged }) {
               style={{ borderColor: P.hair, color: P.navy }}
               value={assets.utm_campaign}
               onChange={(event) => setAssets((prev) => ({ ...prev, utm_campaign: event.target.value }))}
-              placeholder={deal.issue_number ? `issue-${deal.issue_number}` : 'issue-patron'}
+              placeholder={deal.issue_number ? `issue-${deal.issue_number}` : 'issue-sponsor'}
             />
           </label>
           <label className="block md:col-span-2">
