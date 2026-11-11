@@ -16,6 +16,10 @@ import { useReadAlong, READ_ALONG_ATTR } from '@/components/magazine/readAlong';
 import ReadAlongCursor from '@/components/magazine/ReadAlongCursor';
 import TipJar from '@/components/magazine/TipJar';
 import PanelGrid from '@/components/magazine/PanelGrid';
+import CoverPlate from '@/components/magazine/plates/CoverPlate';
+import MastheadPage from '@/components/magazine/plates/MastheadPage';
+import ChapterDivider from '@/components/magazine/plates/ChapterDivider';
+import PullQuotePlate from '@/components/magazine/plates/PullQuotePlate';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
 // runs beneath it.
@@ -86,7 +90,6 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
 
   const blocks = pageBlocks;
   const bg = page.background_image_url;
-  const credits = issue.cover_credits || {};
   // The people this page is about, resolved once: a page stores names, the profile is
   // keyed by id. An edition page points at its article, a plate tile at its own name.
   const nomineeByTitle = nomineeIndex(articles);
@@ -131,58 +134,9 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     );
   }
 
-  // Cover page. A cover with a photograph is led by it; a cover without one is set in
-  // type — the masthead mark, the issue, the rule, and the credit stack — which is how
-  // an institutional publication covers an edition rather than leaving a navy blank.
+  // The cover: the issue's own plate, or the edition set in type (see CoverPlate).
   if (page.layout_type === 'cover') {
-    // Three covers in one. Art the composer laid on the page is drawn with the copy set over
-    // it; the issue's own cover plate — the finished artwork the edition was announced with —
-    // is printed exactly as it was designed, because it already carries the masthead, the
-    // issue and the invitation; and a cover with neither is set in type.
-    const art = bg || issue.cover_image_url || null;
-    const composed = (page.content_blocks || []).some((block) => block.type !== 'kicker');
-    const drawCopy = composed || (!art && (page.content_blocks || []).length > 0);
-    return (
-      <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
-        {art && <img src={art} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-        {art && drawCopy && (
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(7,15,31,0.3) 0%, rgba(7,15,31,0.7) 100%)' }} />
-        )}
-        <div className="relative w-full h-full flex flex-col items-center justify-center p-8 text-center">
-          {!drawCopy ? null : <>
-          {!art && (
-            <>
-              <span className="absolute" style={{ inset: '14px', border: `1px solid ${P.gold}45` }} />
-              <span
-                className="absolute font-serif select-none pointer-events-none leading-none"
-                style={{ color: `${P.gold}12`, fontSize: 'clamp(2.6rem, 21vw, 6.5rem)', letterSpacing: '-0.02em' }}
-              >
-                TOP 100
-              </span>
-            </>
-          )}
-          <span className="relative text-[10px] font-bold uppercase tracking-[0.4em] mb-4 ppc-rise" style={{ color: P.gold, animationDelay: '0.2s' }}>
-            {issue.cover_kicker || 'The 2025 Edition'}
-          </span>
-          <h1 className="relative font-serif text-2xl sm:text-3xl leading-tight max-w-[15ch] ppc-rise" style={{ color: P.cream, animationDelay: '0.4s' }}>
-            {issue.title}
-          </h1>
-          {issue.subtitle && (
-            <p className="relative text-sm mt-3 ppc-rise" style={{ color: 'rgba(250,248,245,0.7)', animationDelay: '0.6s' }}>{issue.subtitle}</p>
-          )}
-          <div className="relative w-12 h-px mt-6 ppc-rise" style={{ background: P.gold, animationDelay: '0.8s' }} />
-          {(credits.subject || credits.photographer || credits.writer) && (
-            <div className="relative mt-8 ppc-rise" style={{ animationDelay: '1s' }}>
-              <p className="text-[9px] font-bold uppercase tracking-[0.3em] mb-2" style={{ color: 'rgba(201,168,124,0.6)' }}>On the Cover</p>
-              {credits.subject && <p className="text-xs" style={{ color: 'rgba(250,248,245,0.8)' }}>{credits.subject}</p>}
-              {credits.photographer && <p className="text-[10px] mt-1" style={{ color: 'rgba(250,248,245,0.5)' }}>Photography by {credits.photographer}</p>}
-              {credits.writer && <p className="text-[10px]" style={{ color: 'rgba(250,248,245,0.5)' }}>Written by {credits.writer}</p>}
-            </div>
-          )}
-          </>}
-        </div>
-      </div>
-    );
+    return <CoverPlate page={page} issue={issue} bg={bg} />;
   }
 
   // Table of Contents
@@ -282,47 +236,9 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     );
   }
 
-  // Chapter divider: a part of the book, or one region of the index opened by its own
-  // line — what the opening carries, stated before a reader turns into it.
+  // A part of the book, opened by its own plate (see ChapterDivider).
   if (page.layout_type === 'chapter_divider') {
-    const carries = blocks.find((block) => block.type === 'body')?.text || '';
-    // Where this part falls in the book: the dividers are counted off the issue itself, so a
-    // divider says "Part 01 of 02" without the composer having to number them by hand.
-    const parts = pages.filter((entry) => entry.layout_type === 'chapter_divider');
-    const at = parts.findIndex((entry) => entry.id === page.id);
-    const number = page.chapter_number ?? (at >= 0 ? at + 1 : null);
-    const counted = at >= 0 && parts.length > 1
-      ? `Part ${String(at + 1).padStart(2, '0')} of ${String(parts.length).padStart(2, '0')}`
-      : 'Part';
-
-    return (
-      <div className="relative w-full h-full overflow-hidden flex flex-col items-center justify-center p-8 text-center" style={{ background: P.navy }}>
-        <span className="text-[8px] font-bold uppercase tracking-[0.38em] ppc-rise" style={{ color: P.gold }}>
-          {counted}
-        </span>
-        {number != null && (
-          <span className="mt-4 font-serif text-6xl leading-none ppc-rise" style={{ color: P.gold, opacity: 0.34, animationDelay: '0.15s' }}>
-            {String(number).padStart(2, '0')}
-          </span>
-        )}
-        <div className="my-5 h-px w-14 ppc-rise" style={{ background: P.copper, animationDelay: '0.25s' }} />
-        <h2 className="font-serif text-3xl leading-tight ppc-rise" style={{ color: P.cream, animationDelay: '0.3s' }}>
-          {page.chapter_label || 'Chapter'}
-        </h2>
-        {carries && (
-          <p
-            className="mt-4 max-w-[26ch] font-serif text-[12.5px] italic leading-relaxed ppc-rise"
-            style={{ color: 'rgba(250,248,245,0.68)', animationDelay: '0.45s' }}
-          >
-            {carries}
-          </p>
-        )}
-        <div className="mt-8 h-px w-8" style={{ background: `${P.gold}45` }} />
-        <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.28em]" style={{ color: 'rgba(250,248,245,0.45)' }}>
-          {issue.title}
-        </p>
-      </div>
-    );
+    return <ChapterDivider page={page} issue={issue} blocks={blocks} pages={pages} />;
   }
 
   // Pull quote: her voice at the size of the paper. When the page carries the read as
@@ -334,44 +250,8 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     const read = blocks.filter((b) => b.type === 'body');
 
     if (!read.length) {
-      // The breakaway quote is the one page in the book that changes key: printed on the navy
-      // plate rather than the paper, so it reads as a full stop between two movements — the
-      // house line at its head, the quote at the size of the page, and its attribution ruled
-      // off beneath it.
-      return (
-        <div className="relative w-full h-full overflow-hidden flex flex-col justify-between p-8" style={{ background: P.navy }}>
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[8px] font-bold uppercase tracking-[0.32em]" style={{ color: P.gold }}>TOP 100</p>
-            {kicker?.text && (
-              <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: 'rgba(201,168,124,0.72)' }}>
-                {kicker.text}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <div className="mb-3 font-serif text-5xl leading-none" style={{ color: P.gold, opacity: 0.42 }}>&ldquo;</div>
-            <p className="font-serif text-[21px] leading-[1.3] ppc-rise" style={{ color: P.cream }}>
-              {quoteBlock.text || 'A pull quote will appear here.'}
-            </p>
-            {quoteBlock.attribution && (
-              <>
-                <div className="mt-6 h-px w-10" style={{ background: P.copper }} />
-                <p
-                  className="mt-3 text-[8.5px] font-bold uppercase tracking-[0.26em] ppc-rise"
-                  style={{ color: P.gold, animationDelay: '0.2s' }}
-                >
-                  {quoteBlock.attribution}
-                </p>
-              </>
-            )}
-          </div>
-
-          <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: 'rgba(250,248,245,0.42)' }}>
-            {issue.cover_kicker || issue.title}
-          </p>
-        </div>
-      );
+      // The breakaway quote, printed on the navy plate rather than the paper.
+      return <PullQuotePlate quote={quoteBlock} kicker={kicker?.text} issue={issue} />;
     }
 
     return (
@@ -434,85 +314,9 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     );
   }
 
-  // Masthead: the issue's own front matter — what this book is, who made it, and the line it
-  // opens on. It is printed on the paper rather than on a plate: the house line and the issue
-  // ruled across the head, the title set as a title, the preface beneath it, and the men and
-  // women who made the book listed under their parts.
+  // The issue's own front matter (see MastheadPage).
   if (page.layout_type === 'masthead') {
-    const contributors = issue.contributors || [];
-    const foot = [
-      issue.issue_number ? `Issue ${issue.issue_number}` : null,
-      (issue.sections || []).length ? `${(issue.sections || []).length} parts` : null,
-      `${totalPages} pages`,
-    ].filter(Boolean).join(' · ');
-
-    return (
-      <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-        <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
-          <div className="px-6 pb-7 pt-7 sm:px-8">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="text-[8px] font-bold uppercase tracking-[0.3em]" style={{ color: P.navy }}>
-                TOP 100 · Aerospace &amp; Aviation
-              </p>
-              {issue.cover_kicker && (
-                <p className="text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: P.copper }}>
-                  {issue.cover_kicker}
-                </p>
-              )}
-            </div>
-            <div className="mt-2 h-[2px] w-full" style={{ background: P.copper }} />
-
-            <h2 className="mt-5 font-serif text-[26px] leading-[1.06]" style={{ color: P.navy }}>
-              {issue.title}
-            </h2>
-            {issue.subtitle && (
-              <p className="mt-2 font-serif text-[13px] italic leading-snug" style={{ color: 'rgba(30,58,90,0.62)' }}>
-                {issue.subtitle}
-              </p>
-            )}
-            {issue.preface && (
-              <p className="mt-5 text-[12px] leading-[1.78]" style={{ color: 'rgba(30,58,90,0.8)' }}>
-                {issue.preface}
-              </p>
-            )}
-
-            {contributors.length > 0 && (
-              <section className="mt-6" style={{ borderTop: '1px solid rgba(30,58,90,0.18)', paddingTop: 10 }}>
-                <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: 'rgb(var(--editorial-label-rgb))' }}>
-                  Contributors
-                </p>
-                <dl className="mt-2.5 space-y-1.5">
-                  {contributors.map((person, i) => (
-                    <div key={person.name || i} className="flex items-baseline gap-2">
-                      <dt className="min-w-0 text-[11px] font-medium" style={{ color: P.navy }}>{person.name}</dt>
-                      <span
-                        className="h-px flex-1 self-center"
-                        style={{ background: 'repeating-linear-gradient(90deg, rgba(30,58,90,0.26) 0 1px, transparent 1px 4px)' }}
-                        aria-hidden="true"
-                      />
-                      {person.role && (
-                        <dd className="flex-none text-[8.5px] font-bold uppercase tracking-[0.14em]" style={{ color: 'rgba(30,58,90,0.5)' }}>
-                          {person.role}
-                        </dd>
-                      )}
-                    </div>
-                  ))}
-                </dl>
-              </section>
-            )}
-
-            <p className="mt-6 text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: 'rgba(30,58,90,0.4)' }}>
-              {foot}
-            </p>
-          </div>
-        </div>
-        <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
-          <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
-            {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
-          </span>
-        </div>
-      </div>
-    );
+    return <MastheadPage issue={issue} scrollRef={scrollRef} pageNumber={pageNumber} totalPages={totalPages} />;
   }
 
   // Profile. A portrait page leads with the face, full width and cropped at the top
