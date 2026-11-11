@@ -21,11 +21,14 @@ const MS_PER_WORD = 260;      // ≈ 230 words a minute, the pace a page is held
 const SENTENCE_HOLD = 1.9;    // a word that closes a sentence is held a beat longer
 const PARAGRAPH_HOLD = 1.25;  // ...and the last word of a paragraph a little longer again
 
-// The reading band: the strip of the frame the cursor keeps itself in, so the eye is never
-// sent hunting up and down the page for the word being read.
-const BAND_IN = 0.28;
-const BAND_OUT = 0.62;
-const BAND_AT = 0.38;
+// The reading line: the height in the frame the word being read is held at, so the eye is
+// never sent hunting up and down the page. The page glides under the mark to keep it there,
+// a frame at a time — it is never shifted a band at a time, which is what made the roll
+// arrive as a jump the instant a page first needed to scroll.
+const READING_LINE = 0.36;
+// How hard the page is pulled towards that line each frame: gentle enough that the type
+// drifts up under the mark at reading pace rather than stepping a line at every word.
+const CHASE = 0.16;
 
 const endsSentence = (word) => /[.!?…:;]["'”’)\]]?$/.test(word);
 
@@ -119,6 +122,13 @@ export function useReadAlong({
   // A hand on the page holds the cursor where it stands; a tap on a word gives it back.
   const [yielded, setYielded] = useState(false);
   const wordsRef = useRef([]);
+  // Where the page stands for the word being read, in the scroller's own pixels. The mark
+  // moves a word at a time; the page is drawn towards a new standing every frame, so the two
+  // never land as one visible jump.
+  const targetRef = useRef(null);
+  // The word being read, readable without waiting for a render — the page resets it the
+  // moment it becomes the page being read.
+  const indexRef = useRef(0);
   const pace = typeof speed === 'number' && speed > 0 ? speed : 1;
 
   // Collect the page's copy when the page becomes the one being read, and let go of it the
@@ -126,6 +136,8 @@ export function useReadAlong({
   useEffect(() => {
     const el = containerRef.current;
     wordsRef.current = el && enabled ? wordsOf(el) : [];
+    indexRef.current = 0;
+    targetRef.current = null;
     setIndex(0);
     setYielded(false);
     if (!wordsRef.current.length) setCursor(null);
@@ -136,18 +148,24 @@ export function useReadAlong({
     }
   }, [containerRef, enabled, pageKey]);
 
-  // Find the word, put the mark on it, and keep it in the band.
+  // Find the word, put the mark on it, and reckon where the page wants to stand for it.
   useEffect(() => {
     const el = containerRef.current;
     const words = wordsRef.current;
     if (!el || !enabled || !words.length) {
       setCursor(null);
+      targetRef.current = null;
       return;
     }
-    const at = Math.min(index, words.length - 1);
+    // Read through the ref, not the state: when the film turns to another page the mark is
+    // reset before this runs, so a new page is never read at the index the old one was left
+    // at — which used to send a fresh page hunting down to a word nobody was reading.
+    const at = Math.min(indexRef.current, words.length - 1);
+    indexRef.current = at;
     const box = boxOf(el, words[at]);
     if (!box) {
       setCursor(null);
+      targetRef.current = null;
       return;
     }
     setCursor({ ...box, at: at + 1, total: words.length });
@@ -155,11 +173,29 @@ export function useReadAlong({
     // being read, so the roll it had is stood down for as long as the mark is on it.
     const band = el.clientHeight;
     if (!band) return;
-    const fromTop = box.top - el.scrollTop;
-    if (fromTop < band * BAND_IN || fromTop + box.height > band * BAND_OUT) {
-      el.scrollTop = Math.max(box.top - band * BAND_AT, 0);
-    }
+    const stand = Math.max(box.top - band * READING_LINE, 0);
+    targetRef.current = Math.min(stand, Math.max(el.scrollHeight - band, 0));
   }, [containerRef, enabled, index, pageKey]);
+
+  // The page drawn under the word: every frame the gap between where the page stands and
+  // where the word wants it is taken up a little, so the type drifts up past the reading line
+  // at the pace it is being read. A page whose words are still above the line simply stands
+  // where it is, and the roll begins on its own as they reach it.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !enabled || yielded) return undefined;
+    let raf = 0;
+    const draw = () => {
+      const target = targetRef.current;
+      if (target != null) {
+        const gap = target - el.scrollTop;
+        if (Math.abs(gap) > 0.5) el.scrollTop += gap * CHASE;
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(raf);
+  }, [containerRef, enabled, yielded, pageKey]);
 
   // The clock: one word at its time, with the held beats a reader takes anyway.
   useEffect(() => {
@@ -182,9 +218,13 @@ export function useReadAlong({
     const hand = () => setYielded(true);
     el.addEventListener('wheel', hand, { passive: true });
     el.addEventListener('touchstart', hand, { passive: true });
+    // ...and a press on the page or its scroll bar, so dragging the page by hand is never
+    // drawn back under the word while the thumb is still holding it.
+    el.addEventListener('pointerdown', hand);
     return () => {
       el.removeEventListener('wheel', hand);
       el.removeEventListener('touchstart', hand);
+      el.removeEventListener('pointerdown', hand);
     };
   }, [containerRef, enabled]);
 
