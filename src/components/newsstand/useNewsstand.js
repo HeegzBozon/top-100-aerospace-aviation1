@@ -21,7 +21,7 @@ const isStocked = (bulletin) => {
   return Number.isNaN(date.getTime()) || date <= new Date();
 };
 
-const EMPTY = { loading: true, error: null, issues: [], edition: null, bulletins: [], nominees: [] };
+const EMPTY = { loading: true, error: null, issues: [], edition: null, bulletins: [], nominees: [], series: [] };
 const WIRE_EMPTY = { loading: true, error: null, items: [], sources: [] };
 
 // The stand's stock: the bound editions and the bulletins — the house's own release notes
@@ -45,9 +45,14 @@ export default function useNewsstand() {
       base44.entities.Nominee.filter({ status: 'active' }, { sort: 'name', limit: 100 }),
       // Release notes have one source: released platform-scope status updates.
       base44.entities.StatusUpdate.filter({ scope: 'platform', status: 'released' }, { sort: '-released_at', limit: 50 }),
+      // The Top Viral Posts series is read from its own public index. It prints as a leaf of
+      // its own, so a series that cannot be read leaves that leaf unstocked rather than
+      // shuttering the stand.
+      base44.functions.invoke('getPublicViralPosts', {}).catch(() => null),
     ])
-      .then(([issues, bulletins, nominees, notes]) => {
+      .then(([issues, bulletins, nominees, notes, viral]) => {
         const allIssues = rows(issues);
+        const viralBody = viral && typeof viral === 'object' && 'data' in viral ? viral.data : viral;
         setStock({
           loading: false,
           error: null,
@@ -56,6 +61,7 @@ export default function useNewsstand() {
           bulletins: rows(bulletins),
           nominees: rows(nominees),
           notes: rows(notes),
+          series: Array.isArray(viralBody?.posts) ? viralBody.posts : [],
         });
       })
       .catch((error) => {
@@ -66,6 +72,7 @@ export default function useNewsstand() {
           bulletins: [],
           nominees: [],
           notes: [],
+          series: [],
         });
       });
   }, []);
@@ -175,6 +182,23 @@ export default function useNewsstand() {
       // first, numbered by its own date. The archive is a fixed record, so it is read from the
       // series itself rather than from platform bulletins.
       newsletter: newsletterNotes(),
+      // The series: the posts the house has staged from the Fellows' own accounts. Order is the
+      // series' own — it prints by reach — and it is never a standing of the Fellows. Each post
+      // is read on its own page, so the row hands over rather than opening where it stands.
+      series: (stock.series || [])
+        .filter((post) => post.slug)
+        .map((post) => ({
+          key: `viral-${post.slug}`,
+          rack: 'series',
+          kicker: 'Top Viral Posts',
+          title: post.nominee_name || 'A featured post',
+          meta: [post.impressions ? `${post.impressions} impressions` : null, post.nominee_title, post.nominee_company]
+            .filter((line) => line && line !== 'not found')
+            .join(' · '),
+          teaser: firstLine(post.takeaway, 170),
+          plate: post.screenshot_url || '',
+          to: `/viralpost2026/featured/${post.slug}`,
+        })),
       // And the notes pinned by the door: what the platform itself shipped.
       release: (stock.notes || []).map((note) => ({
         key: `note-${note.id}`,

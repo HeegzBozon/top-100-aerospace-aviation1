@@ -13,6 +13,7 @@ import NewsstandRack, { RackEmpty, RackShelf } from '@/components/newsstand/News
 import NewsstandCover from '@/components/newsstand/NewsstandCover';
 import StockRow from '@/components/newsstand/StockRow';
 import WireRack from '@/components/newsstand/WireRack';
+import SeriesRack from '@/components/newsstand/SeriesRack';
 import PullToRefresh from '@/components/capabilities/performance/PullToRefresh';
 
 // The Newsstand.
@@ -237,6 +238,7 @@ export default function Newsstand() {
               const items = itemsFor(rack);
               const isRack = rack.key === 'volumes';
               const isWire = rack.key === 'wire';
+              const isSeries = rack.key === 'series';
 
               return (
                 <NewsstandRack key={rack.key} rack={rack} count={(sections[rack.key] || []).length}>
@@ -254,6 +256,16 @@ export default function Newsstand() {
                     />
                   ) : items.length === 0 ? (
                     <RackEmpty rack={rack} />
+                  ) : isSeries ? (
+                    <SeriesRack
+                      items={items}
+                      cursorKey={cursorKey}
+                      registerRef={(item, node) => {
+                        itemRefs.current[item.key] = node;
+                      }}
+                      onFocus={setCursorKey}
+                      onOpen={take}
+                    />
                   ) : isRack ? (
                     <>
                       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:px-0">

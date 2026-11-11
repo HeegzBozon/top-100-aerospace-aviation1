@@ -1,8 +1,8 @@
 import { C } from '@/components/crm/crmConfig';
 
-// The stand's three leaves: the volumes you take away, the issues mailed out of them, and the
-// notes the house keeps by the door. Each leaf prints its own count, so the weight of a tab is
-// legible before it is opened.
+// The stand's leaves: the volumes you take away, the issues mailed out of them, the series the
+// house has staged, and the notes it keeps by the door. Each leaf prints its own count, so the
+// weight of a tab is legible before it is opened.
 export default function NewsstandTabs({ tabs = [], activeKey, onSelect }) {
   return (
     <div

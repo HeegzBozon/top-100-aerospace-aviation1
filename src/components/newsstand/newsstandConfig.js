@@ -2,8 +2,9 @@ import { C } from '@/components/crm/crmConfig';
 
 // The stand, read the way a reader walks past it: the volumes the house has bound and the
 // pieces that ran inside them; the issues — every honoree as a spotlight of their own, and
-// the newsletter's own run; and the notes kept by the door, the wire on one side and what the
-// platform shipped on the other.
+// the newsletter's own run; the series the house has staged from the Fellows' own accounts;
+// and the notes kept by the door, the wire on one side and what the platform shipped on the
+// other.
 export const NEWSSTAND_TABS = [
   { key: 'volumes', label: 'Volumes', subs: [] },
   {
@@ -14,6 +15,7 @@ export const NEWSSTAND_TABS = [
       { key: 'articles', label: 'Articles' },
     ],
   },
+  { key: 'series', label: 'Series', subs: [] },
   {
     key: 'notes',
     label: 'Notes',
@@ -54,6 +56,16 @@ export const RACKS = [
     kicker: 'Insights & Spotlights',
     blurb: 'Every issue the house has mailed since February 2022, newest first, as it went out.',
     empty: 'The first issue of the newsletter takes its place here the day it is mailed.',
+  },
+  {
+    key: 'series',
+    tab: 'series',
+    label: 'The series',
+    kicker: 'Top Viral Posts',
+    blurb:
+      "The posts the house has staged in its Top Viral Posts series, printed in the order the series runs. Each is read on a page of its own, and the reach printed with it belongs to the post, never to a Fellow's standing.",
+    empty:
+      'The series has not been set yet. A post enters it the day the house stages it, and each one takes its own page.',
   },
   {
     key: 'wire',
