@@ -272,7 +272,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
               </p>
             )}
             <div className="my-5 h-px w-12" style={{ background: `${P.copper}66` }} />
-            {read.map((block, i) => <BlockRenderer key={i} block={block} lead={i === 0} />)}
+            {read.map((block, i) => <BlockRenderer key={i} block={block} lead={i === 0} inBody />)}
           </div>
         </div>
         <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
@@ -401,7 +401,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
             {rest.map((block, i) => (
               block.type === 'image'
                 ? <PageImageBand key={i} block={block} />
-                : <BlockRenderer key={i} block={block} lead={i === firstBody} />
+                : <BlockRenderer key={i} block={block} lead={i === firstBody} inBody />
             ))}
           </div>
         </div>
@@ -456,7 +456,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
             item.panels
               // A sheet of panels — the page's own beats, unfolded as the issue plays.
               ? <PanelGrid key={`panels-${item.index}`} panels={item.panels} progress={playing ? progress : null} />
-              : <BlockRenderer key={item.index} block={item.block} lead={headEnd + item.index === leadBody} />
+              : <BlockRenderer key={item.index} block={item.block} lead={headEnd + item.index === leadBody} inBody />
           ))}
         </div>
       </div>
@@ -470,11 +470,24 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   );
 }
 
-function BlockRenderer({ block, lead = false }) {
+function BlockRenderer({ block, lead = false, inBody = false }) {
   switch (block.type) {
     case 'kicker':
       return <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-3" style={{ color: P.gold }}>{block.text}</p>;
     case 'heading':
+      // A heading at the head of the page is the story's own title; the same block inside the
+      // body is a subhead, and is set as one — smaller, ruled off above, never competing with
+      // the title standing at the top of the frame.
+      if (inBody) {
+        return (
+          <h3
+            className="mb-2.5 mt-5 border-t pt-3 font-serif text-[13px] font-semibold leading-tight sm:text-[15px]"
+            style={{ color: P.navy, borderColor: 'rgba(184,115,51,0.35)' }}
+          >
+            {block.text}
+          </h3>
+        );
+      }
       return <h2 className="font-serif text-lg sm:text-xl leading-tight mb-3" style={{ color: P.navy }}>{block.text}</h2>;
     case 'byline':
       return (
