@@ -57,5 +57,39 @@
     "proposed_content",
     "editor_email",
     "edit_summary"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.editor_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.editor_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.editor_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

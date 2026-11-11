@@ -16,5 +16,21 @@
     "poll_id",
     "voter_id",
     "selected_option"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.voter_id": "{{user.id}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

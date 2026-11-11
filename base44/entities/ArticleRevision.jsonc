@@ -51,5 +51,21 @@
     "article_id",
     "content",
     "editor_email"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.editor_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

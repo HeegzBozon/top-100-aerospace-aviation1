@@ -89,5 +89,35 @@
     "session_date",
     "host_email",
     "format"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.host_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "$or": [
+        {
+          "data.host_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.host_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

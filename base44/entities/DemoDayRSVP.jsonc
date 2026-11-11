@@ -34,5 +34,39 @@
   "required": [
     "demo_day_id",
     "attendee_email"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.attendee_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.attendee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.attendee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

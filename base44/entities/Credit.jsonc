@@ -94,8 +94,13 @@
     "role"
   ],
   "rls": {
-    "read": true,
-    "write": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
       "$or": [
         {
           "user_condition": {
@@ -103,7 +108,19 @@
           }
         },
         {
-          "claimed_by_user_email": "{{user.email}}"
+          "data.claimed_by_user_email": "{{user.email}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.claimed_by_user_email": "{{user.email}}"
         }
       ]
     }

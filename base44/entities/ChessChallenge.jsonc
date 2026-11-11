@@ -49,13 +49,16 @@
     "challenged_email"
   ],
   "rls": {
+    "create": {
+      "data.challenger_email": "{{user.email}}"
+    },
     "read": {
       "$or": [
         {
-          "challenger_email": "{{user.email}}"
+          "data.challenger_email": "{{user.email}}"
         },
         {
-          "challenged_email": "{{user.email}}"
+          "data.challenged_email": "{{user.email}}"
         },
         {
           "user_condition": {
@@ -64,13 +67,28 @@
         }
       ]
     },
-    "write": {
+    "update": {
       "$or": [
         {
-          "challenger_email": "{{user.email}}"
+          "data.challenger_email": "{{user.email}}"
         },
         {
-          "challenged_email": "{{user.email}}"
+          "data.challenged_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.challenger_email": "{{user.email}}"
+        },
+        {
+          "data.challenged_email": "{{user.email}}"
         },
         {
           "user_condition": {

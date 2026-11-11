@@ -62,5 +62,21 @@
   "required": [
     "nominee_id",
     "endorser_email"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.endorser_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

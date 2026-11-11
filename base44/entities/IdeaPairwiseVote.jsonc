@@ -20,5 +20,32 @@
     "voter_email",
     "winner_idea_id",
     "loser_idea_id"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.voter_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.voter_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

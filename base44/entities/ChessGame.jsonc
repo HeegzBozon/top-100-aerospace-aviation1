@@ -119,13 +119,16 @@
     "player_black_email"
   ],
   "rls": {
+    "create": {
+      "data.player_white_email": "{{user.email}}"
+    },
     "read": {
       "$or": [
         {
-          "player_white_email": "{{user.email}}"
+          "data.player_white_email": "{{user.email}}"
         },
         {
-          "player_black_email": "{{user.email}}"
+          "data.player_black_email": "{{user.email}}"
         },
         {
           "user_condition": {
@@ -134,13 +137,28 @@
         }
       ]
     },
-    "write": {
+    "update": {
       "$or": [
         {
-          "player_white_email": "{{user.email}}"
+          "data.player_white_email": "{{user.email}}"
         },
         {
-          "player_black_email": "{{user.email}}"
+          "data.player_black_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.player_white_email": "{{user.email}}"
+        },
+        {
+          "data.player_black_email": "{{user.email}}"
         },
         {
           "user_condition": {

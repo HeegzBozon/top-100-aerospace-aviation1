@@ -50,5 +50,32 @@
     "startup_id",
     "investor_email",
     "signal_type"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.investor_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.investor_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

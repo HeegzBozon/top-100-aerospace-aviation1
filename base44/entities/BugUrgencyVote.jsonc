@@ -29,5 +29,32 @@
     "bug_id",
     "urgency_score",
     "impact_score"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.voter_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.voter_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

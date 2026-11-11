@@ -35,5 +35,35 @@
     "provider_email",
     "start_date",
     "end_date"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "data.provider_email": "{{user.email}}"
+    },
+    "read": null,
+    "update": {
+      "$or": [
+        {
+          "data.provider_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.provider_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }
