@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, FileText, FileUp, Crown } from 'lucide-react';
+import { Plus, Trash2, FileText, FileUp, Crown, Feather } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, SECTION_TYPES, SECTION_GROUPS, ASSEMBLY_MODES, THEME_ACCENTS, DEFAULT_SECTIONS, VOLUME_IV_BLUEPRINT, sectionGroupLabel } from '@/components/magazine/magazineConfig';
 import PdfUploadPanel from '@/components/magazine/PdfUploadPanel';
 import CoverArtPanel from '@/components/magazine/CoverArtPanel';
+import { briefForIssue } from '@/components/magazine/briefs';
+import { bindBrief } from '@/components/magazine/bindBrief';
 
 let sectionIdCounter = 0;
 
@@ -17,6 +19,30 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate, onRel
   const [assemblyMode, setAssemblyMode] = useState(issue.assembly_mode || 'native');
   const [themeAccent, setThemeAccent] = useState(issue.theme_accent || 'navy');
   const [saving, setSaving] = useState(false);
+  // An issue that is written rather than composed: the brief in code is the copy and the
+  // composition both, and laying it down replaces this issue's pages with it.
+  const brief = briefForIssue(issue);
+  const [binding, setBinding] = useState(false);
+
+  const layDownBrief = async () => {
+    setBinding(true);
+    try {
+      const { issue: bound } = await bindBrief({ issueId: issue.id, brief });
+      // The desk keeps showing the issue it just laid down, not the one it replaced.
+      if (bound) {
+        setTitle(bound.title || '');
+        setSubtitle(bound.subtitle || '');
+        setCoverKicker(bound.cover_kicker || '');
+        setPreface(bound.preface || '');
+        setColophon(bound.colophon || '');
+        setSections(bound.sections || []);
+        setThemeAccent(bound.theme_accent || 'navy');
+      }
+      await onReload?.();
+    } finally {
+      setBinding(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
@@ -76,6 +102,26 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate, onRel
 
   return (
     <div className="space-y-6">
+      {/* A written issue: the brief in code is the issue's identity, its articles and its
+          pages in one, laid down here rather than assembled by hand. */}
+      {brief && (
+        <div className="rounded-2xl p-5" style={{ background: 'rgba(30,58,90,0.04)', border: `1px solid ${P.navy}22` }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Feather className="w-4 h-4" style={{ color: P.copper }} />
+            <h3 className="text-sm font-serif" style={{ color: P.navy }}>Written brief</h3>
+          </div>
+          <p className="text-xs mb-4" style={{ color: 'rgba(30,58,90,0.6)' }}>
+            Issue {issue.issue_number} is authored in full: {brief.identity.title}. Laying it down sets the
+            issue&rsquo;s identity, sections, articles and {brief.pages.length} pages, and keeps the issue
+            itself — its number, its status and its links.
+          </p>
+          <button onClick={layDownBrief} disabled={binding} className="mag-btn-primary disabled:opacity-50">
+            <Feather className="w-4 h-4 inline mr-1.5" />
+            {binding ? 'Laying down…' : 'Lay down the brief'}
+          </button>
+        </div>
+      )}
+
       {/* Volume IV Quick Start */}
       {sections.length === 0 && (
         <div className="rounded-2xl p-5" style={{ background: 'rgba(184,115,51,0.05)', border: `1px solid ${P.copper}30` }}>
