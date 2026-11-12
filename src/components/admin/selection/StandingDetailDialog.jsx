@@ -26,7 +26,7 @@ function measureLine(column, entry) {
   }
   if (column?.key === 'elo') {
     const weighed = row.appearances > 0 || row.elo !== 1200;
-    return { value: weighed ? Math.round(row.elo) : '—', note: `${row.appearances} marks` };
+    return { value: weighed ? Math.round(row.elo) : '—', note: `${row.appearances} evaluations` };
   }
   const measured = row.borda_projected > 0 || row.appearances > 0;
   return { value: measured ? row.combined_index : '—', note: 'index across the three measures' };
@@ -47,7 +47,7 @@ export default function StandingDetailDialog({ entry, since, onClose }) {
     { label: 'Elo · recorded', value: Math.round(row.elo_recorded || 0) },
     { label: 'Holistic', value: row.holistic ? Math.round(row.holistic) : '—' },
     { label: 'Combined index', value: row.combined_index ?? '—' },
-    { label: 'Pairwise marks', value: row.appearances || 0 },
+    { label: 'Pairwise evaluations', value: row.appearances || 0 },
     { label: 'Won / lost', value: `${row.wins || 0} / ${row.losses || 0}` },
     { label: 'Win rate', value: winRate === null ? '—' : `${winRate}%` },
   ];

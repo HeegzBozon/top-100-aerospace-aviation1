@@ -103,11 +103,11 @@ export default function PersonalStandings({
         {!loading && !error && marks === 0 && otherLaneMarks > 0 && (
           <div className="rounded-2xl px-3.5 py-3.5" style={{ background: 'rgba(255,255,255,0.72)', border: `1px solid ${brand.navy}10` }}>
             <p className="text-[11.5px] font-bold" style={{ color: brand.navy }}>
-              Your {otherLaneMarks.toLocaleString()} marks are in the {scope === 'test' ? 'community' : 'test'} lane
+              Your {otherLaneMarks.toLocaleString()} evaluations are in the {scope === 'test' ? 'community' : 'test'} lane
             </p>
             <p className="mt-1 text-[10.5px] leading-relaxed" style={{ color: ink.body }}>
               Every ballot is stamped with the lane of the account that cast it. Read the other
-              lane to see the names those marks carried.
+              lane to see the names those evaluations carried.
             </p>
             <button
               type="button"

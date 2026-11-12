@@ -10,7 +10,7 @@ export const STANDING_COLUMNS = [
   {
     key: 'elo',
     label: 'Elo',
-    hint: 'Strength from pairwise marks',
+    hint: 'Strength from pairwise evaluations',
     valueOf: (r) => r.elo || 0,
   },
   {

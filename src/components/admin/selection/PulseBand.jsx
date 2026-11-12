@@ -5,7 +5,7 @@
 const FIGURES = [
   { key: 'cast', label: 'Cast' },
   { key: 'seeded', label: 'Seeded' },
-  { key: 'marks', label: 'Marks' },
+  { key: 'marks', label: 'Evaluations' },
   { key: 'share', label: 'Filed' },
 ];
 

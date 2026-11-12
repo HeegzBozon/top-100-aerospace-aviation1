@@ -95,7 +95,7 @@ export default function CohortDive({ cohortStats = [], mode = 'live' }) {
                   <span className="tabular-nums">{fmt(set.ballots)} ballots</span>
                   <span className="tabular-nums">{fmt(set.seeded)} seeded</span>
                   <span className="ml-auto tabular-nums font-semibold text-editorial-navy/70">
-                    {fmt(set.comparisons)} marks
+                    {fmt(set.comparisons)} evaluations
                   </span>
                 </div>
               </button>
@@ -125,7 +125,7 @@ export default function CohortDive({ cohortStats = [], mode = 'live' }) {
         })}
       </div>
       <p className="mt-1 text-[8px] uppercase tracking-[0.12em] text-editorial-navy/35">
-        {mode === 'internal' ? 'Standing · ballots · internal marks' : 'Standing · ballots · marks'}
+        {mode === 'internal' ? 'Standing · ballots · internal evaluations' : 'Standing · ballots · evaluations'}
       </p>
     </div>
   );

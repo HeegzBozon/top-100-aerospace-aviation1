@@ -11,7 +11,7 @@ const COLUMNS = [
   { key: 'xp', label: 'XP', numeric: true },
   { key: 'sets_completed', label: 'Sets', numeric: true },
   { key: 'ballots_saved', label: 'Ballots', numeric: true },
-  { key: 'comparisons_recorded', label: 'Marks', numeric: true },
+  { key: 'comparisons_recorded', label: 'Evaluations', numeric: true },
   { key: 'last_action_at', label: 'Last seen', numeric: true },
 ];
 

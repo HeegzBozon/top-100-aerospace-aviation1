@@ -95,7 +95,7 @@ export default function MobileStandingsLedger({ rows = [], moves = {}, since, mo
                     {row.name}
                   </span>
                   <span className="block truncate text-[9px] uppercase tracking-[0.1em] leading-tight text-editorial-navy/40">
-                    {[row.cohort_label, `${row.appearances || 0} marks`].filter(Boolean).join(' · ')}
+                    {[row.cohort_label, `${row.appearances || 0} evaluations`].filter(Boolean).join(' · ')}
                   </span>
                 </span>
 
@@ -129,7 +129,7 @@ export default function MobileStandingsLedger({ rows = [], moves = {}, since, mo
         {since ? ` Movement since ${new Date(since).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}.` : ''}{' '}
         {mode === 'internal'
           ? 'Internal sets: recorded, never scored.'
-          : 'Borda and Combined are projected; Elo is scored from the marks in view.'}
+          : 'Borda and Combined are projected; Elo is scored from the evaluations in view.'}
       </p>
     </div>
   );

@@ -5,18 +5,19 @@ import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 // The monitor's head strip: the counts the ledger is producing, then the audience it is
 // producing them for. Everything else on the surface is the dive under these figures.
 //
-// Three levels of the same record, in the order they are cast: a ballot is a Fellow's
-// whole ordering, a mini ballot is one sitting of it — four cards, five marks — and a mark
-// is one nominee weighed against another. Marks are counted in the reading on the glass.
+// Three levels of the same record, in the order they are cast: a ballot is an evaluator's
+// whole ordering, a mini ballot is one sitting of it — four cards, five evaluations — and an
+// evaluation is one nominee weighed against another. Evaluations are counted in the reading
+// on the glass.
 
 const num = (value) => (Number(value) || 0).toLocaleString();
 
 const FIGURES = [
   { key: 'ballots', label: 'Ballots', note: 'whole orderings' },
-  { key: 'mini', label: 'Mini ballots', note: 'four cards, five marks' },
-  { key: 'comparisons', label: 'Marks', note: 'nominee against nominee' },
+  { key: 'mini', label: 'Mini ballots', note: 'four cards, five evaluations' },
+  { key: 'comparisons', label: 'Evaluations', note: 'nominee against nominee' },
   { key: 'pool', label: 'In pool', wide: true },
-  { key: 'contributors', label: 'Fellows', wide: true },
+  { key: 'contributors', label: 'Evaluators', wide: true },
 ];
 
 // A phone carries only the three levels of the vote itself; the audience behind them is a

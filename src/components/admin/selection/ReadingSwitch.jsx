@@ -10,7 +10,7 @@ import { ShieldCheck, Users } from 'lucide-react';
 // still legible from the one that is.
 export default function ReadingSwitch({ mode, onMode, live = 0, test = 0 }) {
   const readings = [
-    { key: 'live', label: 'Community', note: 'cast by Fellows', count: live, icon: Users },
+    { key: 'live', label: 'Community', note: 'cast by evaluators', count: live, icon: Users },
     { key: 'internal', label: 'Test', note: 'admin sets, never scored', count: test, icon: ShieldCheck },
   ];
 

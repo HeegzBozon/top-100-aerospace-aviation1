@@ -190,12 +190,12 @@ export default function SignalProgress({ totals, scopeLabel, mode = 'live' }) {
         {num(reading.covered)} of {num(reading.pool)} nominees {live ? 'weighed' : 'walked'} once (
         {pct(reading.covered, reading.pool)}%).{' '}
         {live
-          ? `Live sets only${heldApart > 0 ? `; ${num(heldApart)} test marks held apart` : ''}.`
-          : `Test sets only; ${num(heldApart)} community marks outside this view.`}
+          ? `Live sets only${heldApart > 0 ? `; ${num(heldApart)} test evaluations held apart` : ''}.`
+          : `Test sets only; ${num(heldApart)} community evaluations outside this view.`}
       </p>
       <p className="mt-1.5 hidden text-[9px] leading-relaxed text-editorial-navy/40 md:block">
         {num(reading.covered)} of {num(reading.pool)} nominees {live ? 'weighed' : 'walked'} at least once —{' '}
-        {pct(reading.covered, reading.pool)}% of the pool. {MARKS_PER_SITTING} marks to the mini
+        {pct(reading.covered, reading.pool)}% of the pool. {MARKS_PER_SITTING} evaluations to the mini
         ballot, {CARDS_PER_SITTING} card appearances, and the set targets scaled from this pool of{' '}
         {num(reading.pool)}. The totals hold only if the sittings are spread evenly; precision is
         read at the cut line, not from volume alone.

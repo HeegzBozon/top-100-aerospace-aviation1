@@ -48,15 +48,15 @@ export default function SignalProgress({ data, loading, scope = 'community' }) {
   const pill = atIdeal ? 'At the ideal' : reached ? 'Floor reached' : 'Below floor';
 
   const footer = !measurement
-    ? 'This cohort’s pool could not be read, so no marks can be set. The reading returns with the next poll.'
+    ? 'This cohort’s pool could not be read, so no evaluations can be set. The reading returns with the next poll.'
     : reading.ready
-      ? `${commas(reading.covered)} of ${commas(reading.pool)} nominees weighed at least once${readingTests ? ' in test runs' : ''} — ${pct(reading.coverage)} of the pool. ${CARDS_PER_SITTING} cards to the mini ballot and ${MARKS_PER_SITTING} marks written from it; the marks are set from the pool of ${commas(reading.pool)}, so they move with the field.` +
+      ? `${commas(reading.covered)} of ${commas(reading.pool)} nominees weighed at least once${readingTests ? ' in test runs' : ''} — ${pct(reading.coverage)} of the pool. ${CARDS_PER_SITTING} cards to the mini ballot and ${MARKS_PER_SITTING} evaluations written from it; the evaluations are set from the pool of ${commas(reading.pool)}, so they move with the field.` +
         (readingTests
-          ? ' These are simulated reference marks only. Test runs change no rating, community milestone or report.'
+          ? ' These are simulated reference evaluations only. Test runs change no rating, community milestone or report.'
           : heldApart
             ? ` ${commas(heldApart)} test comparisons are held apart from these figures.`
             : '')
-      : 'The pool standing in this cohort has not been read yet, so no marks can be set.';
+      : 'The pool standing in this cohort has not been read yet, so no evaluations can be set.';
 
   const columns = [
     {
@@ -193,10 +193,10 @@ export default function SignalProgress({ data, loading, scope = 'community' }) {
       <div className="mt-2.5" style={{ borderTop: RULE, paddingTop: 8 }}>
         <div className="flex items-baseline justify-between gap-2">
           <p className={MARK_LABEL} style={{ color: ink.soft }}>
-            {readingTests ? 'Testers past each rung' : 'Fellows past each rung'}
+            {readingTests ? 'Testers past each rung' : 'Evaluators past each rung'}
           </p>
           <p className="text-[6.5px] tabular-nums" style={{ color: ink.soft }}>
-            {commas(marks)} marks
+            {commas(marks)} evaluations
           </p>
         </div>
         {waiting ? (

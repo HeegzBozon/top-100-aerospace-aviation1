@@ -141,7 +141,7 @@ export default function MarkSetsLedger({ marks = [], recent = 0 }) {
         {visible.length === 0 && (
           <p className="rounded-lg border border-editorial-navy/10 bg-white px-3 py-8 text-center text-[11px] leading-relaxed text-editorial-navy/55">
             {marks.length === 0
-              ? 'No marks recorded in this scope yet. The ledger fills as the community weighs.'
+              ? 'No evaluations recorded in this scope yet. The ledger fills as the community weighs.'
               : `Nothing matches “${query}”.`}
           </p>
         )}
@@ -224,7 +224,7 @@ export default function MarkSetsLedger({ marks = [], recent = 0 }) {
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[12px] text-editorial-navy/55">
                   {marks.length === 0
-                    ? 'No marks recorded in this scope yet. The ledger fills as the community weighs.'
+                    ? 'No evaluations recorded in this scope yet. The ledger fills as the community weighs.'
                     : `Nothing matches “${query}”.`}
                 </td>
               </tr>

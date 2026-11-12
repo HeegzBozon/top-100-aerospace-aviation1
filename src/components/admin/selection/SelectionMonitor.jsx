@@ -175,7 +175,7 @@ export default function SelectionMonitor({ onOpenMenu }) {
                 Ballots
               </TabsTrigger>
               <TabsTrigger value="marks" className="px-1 text-[10px] md:px-3 md:text-sm">
-                Marks
+                Evaluations
               </TabsTrigger>
               <TabsTrigger value="contributors" className="px-1 text-[10px] md:px-3 md:text-sm">
                 Community

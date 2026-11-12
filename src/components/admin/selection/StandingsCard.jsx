@@ -14,7 +14,7 @@ function measureFor(column, row) {
   }
   if (column.key === 'elo') {
     const weighed = row.appearances > 0 || row.elo !== 1200;
-    return { value: weighed ? Math.round(row.elo) : '—', note: `${row.appearances} marks` };
+    return { value: weighed ? Math.round(row.elo) : '—', note: `${row.appearances} evaluations` };
   }
   const measured = row.borda_projected > 0 || row.appearances > 0;
   return { value: measured ? row.combined_index : '—', note: `${row.wins} W · ${row.losses} L` };
