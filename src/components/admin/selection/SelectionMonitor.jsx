@@ -119,7 +119,7 @@ export default function SelectionMonitor({ onOpenMenu }) {
           signal is legible on the first screen, with nothing to scroll past. On a desk the
           strip still leads, as it always has. */}
       <div className="order-3 md:order-none">
-        <MonitorStats totals={totals} />
+        <MonitorStats totals={totals} contributors={data?.contributors || []} />
       </div>
 
       {/* Which ledger is on the glass — the community's, or the internal test sets. Both
