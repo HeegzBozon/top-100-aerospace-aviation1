@@ -26,6 +26,7 @@ export default function AnalyticsDesk() {
   const [link, setLink] = useState('loading');
   const [properties, setProperties] = useState([]);
   const [property, setProperty] = useState(null);
+  const [stream, setStream] = useState(null);
   const [reason, setReason] = useState('');
   const [report, setReport] = useState(null);
   const [reportState, setReportState] = useState('idle');
@@ -38,12 +39,14 @@ export default function AnalyticsDesk() {
       if (!data?.connected) {
         setProperties([]);
         setProperty(null);
+        setStream(null);
         setReason(data?.reason || '');
         setLink('down');
         return;
       }
       setProperties(data.properties || []);
       setProperty(data.property || null);
+      setStream(data.stream || null);
       setReason(data.reason || '');
       setLink('live');
     } catch {
@@ -136,6 +139,7 @@ export default function AnalyticsDesk() {
         property={property}
         properties={properties}
         reason={reason}
+        stream={stream}
         onSelect={selectProperty}
         onApply={pointAt}
         onRefresh={readStatus}

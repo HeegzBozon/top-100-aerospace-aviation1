@@ -24,6 +24,19 @@ const UNCONNECTED =
 
 const METRICS = ['sessions', 'totalUsers', 'screenPageViews'];
 
+// THE HOUSE'S OWN STREAM.
+//
+// GA4 reports are read by property, never by measurement id, so the stream is held here to do
+// two honest jobs: name on the desk exactly which stream the figures belong to, and let the
+// property be found by its measurement id when the connected identity can enumerate accounts
+// but the house has not pinned a property by hand. The identity of the stream is the same one
+// the document's own tag sends to (see index.html).
+const STREAM = {
+  measurementId: 'G-47ZS78SLXV',
+  streamId: '16327959792',
+  containerId: 'GTM-5WD3H3DR',
+};
+
 function daysAgo(days: number) {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - days);
@@ -114,12 +127,33 @@ async function pinnedProperty(accessToken: string, wanted: any) {
   }
 }
 
-async function resolveTarget(accessToken: string, properties: any[], wanted: any) {
+// Which of the visible properties carries the house's measurement id. Only properties the
+// connection can already see are asked, so this can never reach past the grant it was given.
+async function propertyForStream(token: string, properties: any[]) {
+  for (const property of properties.slice(0, 25)) {
+    const page = await gaFetch(
+      token,
+      `${ADMIN_API}/${property.name}/dataStreams?pageSize=200`,
+    ).catch(() => null);
+    const found = (page?.dataStreams || []).find(
+      (stream: any) => stream?.webStreamData?.measurementId === STREAM.measurementId,
+    );
+    if (found) {
+      return { property, streamId: String(found.name || '').split('/').pop() || STREAM.streamId };
+    }
+  }
+  return null;
+}
+
+async function resolveTarget(accessToken: string, properties: any[], wanted: any, carried: any = null) {
   const matched = matchProperty(properties, wanted);
   if (matched) return matched;
 
   const pinned = await pinnedProperty(accessToken, wanted);
   if (pinned) return pinned;
+
+  // The property the document actually reports into outranks a guess between siblings.
+  if (carried?.name) return carried;
 
   if (properties.length === 1) return properties[0];
   const named = properties.find((property) => property.displayName);
@@ -202,15 +236,26 @@ export default async function (req: Request): Promise<Response> {
     }
     try {
       const properties = await listProperties(accessToken);
-      const property = await resolveTarget(accessToken, properties, body.propertyId);
+      const carried = await propertyForStream(accessToken, properties);
+      const property = await resolveTarget(
+        accessToken,
+        properties,
+        body.propertyId,
+        carried?.property,
+      );
       return Response.json({
         connected: true,
         ok: Boolean(property),
         properties,
         property,
+        stream: {
+          ...STREAM,
+          matchedProperty: carried?.property?.name || null,
+          matched: Boolean(carried),
+        },
         reason: property
           ? ''
-          : 'The connection is live but the Google account behind it cannot see any GA4 property. Authorize the connector with the account that owns the property, or pin the property id.',
+          : `The connection is live but the Google account behind it cannot see any GA4 property. Authorize the connector with the account that owns stream ${STREAM.measurementId}, or pin the property id.`,
       });
     } catch (error: any) {
       return Response.json({
@@ -328,6 +373,7 @@ export default async function (req: Request): Promise<Response> {
       connected: true,
       property,
       properties,
+      stream: STREAM,
       range: { startDate, endDate },
       // Kept as the raw GA4 reports: the existing traffic panel reads them by header.
       overview,

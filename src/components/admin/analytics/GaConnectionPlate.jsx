@@ -8,7 +8,16 @@ import { RefreshCw } from 'lucide-react';
 // A connection can be live and still enumerate no property (the Admin API only lists the
 // ones the connected identity can administer). The property id can then be pinned by hand
 // and read straight from the Data API, which answers for anyone allowed to report on it.
-export default function GaConnectionPlate({ state, property, properties, reason, onSelect, onApply, onRefresh }) {
+export default function GaConnectionPlate({
+  state,
+  property,
+  properties,
+  reason,
+  stream,
+  onSelect,
+  onApply,
+  onRefresh,
+}) {
   const [draft, setDraft] = useState('');
   const pinned = Boolean(property?.name) && !properties?.some((item) => item.name === property.name);
 
@@ -41,6 +50,15 @@ export default function GaConnectionPlate({ state, property, properties, reason,
               Google Analytics
             </p>
             <p className="truncate text-[12px] leading-snug text-editorial-cream/85">{line}</p>
+            {stream?.measurementId && (
+              <p className="truncate text-[10px] leading-relaxed tracking-[0.06em] text-editorial-cream/45">
+                {stream.measurementId}
+                <span className="text-editorial-cream/25"> · </span>
+                stream {stream.streamId}
+                <span className="text-editorial-cream/25"> · </span>
+                {stream.containerId}
+              </p>
+            )}
           </div>
         </div>
 
@@ -78,6 +96,14 @@ export default function GaConnectionPlate({ state, property, properties, reason,
           Authorize the Google Analytics connector under Integrations, then test the link
           again. The audience and route figures stay blank until the property can be read;
           patron delivery is counted on the house's own ledger and is unaffected.
+        </p>
+      )}
+
+      {state === 'live' && property && properties?.length > 0 && stream && !stream.matched && (
+        <p className="mt-2.5 border-t border-editorial-gold/20 pt-2.5 text-[11px] leading-relaxed text-editorial-cream/65">
+          None of the properties this connection can see carries stream {stream.measurementId}.
+          The figures above are read from {property.displayName || property.name}, which may be
+          another stream in the same account.
         </p>
       )}
 
