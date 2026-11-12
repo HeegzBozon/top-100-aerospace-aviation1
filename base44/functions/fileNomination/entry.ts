@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
+import { appendNominationsToManifest } from '../../shared/manifestAppend.ts';
 
 // ── Filing a nomination ──
 //
@@ -238,6 +239,10 @@ export default async function (req) {
 
     if (freshEntries.length) {
       await service.entities.NominationIntake.bulkCreate(freshEntries.map((entry) => ({ ...entry, ...intakeBase })));
+      // What the Fellow put forward joins their own Manifest at the end — the one shared
+      // order Women and Men stand on. A filing with no record behind it stays in the intake
+      // for review; nothing is invented and no ballot is cast.
+      await appendNominationsToManifest(service, email).catch(() => null);
     }
     if (freshLegends.length) {
       await service.entities.LocalLegendNomination.bulkCreate(

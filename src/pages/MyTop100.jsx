@@ -40,6 +40,15 @@ function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+// A stored Manifest, read into the surface's own rows. One list carries Women and Men
+// together, so an entry keeps the cohort it was filed under and its angel designation.
+const rowsFromList = (list) =>
+  (list?.rankings || []).map((r) => ({
+    ...r,
+    nomination_category: r.nomination_category || 'women',
+    also_angels: !!r.also_angels,
+  }));
+
 // The surface the committee was last left on, held for the session rather than the
 // device: a Fellow's place in their own work, not a setting.
 const COMMITTEE_TAB_KEY = 'top100_committee_tab';
@@ -156,16 +165,25 @@ export default function MyTop100({ initialTab = null } = {}) {
         setUser(currentUser);
 
         const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email });
-        if (lists.length > 0) {
-          const existing = lists[0];
-          setMyList(existing);
-          setRankings((existing.rankings || []).map(r => ({
-            ...r,
-            nomination_category: r.nomination_category || 'women',
-            also_angels: !!r.also_angels,
-          })));
-          setListName(existing.list_name || 'My Top 100');
-          setShareCode(existing.share_code || generateShareCode());
+        let stored = lists[0] || null;
+
+        // The Manifest carries the names its Fellow put forward: whatever the intake holds and
+        // the list does not is appended at the end, in the order it was filed, once. Nothing is
+        // written when there is nothing to add, and no ballot is cast by it — a ballot is cast
+        // in the Crosscheck.
+        try {
+          const synced = await base44.functions.invoke('syncManifestNominations', {});
+          if (synced?.data?.added > 0) {
+            const fresh = await base44.entities.UserTop100List.filter({ user_email: currentUser.email });
+            stored = fresh[0] || stored;
+          }
+        } catch { /* the Manifest opens as it stands */ }
+
+        if (stored) {
+          setMyList(stored);
+          setRankings(rowsFromList(stored));
+          setListName(stored.list_name || 'My Top 100');
+          setShareCode(stored.share_code || generateShareCode());
         } else {
           setShareCode(generateShareCode());
         }
@@ -174,7 +192,7 @@ export default function MyTop100({ initialTab = null } = {}) {
         // has not built one: the order is the concept the weighing is learned on, so a new
         // Analyst is set down where they can build it rather than in front of a ballot they
         // have nothing to weigh yet.
-        const built = (lists[0]?.rankings || []).length;
+        const built = (stored?.rankings || []).length;
         if (initialTab === 'vote' && built === 0) {
           setActiveTab('nominate');
           setGlassOpen((open) => (open === 'vote' ? 'nominate' : open));

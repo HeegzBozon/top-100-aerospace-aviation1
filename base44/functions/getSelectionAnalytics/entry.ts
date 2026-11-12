@@ -69,6 +69,26 @@ async function listMarks(service, query) {
   return all;
 }
 
+// Every Fellow's Manifest, read to its end. A Manifest is not a ballot: it is the order a
+// Fellow keeps, saved as they build it, and it is counted here so a quiet Crosscheck ledger
+// is never mistaken for a field nobody has put names forward in.
+async function listManifests(service) {
+  const all = [];
+  let cursor = null;
+  let rounds = 0;
+  while (rounds !== 12) {
+    rounds += 1;
+    const options = { sort: '-created_date', limit: 200 };
+    if (cursor) options.cursor = cursor;
+    const page = await service.entities.UserTop100List.filter({}, options).catch(() => null);
+    const items = page?.items || (Array.isArray(page) ? page : []);
+    all.push(...items);
+    if (!page?.has_more || !page?.next_cursor) break;
+    cursor = page.next_cursor;
+  }
+  return all;
+}
+
 // Elo recomputed from the marks of one view alone, oldest first, everyone starting level.
 // It is a reading, never a write: the internal view is the operator's own baseline, and
 // no figure from it reaches a Fellow's record, a ladder, or a published number.
@@ -176,7 +196,7 @@ export default async function (req) {
     const internalMarkQuery = { ...seasonQuery, is_test: true };
     const markQuery = mode === 'internal' ? internalMarkQuery : liveMarkQuery;
 
-    const [liveMarkCount, internalMarkCount, contributorCount, contributions, marks, nominees] = await Promise.all([
+    const [liveMarkCount, internalMarkCount, contributorCount, contributions, marks, nominees, manifests] = await Promise.all([
       service.entities.PairwiseVote.count(liveMarkQuery).catch(() => 0),
       service.entities.PairwiseVote.count(internalMarkQuery).catch(() => 0),
       service.entities.VotingContribution.count({ season_id: { $in: scopedIds } }).catch(() => 0),
@@ -187,6 +207,9 @@ export default async function (req) {
       // prints its most recent page of them.
       listMarks(service, markQuery),
       listScopePool(service, scopedIds),
+      // The Manifests themselves: what the Fellows have ordered, whether or not a Crosscheck
+      // has been filed from them yet.
+      listManifests(service),
     ]);
 
     const comparisons = mode === 'internal' ? internalMarkCount : liveMarkCount;
@@ -195,6 +218,14 @@ export default async function (req) {
 
     const ballots = savedBallots;
     const ballotCount = savedBallots.length;
+
+    // Manifests, counted apart from ballots: an order a Fellow has saved, and the names it
+    // carries. Neither figure is a vote, and neither is weighed into a standing.
+    const heldManifests = manifests.filter((m) => Array.isArray(m.rankings) && m.rankings.length);
+    const manifestEntries = heldManifests.reduce((total, m) => total + m.rankings.length, 0);
+    const manifestPeople = new Set(
+      heldManifests.flatMap((m) => m.rankings.map((entry) => entry.nominee_id).filter(Boolean)),
+    ).size;
 
     // ── Live standings ───────────────────────────────────────────────────────────
     const scoped = nominees.filter((n) => {
@@ -410,6 +441,11 @@ export default async function (req) {
         comparisons_test: internalMarkCount,
         contributors: contributorCount,
         ballots: ballotCount,
+        // The Manifest's own figures, beside the ballot's: an order saves itself, a ballot is
+        // cast. Read together, a zero ballot count cannot be read as an empty field.
+        manifests: heldManifests.length,
+        manifest_entries: manifestEntries,
+        manifest_people: manifestPeople,
         seeded: openDrafts.length,
         ballots_on_record: ballotCount + openDrafts.length,
         // People, not seats: a Fellow standing in two open cohorts is one person in the

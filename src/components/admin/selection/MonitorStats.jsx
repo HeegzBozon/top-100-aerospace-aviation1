@@ -9,6 +9,10 @@ import { MARKS_PER_SITTING } from '@/lib/ballotMeasurement';
 // whole ordering, a mini ballot is one sitting of it — four cards, five evaluations — and an
 // evaluation is one nominee weighed against another. Evaluations are counted in the reading
 // on the glass.
+//
+// The Manifest stands beside them and is not one of them. A Manifest saves itself as it is
+// built, so it carries names long before anything is cast from it — which is why it is read
+// on its own line, and why a quiet ballot count is not read as an empty field.
 
 const num = (value) => (Number(value) || 0).toLocaleString();
 
@@ -16,9 +20,16 @@ const FIGURES = [
   { key: 'ballots', label: 'Ballots', note: 'whole orderings' },
   { key: 'mini', label: 'Mini ballots', note: 'four cards, five evaluations' },
   { key: 'comparisons', label: 'Evaluations', note: 'nominee against nominee' },
+  { key: 'manifest_entries', label: 'On Manifests', note: 'names ordered' },
   { key: 'pool', label: 'In pool', wide: true },
   { key: 'contributors', label: 'Evaluators', wide: true },
 ];
+
+// The Manifest's own note carries the number of orders behind the names it holds.
+const noteFor = (figure, totals) =>
+  figure.key === 'manifest_entries'
+    ? `${num(totals?.manifests)} orders, saved as built`
+    : figure.note;
 
 // A phone carries only the three levels of the vote itself; the audience behind them is a
 // desk reading, and hiding it here leaves the signal instrument the head of the glass.
@@ -41,11 +52,11 @@ export default function MonitorStats({ totals }) {
 
   return (
     <div className="space-y-1.5">
-      <dl className="grid grid-cols-3 gap-1.5 md:grid-cols-5">
+      <dl className="grid grid-cols-3 gap-1.5 md:grid-cols-6">
         {FIGURES.map((figure) => (
           <div
             key={figure.key}
-            title={figure.note}
+            title={noteFor(figure, totals)}
             className={`rounded-lg border border-editorial-navy/10 bg-white px-1.5 py-1.5 ${
               figure.wide ? 'hidden md:block' : ''
             }`}
@@ -59,6 +70,11 @@ export default function MonitorStats({ totals }) {
           </div>
         ))}
       </dl>
+
+      {/* The distinction the strip is read by: the order saves itself, the weighing is cast. */}
+      <p className="text-[9px] uppercase tracking-[0.14em] text-editorial-navy/40">
+        A Manifest saves itself as it is built · a ballot is cast in the Crosscheck
+      </p>
 
       {/* Traffic, read from the property: three readings in one line, and the shape of
           the days behind them. */}
