@@ -1,7 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google Tag Manager — container GTM-5WD3H3DR -->
+    <!-- Google Tag Manager — container GTM-5WD3H3DR.
+
+         The container is deliberately left empty of any GA4 Configuration tag. Measurement
+         is carried by the direct gtag below, which is the one and only place page_view is
+         sent; the container exists so third-party pixels and scripts can be added there
+         without touching this document. Adding a GA4 tag inside GTM would send every page
+         view twice into the same stream. -->
     <script>
       (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
       new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -11,7 +17,8 @@
     </script>
     <!-- End Google Tag Manager -->
 
-    <!-- Google tag (gtag.js) — GA4 stream 16327959792 -->
+    <!-- Google tag (gtag.js) — GA4 stream 16327959792. The primary tracker: page views are
+         initialised here, never in the container above. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-47ZS78SLXV"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
