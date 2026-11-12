@@ -57,6 +57,7 @@ const EpisodePipeline           = lazy(() => import('@/components/admin/EpisodeP
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
 const MailRoom                  = lazy(() => import('@/components/admin/mailroom/MailRoom'));
 const EditorialCalendarDesk     = lazy(() => import('@/components/admin/editorial-calendar/EditorialCalendarDesk'));
+const BasecampDesk              = lazy(() => import('@/components/admin/basecamp/BasecampDesk'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -368,6 +369,9 @@ export default function Admin() {
       // The mail room: the audience ledger, the smart lists and the letter itself.
       case 'mail-room':
         return <MailRoom />;
+      // The house's Basecamp account: its projects, and the records inside them.
+      case 'basecamp':
+        return <BasecampDesk />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">

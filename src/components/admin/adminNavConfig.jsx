@@ -31,6 +31,7 @@ import {
     Mail,
     Route,
     Tag,
+    FolderKanban,
 } from 'lucide-react';
 
 /**
@@ -131,6 +132,9 @@ export const ADMIN_SECTIONS = [
             { id: 'sales', label: 'Sales Analytics', icon: DollarSign, component: 'SalesAnalytics' },
             { id: 'dispatch', label: 'Funnel Desk', icon: TrendingUp, component: 'DispatchFunnelPanel' },
             { id: 'mail-room', label: 'Mail Room', icon: Mail, component: 'MailRoom' },
+            // The house's Basecamp account, read and worked as a desk. Administrator-only,
+            // and unindexed — every call behind it re-checks the role on the server.
+            { id: 'basecamp', label: 'Basecamp', icon: FolderKanban, component: 'BasecampDesk' },
         ],
     },
 ];
