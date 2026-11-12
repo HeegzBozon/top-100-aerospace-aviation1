@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { TRACKED_CHANNELS, safeDestination } from '../../shared/patronLifecycle.ts';
+import { TRACKED_CHANNELS, TRACKED_SECTIONS, safeDestination } from '../../shared/patronLifecycle.ts';
 
 // THE TRACKED LINK.
 //
@@ -22,6 +22,12 @@ export default async function (req: Request): Promise<Response> {
   const dealId = here.searchParams.get('d');
   const channelParam = here.searchParams.get('c') || 'issue';
   const channel = TRACKED_CHANNELS.includes(channelParam) ? channelParam : 'issue';
+
+  // The section the link stood in — Section 04 gold, Section 06 silver, Section 10 bronze,
+  // Section 12 the footer door. The token is validated here rather than trusted: anything
+  // the house does not sell is dropped, so utm_content can only ever carry one of the five.
+  const sectionParam = here.searchParams.get('s') || '';
+  const section = TRACKED_SECTIONS.includes(sectionParam) ? sectionParam : '';
 
   if (!dealId) {
     return Response.redirect(fallback.toString(), 302);
@@ -48,6 +54,7 @@ export default async function (req: Request): Promise<Response> {
     'utm_campaign',
     deal?.assets?.utm_campaign || `issue-${deal?.issue_number || 'patron'}`,
   );
+  if (section) destination.searchParams.set('utm_content', section);
 
   // Counting is best-effort: a reader is never held at the door because a write was slow.
   try {
@@ -56,6 +63,7 @@ export default async function (req: Request): Promise<Response> {
       slot_id: deal?.slot_id || '',
       issue_number: deal?.issue_number || undefined,
       channel,
+      ...(section ? { section } : {}),
       destination_host: destination.host,
       referrer: String(req.headers.get('referer') || '').slice(0, 300),
       clicked_at: new Date().toISOString(),

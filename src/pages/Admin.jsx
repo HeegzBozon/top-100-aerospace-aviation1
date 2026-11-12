@@ -34,6 +34,7 @@ const AvailabilityManager       = lazy(() => import('@/components/admin/Availabi
 const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsReviewManager'));
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
+const AnalyticsDesk             = lazy(() => import('@/components/admin/analytics/AnalyticsDesk'));
 const DispatchFunnelPanel       = lazy(() => import('@/components/admin/DispatchFunnelPanel'));
 const NominationFunnelPanel     = lazy(() => import('@/components/admin/NominationFunnelPanel'));
 const FunnelAuditDesk           = lazy(() => import('@/components/admin/funnel-audit/FunnelAuditDesk'));
@@ -344,6 +345,10 @@ export default function Admin() {
         return <PlatformSettings />;
       case 'rail-items':
         return <RailItemManager />;
+      // The traffic desk: audience and routes from GA4, patron delivery from the click
+      // ledger, and the existing traffic panel below it.
+      case 'analytics':
+        return <AnalyticsDesk />;
       case 'sales':
         return <SalesAnalytics />;
       // The funnel desk: the audit of every journey the house runs, then the house's two

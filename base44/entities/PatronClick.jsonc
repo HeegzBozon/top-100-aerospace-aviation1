@@ -20,7 +20,31 @@
         "volume",
         "media_kit"
       ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "green",
+        "yellow"
+      ],
       "description": "Which deliverable carried the link. This is what makes a report possible."
+    },
+    "section": {
+      "type": "string",
+      "enum": [
+        "gold",
+        "silver1",
+        "silver2",
+        "bronze",
+        "footer_door"
+      ],
+      "enumColors": [
+        "yellow",
+        "gray",
+        "gray",
+        "pink",
+        "blue"
+      ],
+      "description": "The media kit section the link stood in, stamped by the redirect from the link's own token and forwarded to the Patron as utm_content. Empty when the link carried no section."
     },
     "destination_host": {
       "type": "string",

@@ -145,10 +145,16 @@ export const DEFAULT_FIREWALL = FIREWALL_LINE;
 // it is built from the deal and never from an address a reader supplies.
 export const TRACKED_CHANNELS = ['issue', 'linkedin', 'volume', 'media_kit'];
 
-export const trackedLink = (origin, dealId, channel = 'issue') => {
+// The section tokens the redirect stamps as utm_content: Section 04 gold, Section 06
+// silver (two plates), Section 10 bronze, Section 12 the footer door.
+export const TRACKED_SECTIONS = ['gold', 'silver1', 'silver2', 'bronze', 'footer_door'];
+
+export const trackedLink = (origin, dealId, channel = 'issue', section = '') => {
   if (!dealId) return '';
   const safe = TRACKED_CHANNELS.includes(channel) ? channel : 'issue';
-  return `${String(origin || '').replace(/\/$/, '')}/functions/patronLink?d=${encodeURIComponent(dealId)}&c=${safe}`;
+  const safeSection = TRACKED_SECTIONS.includes(section) ? section : '';
+  const base = `${String(origin || '').replace(/\/$/, '')}/functions/patronLink?d=${encodeURIComponent(dealId)}&c=${safe}`;
+  return safeSection ? `${base}&s=${safeSection}` : base;
 };
 
 // The desk's small set of parts, so every panel on it is cut from the same metal.

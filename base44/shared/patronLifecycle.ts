@@ -127,10 +127,17 @@ export function blockersFor(deal, stage, { hasSentReport = false } = {}) {
 // deal id, never from a URL a reader supplies.
 export const TRACKED_CHANNELS = ['issue', 'linkedin', 'volume', 'media_kit'];
 
-export function trackedLink(origin, dealId, channel = 'issue') {
+// The five surfaces the media kit sells beside. Each carries its own token, which the
+// redirect stamps on the outbound link as utm_content, so the placement a reader came
+// from is written on the Patron's own analytics as well as on the house's click ledger.
+export const TRACKED_SECTIONS = ['gold', 'silver1', 'silver2', 'bronze', 'footer_door'];
+
+export function trackedLink(origin, dealId, channel = 'issue', section = '') {
   if (!dealId) return '';
   const safeChannel = TRACKED_CHANNELS.includes(channel) ? channel : 'issue';
-  return `${String(origin).replace(/\/$/, '')}/functions/patronLink?d=${encodeURIComponent(dealId)}&c=${safeChannel}`;
+  const safeSection = TRACKED_SECTIONS.includes(section) ? section : '';
+  const base = `${String(origin).replace(/\/$/, '')}/functions/patronLink?d=${encodeURIComponent(dealId)}&c=${safeChannel}`;
+  return safeSection ? `${base}&s=${safeSection}` : base;
 }
 
 // The RFC-ish gate, the same shape used at every other door in the house: garbage addresses

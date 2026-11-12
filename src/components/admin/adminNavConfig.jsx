@@ -129,6 +129,9 @@ export const ADMIN_SECTIONS = [
             { id: 'seasonal-planning', label: 'Seasonal Planning', icon: ClipboardList, component: 'SeasonalPlanningDashboard' },
             { id: 'settings', label: 'Platform Settings', icon: Settings, component: 'PlatformSettings' },
             { id: 'rail-items', label: 'Icon Rail', icon: Columns, component: 'RailItemManager' },
+            // The traffic desk: audience, top content routes, and patron delivery counted
+            // on the house's own click ledger. Administrator-only, and unindexed.
+            { id: 'analytics', label: 'Analytics', icon: BarChart3, component: 'AnalyticsDesk' },
             { id: 'sales', label: 'Sales Analytics', icon: DollarSign, component: 'SalesAnalytics' },
             { id: 'dispatch', label: 'Funnel Desk', icon: TrendingUp, component: 'DispatchFunnelPanel' },
             { id: 'mail-room', label: 'Mail Room', icon: Mail, component: 'MailRoom' },
@@ -151,7 +154,6 @@ export const LEGACY_TAB_REDIRECTS = {
     'season-command-center': 'workspace-selection',
     scoring: 'workspace-selection',
     holistic: 'workspace-selection',
-    analytics: 'workspace-selection',
     verification: 'workspace-selection',
     'photo-diagnostics': 'media',
     'photo-upload': 'media',

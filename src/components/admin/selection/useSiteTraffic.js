@@ -22,10 +22,10 @@ export default function useSiteTraffic(days = DAYS) {
 
     (async () => {
       try {
-        const listed = await getAnalyticsData({});
-        const properties = listed?.data?.properties || [];
-        const known = properties.find((p) => p.name?.includes('FKVD6VNDVS') || p.displayName);
-        const propertyId = known?.name || properties[0]?.name;
+        // The status action resolves the property the connection can read, so the monitor
+        // never guesses at one and never runs a report just to discover it.
+        const listed = await getAnalyticsData({ action: 'status' });
+        const propertyId = listed?.data?.property?.name || '';
         if (!propertyId) {
           if (!cancelled) setState('empty');
           return;

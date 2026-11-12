@@ -32,14 +32,26 @@ export default function AnalyticsPanel({ propertyId, onPropertyChange, propertie
     if (!propertyId) return;
     setLoading(true);
     setError(null);
-    const res = await getAnalyticsData({
-      propertyId,
-      startDate: getDateDaysAgo(range),
-      endDate: getDateDaysAgo(1),
-    });
-    if (res.data?.error) setError(res.data.error);
-    else setData(res.data);
-    setLoading(false);
+    // A refusal from GA4 (not connected, no property, no permission) arrives as a readable
+    // error rather than a blank chart, so the panel always resolves to something to read.
+    try {
+      const res = await getAnalyticsData({
+        propertyId,
+        startDate: getDateDaysAgo(range),
+        endDate: getDateDaysAgo(1),
+      });
+      if (res.data?.error) {
+        setError(res.data.error);
+        setData(null);
+      } else {
+        setData(res.data);
+      }
+    } catch (caught) {
+      setError(caught?.message || 'Google Analytics could not complete the report.');
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
   }, [propertyId, range]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
