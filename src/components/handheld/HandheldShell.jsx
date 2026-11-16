@@ -1,9 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import useKeyboardOpen from "@/hooks/useKeyboardOpen";
 import useFieldIntoView from "@/hooks/useFieldIntoView";
-import HandheldDeck from "./HandheldDeck";
+import { useAuth } from '@/lib/AuthContext';
+import { consoleStartsClosed } from '@/components/shell/immersiveSurfaces';
+import { releaseShellVars } from '@/components/handheld/handheldGeometry';
+const HandheldDeck = lazy(() => import('@/components/handheld/HandheldDeck'));
 import DeckPowerKey from "./DeckPowerKey";
 import { blip, buzz } from "./handheldSound";
 import useOverlayPicker from "./useOverlayPicker";
@@ -38,15 +41,20 @@ export default function HandheldShell() {
   // Whether the machine's hardware is standing on the picture. The key that carries this
   // is never put away with the case, so the state lives here rather than in the deck: the
   // deck is what the key lowers.
-  const [hardwareOn, setHardwareOn] = useState(true);
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const [hardwareChoice, setHardwareChoice] = useState(null);
+  const hardwareOn = hardwareChoice?.path === location.pathname
+    ? hardwareChoice.on
+    : !consoleStartsClosed(location.pathname, isAuthenticated);
   const keyboard = useKeyboardOpen();
   const toggleHardware = useCallback(() => {
     if (isMobile) {
       blip(hardwareOn ? "toggle" : "select");
       buzz();
     }
-    setHardwareOn((on) => !on);
-  }, [hardwareOn, isMobile]);
+    setHardwareChoice({ path: location.pathname, on: !hardwareOn });
+  }, [hardwareOn, isMobile, location.pathname]);
 
   // Stable, so a surface reporting its state never re-triggers itself. The toggle is
   // handed on, because it is now the bar's View menu that puts the machine down as well
@@ -64,10 +72,16 @@ export default function HandheldShell() {
   // The Colony is the one room the machine is worn in full, so the case comes up on
   // entering it. The key still lowers it while standing there, and whatever the reader
   // chose travels out of the room with them.
-  const location = useLocation();
   useEffect(() => {
-    if (location.pathname.toLowerCase().startsWith("/colony")) setHardwareOn(true);
+    if (location.pathname.toLowerCase().startsWith("/colony")) {
+      setHardwareChoice({ path: location.pathname, on: true });
+    }
   }, [location.pathname]);
+
+  // The first closed load has no deck to unmount, so release default geometry too.
+  useLayoutEffect(() => {
+    if (!hardwareOn) releaseShellVars();
+  }, [hardwareOn]);
 
   // The field being typed into is kept above the keys, inside the glass.
   useFieldIntoView(keyboard.open, keyboard.height);
@@ -111,7 +125,7 @@ export default function HandheldShell() {
 
   return (
     <DeviceContext.Provider value={api}>
-      <div className="hh-stage md:hidden flex flex-col overscroll-y-none">
+      <div className={hardwareOn ? 'hh-stage md:hidden flex flex-col overscroll-y-none' : 'min-h-dvh flex flex-col'}>
         <div
           data-handheld-screen="true"
           className="flex-1 min-h-0 overflow-y-auto overscroll-y-none scrollbar-hide flex flex-col"
@@ -125,7 +139,9 @@ export default function HandheldShell() {
         </div>
       </div>
       {!putAway && hardwareOn && (
-        <HandheldDeck deckOn={hardwareOn} onPutAway={toggleHardware} />
+        <Suspense fallback={null}>
+          <HandheldDeck deckOn={hardwareOn} onPutAway={toggleHardware} />
+        </Suspense>
       )}
       {/* The case is put down from the bar's View menu, and the bar is cut into the chin —
           so while the machine is away this key is the only control on the picture, and

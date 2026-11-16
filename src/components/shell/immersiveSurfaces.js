@@ -34,6 +34,11 @@ export function immersiveFor(pathname = "") {
 
 export const standsBackOnDesk = (pathname = "") => immersiveFor(pathname).desk === "full";
 
+// Public arrivals get the whole picture; the existing power key and View menu
+// still override this default. The media kit starts closed for every role.
+export const consoleStartsClosed = (pathname = "", authenticated = false) =>
+  !authenticated || /^\/(mediakit|patronage|media-kit)(\/|$)/i.test(pathname);
+
 // WHICH SURFACES DO NOT WANT THE RAIL.
 //
 // The ticks down the right edge of the glass are a map of a page's sections, and they are

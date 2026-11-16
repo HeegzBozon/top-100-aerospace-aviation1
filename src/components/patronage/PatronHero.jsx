@@ -5,7 +5,7 @@ import { P, FIREWALL_LINE } from './patronConfig';
 // promise a buyer needs to read before anything else: patronage does not touch the record.
 export default function PatronHero() {
   return (
-    <section className="relative overflow-hidden" style={{ background: P.navyDeep }}>
+    <section className="relative flex min-h-dvh items-center overflow-hidden" style={{ background: P.navyDeep }}>
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.18]"
         style={{

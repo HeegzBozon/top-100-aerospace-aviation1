@@ -1,9 +1,12 @@
-import { useLayoutEffect } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/lib/AuthContext';
+import { consoleStartsClosed } from '@/components/shell/immersiveSurfaces';
 import { applyShellVars, releaseShellVars } from "@/components/handheld/handheldGeometry";
 import HandheldBody from "@/components/handheld/HandheldBody";
 import HandheldScreenFrame from "@/components/handheld/HandheldScreenFrame";
 import HandheldChin from "@/components/handheld/HandheldChin";
-import ImacHousing from "@/components/desktop/ImacHousing";
+const ImacHousing = lazy(() => import('@/components/desktop/ImacHousing'));
 import ImacWait from "@/components/desktop/ImacWait";
 
 // The app's loading state, console first.
@@ -13,10 +16,16 @@ import ImacWait from "@/components/desktop/ImacWait";
 // hardware, so the device is present from the first frame and the picture simply
 // fills in underneath it. A desktop has no device, so there it is a plain wait.
 export default function ConsoleLoading({ label = "Powering up" }) {
+  const { pathname } = useLocation();
+  const { isAuthenticated } = useAuth();
+  const closed = consoleStartsClosed(pathname, isAuthenticated);
   useLayoutEffect(() => {
+    if (closed) { releaseShellVars(); return; }
     applyShellVars();
     return releaseShellVars;
-  }, []);
+  }, [closed]);
+
+  if (closed) return <div role="status" className="min-h-dvh bg-editorial-cream p-6 font-body text-sm text-editorial-navy">{label}</div>;
 
   return (
     <>
@@ -65,9 +74,11 @@ export default function ConsoleLoading({ label = "Powering up" }) {
       {/* A desk is housed in the desk machine, so the wait happens inside its tube,
           on a console that is already standing. */}
       <div className="hidden md:block">
-        <ImacHousing>
-          <ImacWait label={label} />
-        </ImacHousing>
+        <Suspense fallback={null}>
+          <ImacHousing>
+            <ImacWait label={label} />
+          </ImacHousing>
+        </Suspense>
       </div>
     </>
   );

@@ -22,7 +22,7 @@ const EMPTY = {
 
 const field = 'w-full border bg-white px-3 py-2.5 text-[12px] outline-none';
 
-export default function PatronInquiryForm() {
+export default function PatronInquiryForm({ sectionId = 'enquire' }) {
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
@@ -59,7 +59,7 @@ export default function PatronInquiryForm() {
 
   if (status === 'sent') {
     return (
-      <section id="enquire" className="border-t" style={{ borderColor: P.hair }}>
+      <section id={sectionId} className="border-t" style={{ borderColor: P.hair }}>
         <div className="mx-auto w-full max-w-3xl px-5 py-12 md:px-10 md:py-16">
           <div className="border p-6 md:p-9" style={{ borderColor: P.copper, background: 'white' }}>
             <Check className="h-5 w-5" style={{ color: P.copper }} />
@@ -85,7 +85,7 @@ export default function PatronInquiryForm() {
   }
 
   return (
-    <section id="enquire" className="border-t" style={{ borderColor: P.hair }}>
+    <section id={sectionId} className="border-t" style={{ borderColor: P.hair }}>
       <div className="mx-auto w-full max-w-3xl px-5 py-10 md:px-10 md:py-14">
         <p className="text-[8.5px] font-bold uppercase tracking-[0.32em] md:text-[9.5px]" style={{ color: P.copper }}>
           The next step

@@ -1,8 +1,9 @@
+import { lazy, Suspense } from 'react';
 import { Outlet, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useDevice } from "@/components/handheld/HandheldShell";
-import ImacHousing from "./ImacHousing";
-import DesktopDock from "./DesktopDock";
+const ImacHousing = lazy(() => import('@/components/desktop/ImacHousing'));
+const DesktopDock = lazy(() => import('@/components/desktop/DesktopDock'));
 import { standsBackOnDesk } from "@/components/shell/immersiveSurfaces";
 
 // Which surfaces own the whole tube — a game driven from its own instrument panel, a
@@ -39,10 +40,10 @@ export default function DesktopShell() {
   const bare = standsBackOnDesk(pathname);
 
   return (
-    <>
+    <Suspense fallback={<div role="status" className="min-h-dvh bg-editorial-cream p-6 text-editorial-navy">Opening console…</div>}>
       <ImacHousing shelf={bare ? null : <DesktopDock />}>
         <Outlet />
       </ImacHousing>
-    </>
+    </Suspense>
   );
 }

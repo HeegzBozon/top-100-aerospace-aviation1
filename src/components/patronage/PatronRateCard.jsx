@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { P, SLOT_CALENDAR, TIER_LABELS, day, money } from './patronConfig';
 
@@ -23,23 +23,13 @@ const byDate = (a, b) => {
 };
 
 export default function PatronRateCard() {
-  const [rows, setRows] = useState(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    let alive = true;
-    base44.entities.SponsorSlot
-      .list('issue_date', 100)
-      .then((list) => alive && setRows(list || []))
-      .catch(() => {
-        if (!alive) return;
-        setFailed(true);
-        setRows([]);
-      });
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const { data, isPending, isError: failed } = useQuery({
+    queryKey: ['media-kit-slots'],
+    queryFn: () => base44.entities.SponsorSlot.list('issue_date', 100),
+    staleTime: 60000,
+    retry: false,
+  });
+  const rows = isPending ? null : data || [];
 
   const slots = (rows && rows.length ? rows : SLOT_CALENDAR).slice().sort(byDate);
 

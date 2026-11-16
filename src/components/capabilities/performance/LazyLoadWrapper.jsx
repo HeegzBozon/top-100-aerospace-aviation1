@@ -13,6 +13,10 @@ export default function LazyLoadWrapper({
   const elementRef = useRef(null);
 
   useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsInView(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasLoaded) {
@@ -31,11 +35,7 @@ export default function LazyLoadWrapper({
       observer.observe(elementRef.current);
     }
 
-    return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current);
-      }
-    };
+    return () => observer.disconnect();
   }, [threshold, rootMargin, hasLoaded]);
 
   const defaultFallback = (
