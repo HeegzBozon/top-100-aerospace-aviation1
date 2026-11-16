@@ -343,6 +343,8 @@ const AuthenticatedApp = () => {
       <Route path="/Top100AerospaceAviation2021" element={<SeasonArchive archiveSeasonId="6a6b70136ccb7c358f77dd7f" />} />
       <Route path="/archive/6a6b70136ccb7c358f77dd7f" element={<ArchiveRedirect to="/Top100AerospaceAviation2021" />} />
       <Route path="/archive/68a4e3ee564cf684ff502a06" element={<ArchiveRedirect to="/Top100Women2025" />} />
+      <Route path="/Top100AerospaceAviation2022" element={<SeasonArchive archiveSeasonId="6a6b7954c924445e2599968d" />} />
+      <Route path="/archive/6a6b7954c924445e2599968d" element={<ArchiveRedirect to="/Top100AerospaceAviation2022" />} />
       <Route path="/archive/:seasonId" element={<SeasonArchive />} />
       <Route path="/events" element={<EventsCalendar />} />
       <Route path="/ground-control" element={<GroundControl />} />
@@ -360,7 +362,7 @@ const AuthenticatedApp = () => {
       <Route path="/volume-one-top100" element={<ArchiveRedirect to="/Top100AerospaceAviation2021" />} />
       <Route path="/volume-two-women" element={<Navigate to="/archive/6a6b756e5c6a4773130e2511" replace />} />
       <Route path="/volume-two-men" element={<Navigate to="/archive/6a6b77cb2f46f1f0cae76d75" replace />} />
-      <Route path="/volume-two-top100" element={<Navigate to="/archive/6a6b7954c924445e2599968d" replace />} />
+      <Route path="/volume-two-top100" element={<ArchiveRedirect to="/Top100AerospaceAviation2022" />} />
       <Route path="/Nominations" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/nominations" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/top100-tv" element={<Top100TV />} />

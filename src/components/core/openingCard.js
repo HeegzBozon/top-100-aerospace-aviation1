@@ -32,9 +32,9 @@ const DIRECT_ENTRY = [
   /^\/media-kit(\/.*)?$/i,
   /^\/magazine\/[^/]+$/i,
   /^\/Top100Women2025$/i,
-  /^\/Top100AerospaceAviation2021$/i,
-  /^\/archive\/(68a4e3ee564cf684ff502a06|6a6b70136ccb7c358f77dd7f)$/i,
-  /^\/volume-one-top100$/i,
+  /^\/Top100AerospaceAviation202[12]$/i,
+  /^\/archive\/(68a4e3ee564cf684ff502a06|6a6b70136ccb7c358f77dd7f|6a6b7954c924445e2599968d)$/i,
+  /^\/volume-(one|two)-top100$/i,
 ];
 
 function currentPath() {

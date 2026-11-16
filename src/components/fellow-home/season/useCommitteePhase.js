@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 
 // Canonical archive deep link for the "Browse the archive" action.
-export const ARCHIVE_DEFAULT = '/archive/6a6b7954c924445e2599968d';
+export const ARCHIVE_DEFAULT = '/Top100AerospaceAviation2022';
 
 const ACTIVE_STATUSES = ['nominations_open', 'voting_open', 'review'];
 
