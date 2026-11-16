@@ -20,6 +20,7 @@ import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
 import SurfaceLoader from '@/components/core/SurfaceLoader';
 import MachineProviders from '@/components/core/MachineProviders';
+import ArchiveRedirect from '@/components/archive/ArchiveRedirect';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -339,6 +340,9 @@ const AuthenticatedApp = () => {
       <Route path="/session-portal/join/:code" element={<SessionJoin />} />
       <Route path="/my-top100" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/top100-list/:shareCode" element={<PublicTop100List />} />
+      <Route path="/Top100AerospaceAviation2021" element={<SeasonArchive archiveSeasonId="6a6b70136ccb7c358f77dd7f" />} />
+      <Route path="/archive/6a6b70136ccb7c358f77dd7f" element={<ArchiveRedirect to="/Top100AerospaceAviation2021" />} />
+      <Route path="/archive/68a4e3ee564cf684ff502a06" element={<ArchiveRedirect to="/Top100Women2025" />} />
       <Route path="/archive/:seasonId" element={<SeasonArchive />} />
       <Route path="/events" element={<EventsCalendar />} />
       <Route path="/ground-control" element={<GroundControl />} />
@@ -353,7 +357,7 @@ const AuthenticatedApp = () => {
       <Route path="/rsvp" element={<Rsvp />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/volume-one-men" element={<Navigate to="/archive/6a6b699d7b16a7017ce0c3c0" replace />} />
-      <Route path="/volume-one-top100" element={<Navigate to="/archive/6a6b70136ccb7c358f77dd7f" replace />} />
+      <Route path="/volume-one-top100" element={<ArchiveRedirect to="/Top100AerospaceAviation2021" />} />
       <Route path="/volume-two-women" element={<Navigate to="/archive/6a6b756e5c6a4773130e2511" replace />} />
       <Route path="/volume-two-men" element={<Navigate to="/archive/6a6b77cb2f46f1f0cae76d75" replace />} />
       <Route path="/volume-two-top100" element={<Navigate to="/archive/6a6b7954c924445e2599968d" replace />} />

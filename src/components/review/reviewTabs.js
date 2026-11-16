@@ -61,7 +61,7 @@ export const REVIEW_TABS = [
     index: "6",
     label: "Archive",
     blurb: "The volumes already closed. Every cycle since the first, kept as the record it is.",
-    to: "/archive/6a6b70136ccb7c358f77dd7f",
+    to: "/Top100AerospaceAviation2021",
     icon: Archive,
   },
 ];

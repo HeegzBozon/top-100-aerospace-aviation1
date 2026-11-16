@@ -27,7 +27,7 @@ export default function ArchiveContinueNav({ currentSeasonId }) {
         <div className="grid gap-3 sm:grid-cols-2">
           {prev && (
             <Link
-              to={`/archive/${prev.seasonId}`}
+              to={prev.canonicalPath || prev.livePath || `/archive/${prev.seasonId}`}
               className="group flex items-start gap-3 p-5 border transition-all hover:-translate-y-0.5"
               style={{ borderColor: `${navy}18`, background: '#faf8f5' }}
             >
@@ -42,7 +42,7 @@ export default function ArchiveContinueNav({ currentSeasonId }) {
           )}
           {next && (
             <Link
-              to={`/archive/${next.seasonId}`}
+              to={next.canonicalPath || next.livePath || `/archive/${next.seasonId}`}
               className="group flex items-start justify-between gap-3 p-5 border transition-all hover:-translate-y-0.5"
               style={{ borderColor: `${navy}18`, background: '#faf8f5' }}
             >
@@ -62,7 +62,7 @@ export default function ArchiveContinueNav({ currentSeasonId }) {
             {others.map((v) => (
               <Link
                 key={v.seasonId}
-                to={`/archive/${v.seasonId}`}
+                to={v.canonicalPath || v.livePath || `/archive/${v.seasonId}`}
                 className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[11px] font-medium transition-all hover:-translate-y-0.5"
                 style={{ borderColor: `${gold}45`, color: navy, background: '#faf8f5' }}
               >

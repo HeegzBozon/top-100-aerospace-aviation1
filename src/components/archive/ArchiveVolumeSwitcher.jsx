@@ -13,7 +13,7 @@ export default function ArchiveVolumeSwitcher({ currentSeasonId }) {
         return (
           <Link
             key={v.seasonId}
-            to={v.livePath || `/archive/${v.seasonId}`}
+            to={v.canonicalPath || v.livePath || `/archive/${v.seasonId}`}
             className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] transition-colors"
             style={{
               background: active ? navy : `${navy}0A`,

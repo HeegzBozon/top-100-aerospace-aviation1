@@ -12,8 +12,9 @@ import { ARCHIVE_VOLUMES, getArchiveAppearance } from '@/components/archive/arch
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
 
-export default function SeasonArchive() {
-  const { seasonId } = useParams();
+export default function SeasonArchive({ archiveSeasonId }) {
+  const { seasonId: routeSeasonId } = useParams();
+  const seasonId = archiveSeasonId || routeSeasonId;
   const navigate = useNavigate();
   const [season, setSeason] = useState(null);
   const [nominees, setNominees] = useState([]);

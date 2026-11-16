@@ -32,8 +32,8 @@ export default function ArchiveVolumesSection() {
         <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {VOLUMES.map((v) => (
             <Link
-              key={v.path}
-              to={v.path}
+              key={v.seasonId}
+              to={v.canonicalPath || v.livePath || v.path}
               className="group block p-5 md:p-6 border transition-all hover:-translate-y-0.5"
               style={{ borderColor: `${brandColors.ink}18`, background: 'white' }}
             >
