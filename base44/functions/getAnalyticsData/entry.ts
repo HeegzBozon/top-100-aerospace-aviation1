@@ -33,6 +33,7 @@ const METRICS = ['sessions', 'totalUsers', 'screenPageViews'];
 // the document's own tag sends to (see index.html).
 const STREAM = {
   measurementId: 'G-47ZS78SLXV',
+  propertyId: '563977567',
   streamId: '16327959792',
   containerId: 'GTM-5WD3H3DR',
 };
@@ -240,7 +241,7 @@ export default async function (req: Request): Promise<Response> {
       const property = await resolveTarget(
         accessToken,
         properties,
-        body.propertyId,
+        body.propertyId || STREAM.propertyId,
         carried?.property,
       );
       return Response.json({
@@ -280,7 +281,7 @@ export default async function (req: Request): Promise<Response> {
     );
   }
 
-  const property = await resolveTarget(accessToken, properties, body.propertyId);
+  const property = await resolveTarget(accessToken, properties, body.propertyId || STREAM.propertyId);
   if (!property) {
     return Response.json(
       {
@@ -303,7 +304,7 @@ export default async function (req: Request): Promise<Response> {
   const endDate = String(body.endDate || daysAgo(1));
 
   try {
-    const [overview, topPages, utmContent, events, ...windowReports] = await Promise.all([
+    const [overview, topPages, utmContent, events, committeeReport, ...windowReports] = await Promise.all([
       runReport(accessToken, property.name, {
         startDate,
         endDate,
@@ -335,6 +336,15 @@ export default async function (req: Request): Promise<Response> {
         orderBy: { metric: { metricName: 'eventCount' }, desc: true },
         limit: 30,
       }).catch(() => null),
+      // A dedicated filter prevents low-volume conversion events falling out of the top 30.
+      runReport(accessToken, property.name, {
+        startDate, endDate,
+        dimensions: ['eventName'], metrics: ['eventCount', 'keyEvents'],
+        dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: [
+          'selection_committee_view', 'selection_committee_vote_click', 'selection_committee_submission',
+        ], caseSensitive: true } } },
+        limit: 3,
+      }).catch((error: any) => ({ error: error?.message || 'Committee events could not be read.' })),
       ...windows.map((days: number) =>
         runReport(accessToken, property.name, {
           startDate: daysAgo(days),
@@ -382,7 +392,14 @@ export default async function (req: Request): Promise<Response> {
       windows: windowTotals,
       windowRoutes,
       utmContent: rowsOf(utmContent).filter((row: any) => row.sessionManualAdContent),
-      events: rowsOf(events),
+      events: [...rowsOf(events).filter((row: any) => !String(row.eventName).startsWith('selection_committee_')), ...rowsOf(committeeReport)],
+      selectionCommittee: committeeReport?.error ? null : {
+        views: rowsOf(committeeReport).find((row: any) => row.eventName === 'selection_committee_view')?.eventCount || 0,
+        clicks: rowsOf(committeeReport).find((row: any) => row.eventName === 'selection_committee_vote_click')?.eventCount || 0,
+        submissions: rowsOf(committeeReport).find((row: any) => row.eventName === 'selection_committee_submission')?.eventCount || 0,
+        keyEvents: rowsOf(committeeReport).find((row: any) => row.eventName === 'selection_committee_submission')?.keyEvents || 0,
+      },
+      selectionCommitteeError: committeeReport?.error || '',
     });
   } catch (error: any) {
     const refused = error?.status === 401 || error?.status === 403;

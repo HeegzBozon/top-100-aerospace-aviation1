@@ -11,6 +11,7 @@ import {
   emptyPersonNomination,
 } from '@/components/nominate/NominateConfig';
 import useModalPicker from '@/components/handheld/useModalPicker';
+import { trackCommitteeAction, trackCommitteeSubmission } from '@/lib/selectionCommitteeAnalytics';
 
 
 const SHARE_OPTIONS = [
@@ -190,6 +191,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
+    trackCommitteeAction('Submit Nomination');
     setSubmitting(true);
     setError('');
     try {
@@ -212,6 +214,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
       if (alsoAngels === 'yes') {
         await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: 'angels' });
       }
+      trackCommitteeSubmission();
       base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: nominationCategory, also_angels: alsoAngels === 'yes', existing: !!selectedNominee } });
       if (selectedNominee) {
         onSubmitted({ existing: true, nominee: selectedNominee, category: nominationCategory, also_angels: alsoAngels === 'yes' });

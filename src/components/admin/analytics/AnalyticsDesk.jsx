@@ -7,6 +7,7 @@ import GaConnectionPlate from './GaConnectionPlate';
 import AudienceCards from './AudienceCards';
 import TopContentRoutes from './TopContentRoutes';
 import SponsorDelivery from './SponsorDelivery';
+import SelectionCommitteeMetrics from '@/components/admin/analytics/SelectionCommitteeMetrics';
 
 // THE TRAFFIC DESK.
 //
@@ -155,6 +156,12 @@ export default function AnalyticsDesk() {
       )}
 
       <AudienceCards windows={report?.windows} loading={reportState === 'loading'} />
+      <SelectionCommitteeMetrics
+        data={reportState === 'ready' ? report?.selectionCommittee : null}
+        range={report?.range}
+        loading={reportState === 'loading'}
+        error={reportError || report?.selectionCommitteeError || (link === 'down' ? 'Connect Google Analytics to read committee events.' : '')}
+      />
 
       <div className="grid gap-2.5 lg:grid-cols-2">
         <TopContentRoutes routes={routes} loading={reportState === 'loading'} />

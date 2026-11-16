@@ -28,6 +28,8 @@ import ConsoleLoading from '@/components/core/ConsoleLoading';
 import MyTop100 from '@/pages/MyTop100';
 import MissionBriefing from '@/components/mission/MissionBriefing';
 import useMissionBriefing from '@/components/mission/useMissionBriefing';
+import useSelectionCommitteeAnalytics from '@/hooks/useSelectionCommitteeAnalytics';
+import { trackCommitteeSubmission } from '@/lib/selectionCommitteeAnalytics';
 
 const DRAFT_KEY = 'top100_nomination_draft_v1';
 
@@ -56,6 +58,7 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [currentUser, setCurrentUser] = useState(null);
   // null until the platform answers whether a Fellow is standing here at all.
   const [signedIn, setSignedIn] = useState(null);
+  useSelectionCommitteeAnalytics(signedIn, currentUser, isPreview);
   // A visitor filing a nomination is briefed once on this device, the same way a Fellow is
   // briefed once on the hub: the record is shared, so nobody reads it twice.
   const briefing = useMissionBriefing('guest', isPreview || signedIn === false);
@@ -332,6 +335,7 @@ export default function NominationForm({ isPreview = false } = {}) {
         },
       });
 
+      trackCommitteeSubmission();
       trackHubEvent('nomination_hub_submit_completed', {
         women_count: nominations.women.length,
         men_count: nominations.men.length,

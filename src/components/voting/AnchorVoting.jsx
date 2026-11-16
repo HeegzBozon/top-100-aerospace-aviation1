@@ -24,6 +24,7 @@ import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import MissionBriefing from '@/components/mission/MissionBriefing';
 import ReviewProgressStrip from '@/components/voting/ReviewProgressStrip';
 import useGlass from '@/hooks/useGlass';
+import { trackCommitteeAction, trackCommitteeSubmission } from '@/lib/selectionCommitteeAnalytics';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -309,6 +310,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     const ordered = [...next, lastId].filter(Boolean);
     if (ordered.length < 4) return;
 
+    trackCommitteeAction('Submit Evaluation');
     setOrder(next);
     setPhase('submitting');
     try {
@@ -320,6 +322,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         season_id: season.id,
       });
       if (!res.data || !res.data.success) throw new Error(res.data?.error || 'Submission failed');
+      trackCommitteeSubmission();
 
       // Non-blocking rewards, mirroring the other ballot.
       Promise.all([awardStardust({ action_type: 'vote' }), progressQuest({ action: 'anchor_vote' })]).catch(() => {});
