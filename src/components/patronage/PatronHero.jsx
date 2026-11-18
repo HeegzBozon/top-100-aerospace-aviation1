@@ -1,5 +1,6 @@
 import { ArrowDown } from 'lucide-react';
 import { P, FIREWALL_LINE } from './patronConfig';
+import { trackEnquireClick } from './mediaKitAnalytics';
 
 // The head of the media kit. It says what the offer is in two lines, then makes the one
 // promise a buyer needs to read before anything else: patronage does not touch the record.
@@ -44,6 +45,7 @@ export default function PatronHero() {
         <div className="mt-8 flex flex-wrap items-center gap-3 md:mt-10">
           <a
             href="#enquire"
+            onClick={() => trackEnquireClick('Raise a hand')}
             className="inline-flex items-center gap-2 rounded-lg px-5 py-3 text-[9.5px] font-bold uppercase tracking-[0.18em]"
             style={{ background: P.copper, color: P.cream }}
           >

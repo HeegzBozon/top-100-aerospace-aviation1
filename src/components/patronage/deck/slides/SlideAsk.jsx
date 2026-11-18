@@ -1,5 +1,6 @@
 import { ArrowRight, Building2, CalendarCheck, Rocket } from 'lucide-react';
 import { P } from '../../patronConfig';
+import { trackEnquireClick } from '../../mediaKitAnalytics';
 
 const NEEDED = [
   { icon: Building2, label: 'Organization & role' },
@@ -10,7 +11,12 @@ const NEEDED = [
 // The ask. The key lands on the enquiry desk at the foot of the page rather than opening a
 // second window: three details are all the house needs to answer.
 export default function SlideAsk() {
-  const toDesk = () => document.getElementById('enquire')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const toDesk = () => {
+    const section = document.getElementById('enquire');
+    if (!section) return;
+    trackEnquireClick('Claim your Sponsor of Record slot');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="flex flex-col justify-center py-1 md:py-3">

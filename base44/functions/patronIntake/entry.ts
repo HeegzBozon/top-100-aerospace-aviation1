@@ -74,7 +74,7 @@ export default async function (req: Request): Promise<Response> {
     if (live.ghl_contact_id) {
       await addContactNote(live.ghl_contact_id, noteLines.join('\n')).catch(() => null);
     }
-    return Response.json({ ok: true, existing: true, deal_id: live.id });
+    return Response.json({ ok: true, existing: true, deal_id: live.id, is_new_lead: false });
   }
 
   const deal = await sr.entities.PatronDeal.create({
@@ -157,5 +157,5 @@ export default async function (req: Request): Promise<Response> {
     console.warn('[patronIntake] admin notice skipped:', error?.message);
   }
 
-  return Response.json({ ok: true, deal_id: deal.id, ghl: ghlState });
+  return Response.json({ ok: true, deal_id: deal.id, ghl: ghlState, is_new_lead: true });
 }

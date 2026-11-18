@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowRight, Check, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { FIT_CATEGORIES, INTERESTS, P, isEmailShaped } from './patronConfig';
+import { trackEnquirySubmitted } from './mediaKitAnalytics';
 
 // The door. A founder or a marketing lead decides here whether to take a call, so the form
 // asks only what qualification needs: who, where, why now, and how to reach them.
@@ -48,7 +49,10 @@ export default function PatronInquiryForm({ sectionId = 'enquire' }) {
         ...form,
         source_detail: 'Media kit',
       });
-      if (response?.data?.error) throw new Error(response.data.error);
+      if (response?.status !== 200 || response?.data?.ok !== true || response.data.error) {
+        throw new Error(response?.data?.error || 'That did not send. Try again in a moment.');
+      }
+      trackEnquirySubmitted({ is_new_lead: response.data.is_new_lead });
       setStatus('sent');
       setForm(EMPTY);
     } catch (failure) {
