@@ -27,6 +27,7 @@ const BOOT_KEY = 'colony-boot-seen';
 // reloading as the only way back, so the issue answers for itself like the ballot does.
 const DIRECT_ENTRY = [
   /^\/vote$/i,
+  /^\/viralpost2022$/i,
   /^\/mediakit$/i,
   /^\/patronage$/i,
   /^\/media-kit(\/.*)?$/i,
