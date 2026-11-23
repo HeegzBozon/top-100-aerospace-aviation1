@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { C, BTN_BASE, BTN } from '@/components/crm/crmConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import useNewsstand from '@/components/newsstand/useNewsstand';
@@ -15,6 +15,8 @@ import StockRow from '@/components/newsstand/StockRow';
 import WireRack from '@/components/newsstand/WireRack';
 import SeriesRack from '@/components/newsstand/SeriesRack';
 import PullToRefresh from '@/components/capabilities/performance/PullToRefresh';
+
+const VIRAL_ARCHIVE = { key: 'viral-archive-2022', title: 'Read the 2022 Archive', to: '/viralpost2022' };
 
 // The Newsstand.
 //
@@ -60,7 +62,10 @@ export default function Newsstand() {
     [sections, tabKey, leadVolume],
   );
   const stockItems = useMemo(
-    () => racks.flatMap((rack) => sections[rack.key] || []),
+    () => racks.flatMap((rack) => {
+      const items = sections[rack.key] || [];
+      return rack.key === 'series' ? [VIRAL_ARCHIVE, ...items] : items;
+    }),
     [racks, sections],
   );
 
@@ -242,6 +247,17 @@ export default function Newsstand() {
 
               return (
                 <NewsstandRack key={rack.key} rack={rack} count={(sections[rack.key] || []).length}>
+                  {isSeries && (
+                    <Link
+                      to={VIRAL_ARCHIVE.to}
+                      ref={(node) => { itemRefs.current[VIRAL_ARCHIVE.key] = node; }}
+                      onFocus={() => setCursorKey(VIRAL_ARCHIVE.key)}
+                      className={`mb-3 inline-flex min-h-11 items-center gap-2 rounded-sm px-2 font-body text-xs font-semibold text-editorial-label underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-editorial-label ${cursorKey === VIRAL_ARCHIVE.key ? 'bg-editorial-sand' : ''}`}
+                    >
+                      {VIRAL_ARCHIVE.title}
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Link>
+                  )}
                   {isWire ? (
                     <WireRack
                       rack={rack}
