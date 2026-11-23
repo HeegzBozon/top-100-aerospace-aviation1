@@ -252,10 +252,19 @@ export default function Newsstand() {
                       to={VIRAL_ARCHIVE.to}
                       ref={(node) => { itemRefs.current[VIRAL_ARCHIVE.key] = node; }}
                       onFocus={() => setCursorKey(VIRAL_ARCHIVE.key)}
-                      className={`mb-3 inline-flex min-h-11 items-center gap-2 rounded-sm px-2 font-body text-xs font-semibold text-editorial-label underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-editorial-label ${cursorKey === VIRAL_ARCHIVE.key ? 'bg-editorial-sand' : ''}`}
-                    >
-                      {VIRAL_ARCHIVE.title}
-                      <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                      className={`mb-4 inline-flex max-w-full items-center gap-3 rounded-sm border border-editorial-copper/30 p-2 pr-3 font-body text-xs font-semibold text-editorial-label hover:bg-editorial-sand focus-visible:outline focus-visible:outline-2 focus-visible:outline-editorial-label sm:gap-4 sm:pr-5 ${cursorKey === VIRAL_ARCHIVE.key ? 'bg-editorial-sand' : ''}`}
+                      >
+                      <img
+                        src="https://media.base44.com/images/public/68996845be6727838fdb822e/0547de8a3ac76474b6e921132ea1c9e9_TOP_100_Aerospace_aviation_top_viral_posts_2022_og_image.jpg/v1/fill/w_1200,h_630/0547de8a3ac76474b6e921132ea1c9e9_TOP_100_Aerospace_aviation_top_viral_posts_2022_og_image.jpg"
+                        alt="Collage of the top viral posts from 2022"
+                        width={1200}
+                        height={630}
+                        loading="lazy"
+                        decoding="async"
+                        className="aspect-[40/21] h-auto w-28 shrink-0 rounded-sm bg-editorial-sand object-contain sm:w-48"
+                      />
+                      <span className="min-w-0 underline underline-offset-4">{VIRAL_ARCHIVE.title}</span>
+                      <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     </Link>
                   )}
                   {isWire ? (
