@@ -1,21 +1,20 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, ArrowLeft, ExternalLink, ChevronRight, Loader2, Inbox, AlertCircle, Quote as QuoteIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DispatchInvite from '@/components/newsletter/DispatchInvite';
+import ViralPostSubmissionFooter, { useOpenViralPostStudio } from '@/components/viral-post/ViralPostSubmissionFooter';
 
-const STUDIO_PATH = '/Profile?studio=open&ref=viralpost2026';
 const NAVY = '#1e3a5a';
 const NAVY_DEEP = '#16293f';
 const GOLD = '#c9a87c';
 const COPPER = '#b87333';
 const CREAM = '#faf8f5';
-const SAND = '#f0e9df';
 
 export default function ViralPost2026() {
-  const navigate = useNavigate();
+  const openSubmission = useOpenViralPostStudio('viralpost2026');
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['publicViralPosts2026'],
@@ -57,13 +56,9 @@ export default function ViralPost2026() {
     return () => { created.forEach((el) => el.parentNode && el.parentNode.removeChild(el)); };
   }, []);
 
-  const openStudio = async () => {
+  const openStudio = () => {
     base44.analytics.track({ eventName: 'viralpost2026_index_add_clicked' });
-    try {
-      const authed = await base44.auth.isAuthenticated();
-      if (authed) { navigate(STUDIO_PATH); return; }
-    } catch {}
-    base44.auth.redirectToLogin(`${window.location.origin}${STUDIO_PATH}`);
+    return openSubmission();
   };
 
   if (isLoading) {
@@ -219,18 +214,7 @@ export default function ViralPost2026() {
         </div>
       </section>
 
-      {/* CLOSING CTA */}
-      <section className="border-t" style={{ borderColor: 'rgba(30,58,90,0.12)', background: SAND }}>
-        <div className="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-20 text-center">
-          <h2 className="font-serif text-2xl md:text-3xl font-bold mb-5" style={{ color: NAVY }}>Have a post that moved the community?</h2>
-          <p className="font-serif text-lg leading-relaxed mb-8" style={{ color: 'rgba(30,58,90,0.8)' }}>
-            TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. Submit your top viral post and join the record.
-          </p>
-          <Button onClick={openStudio} className="rounded-full px-8 h-12 font-semibold" style={{ background: NAVY, color: CREAM }}>
-            Add my own Viral Post
-          </Button>
-        </div>
-      </section>
+      <ViralPostSubmissionFooter onOpen={openStudio} />
 
       {/* The Dispatch — the reader has finished the series; this is the standing
           invitation to keep reading it week by week. */}

@@ -14,9 +14,11 @@ import NewsstandCover from '@/components/newsstand/NewsstandCover';
 import StockRow from '@/components/newsstand/StockRow';
 import WireRack from '@/components/newsstand/WireRack';
 import SeriesRack from '@/components/newsstand/SeriesRack';
+import ViralPostSubmissionFooter, { useOpenViralPostStudio } from '@/components/viral-post/ViralPostSubmissionFooter';
 import PullToRefresh from '@/components/capabilities/performance/PullToRefresh';
 
 const VIRAL_ARCHIVE = { key: 'viral-archive-2022', title: 'Read the 2022 Archive', to: '/viralpost2022' };
+const VIRAL_SUBMISSION = { key: 'viral-submission', title: 'Add my own Viral Post' };
 
 // The Newsstand.
 //
@@ -33,6 +35,7 @@ const VIRAL_ARCHIVE = { key: 'viral-archive-2022', title: 'Read the 2022 Archive
 // is drawn, so a hand on the wheel crosses every rack of that leaf without touching the glass.
 export default function Newsstand() {
   const navigate = useNavigate();
+  const openSubmission = useOpenViralPostStudio();
   const stock = useNewsstand();
   const { sections } = stock;
   const [cursorKey, setCursorKey] = useState(null);
@@ -64,7 +67,7 @@ export default function Newsstand() {
   const stockItems = useMemo(
     () => racks.flatMap((rack) => {
       const items = sections[rack.key] || [];
-      return rack.key === 'series' ? [VIRAL_ARCHIVE, ...items] : items;
+      return rack.key === 'series' ? [VIRAL_ARCHIVE, ...items, VIRAL_SUBMISSION] : items;
     }),
     [racks, sections],
   );
@@ -107,6 +110,10 @@ export default function Newsstand() {
   const take = useCallback(
     (item) => {
       if (!item) return false;
+      if (item.key === VIRAL_SUBMISSION.key) {
+        openSubmission();
+        return true;
+      }
       // A post off the wire lives on the network it was published to, so the stand hands it
       // over rather than opening it in the glass.
       if (item.href) {
@@ -121,7 +128,7 @@ export default function Newsstand() {
       setOpenKey((prev) => (prev === item.key ? null : item.key));
       return true;
     },
-    [navigate],
+    [navigate, openSubmission],
   );
 
   const countOf = useCallback(
@@ -334,6 +341,16 @@ export default function Newsstand() {
                           />
                         </div>
                       ))}
+                    </div>
+                  )}
+                  {isSeries && (
+                    <div className="mt-8">
+                      <ViralPostSubmissionFooter
+                        onOpen={openSubmission}
+                        buttonRef={(node) => { itemRefs.current[VIRAL_SUBMISSION.key] = node; }}
+                        onFocus={() => setCursorKey(VIRAL_SUBMISSION.key)}
+                        selected={cursorKey === VIRAL_SUBMISSION.key}
+                      />
                     </div>
                   )}
                 </NewsstandRack>
