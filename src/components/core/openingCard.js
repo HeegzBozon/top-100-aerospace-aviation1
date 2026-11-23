@@ -28,6 +28,7 @@ const BOOT_KEY = 'colony-boot-seen';
 const DIRECT_ENTRY = [
   /^\/vote$/i,
   /^\/viralpost2022$/i,
+  /^\/viralpost2026$/i,
   /^\/mediakit$/i,
   /^\/patronage$/i,
   /^\/media-kit(\/.*)?$/i,
