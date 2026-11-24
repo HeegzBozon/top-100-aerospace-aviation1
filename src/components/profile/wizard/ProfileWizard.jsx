@@ -29,6 +29,8 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved, openWit
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const inputRef = useRef(null);
+  const submitInFlight = useRef(false);
+  const previouslySavedPost = useRef(null);
 
   const [form, setForm] = useState(() => {
     const seed = {};
@@ -156,8 +158,17 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved, openWit
   };
 
   const handleSubmit = async () => {
+    if (submitInFlight.current || done) return;
+    submitInFlight.current = true;
     setSaving(true);
+    const postLink = String(form.viral_post_link || '').trim();
+    const submittingPost = queue.includes('viral') && Boolean(postLink);
     try {
+      if (submittingPost && previouslySavedPost.current === null) {
+        // The profile snapshot can be stale after reopening the Studio.
+        const account = await base44.auth.me().catch(() => null);
+        if (account) previouslySavedPost.current = String(account.viral_post_link || '').trim();
+      }
       await base44.auth.updateMe({ ...form, profile_wizard_completed: true });
 
       // Mirror the editorial answers onto the nominee record so public profiles match
@@ -170,6 +181,14 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved, openWit
           bio: form.bio,
           avatar_url: form.avatar_url,
         });
+      }
+
+      if (submittingPost && previouslySavedPost.current !== null && postLink !== previouslySavedPost.current) {
+        try {
+          // The existing Google tag applies Consent Mode. No post or contact data is sent.
+          window.gtag?.('event', 'viral_post_submission', { send_to: 'G-47ZS78SLXV' });
+        } catch { /* Analytics must not turn a saved submission into an error. */ }
+        previouslySavedPost.current = postLink;
       }
 
       // Send a copy of the Top Viral Post submission to the email address used in it.
@@ -227,6 +246,7 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved, openWit
       setTimeout(() => confetti({ particleCount: 45, angle: 120, spread: 55, origin: { x: 1 }, colors }), 380);
       setTimeout(() => { onSaved?.(); onClose(); }, 1800);
     } catch (e) {
+      submitInFlight.current = false;
       setError(e?.message || 'Could not save. Please try again.');
       setSaving(false);
     }
