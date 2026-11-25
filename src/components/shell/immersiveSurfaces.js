@@ -35,9 +35,14 @@ export function immersiveFor(pathname = "") {
 export const standsBackOnDesk = (pathname = "") => immersiveFor(pathname).desk === "full";
 
 // Public arrivals get the whole picture; the existing power key and View menu
-// still override this default. The media kit and ballot start closed for every role.
+// still override this default. The media kit and ballot start closed for every role,
+// and so does the Top Viral Posts Series: it is read as a publication, shared by link
+// from LinkedIn, and its readers arrive for the post rather than for the machine.
 export const consoleStartsClosed = (pathname = "", authenticated = false) =>
-  !authenticated || /^\/vote\/?$/i.test(pathname) || /^\/(mediakit|patronage|media-kit)(\/|$)/i.test(pathname);
+  !authenticated ||
+  /^\/vote\/?$/i.test(pathname) ||
+  /^\/viralpost2026(\/|$)/i.test(pathname) ||
+  /^\/(mediakit|patronage|media-kit)(\/|$)/i.test(pathname);
 
 // WHICH SURFACES DO NOT WANT THE RAIL.
 //
