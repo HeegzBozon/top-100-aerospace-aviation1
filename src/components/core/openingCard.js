@@ -29,6 +29,11 @@ const DIRECT_ENTRY = [
   /^\/vote$/i,
   /^\/viralpost2022$/i,
   /^\/viralpost2026$/i,
+  // One featured post is the address the series hands out: a Fellow shares their own
+  // feature link, and the plate over it turns the share into a menu. The index and its
+  // entries answer for themselves together, so the shape beneath the index is listed
+  // here rather than the index alone.
+  /^\/viralpost2026\/featured\/[^/]+$/i,
   /^\/mediakit$/i,
   /^\/patronage$/i,
   /^\/media-kit(\/.*)?$/i,
