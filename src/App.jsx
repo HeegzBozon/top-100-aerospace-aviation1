@@ -370,6 +370,9 @@ const AuthenticatedApp = () => {
       <Route path="/viralpost2022" element={<ViralPost2022 />} />
       <Route path="/viralpost2022/featured/:slug" element={<ViralPost2022Featured />} />
       <Route path="/viralpost2026" element={<ViralPost2026 />} />
+      {/* The short address that went out in public copy, superseded by the full-name
+          slug the desk mints. Static, so it answers before the slug route reads it. */}
+      <Route path="/viralpost2026/featured/omur" element={<Navigate to="/viralpost2026/featured/omur-kahraman" replace />} />
       <Route path="/viralpost2026/featured/:slug" element={<ViralPost2026Featured />} />
       <Route path="/honoree/2021/:slugId" element={<HonoreePublication />} />
       <Route path="/intelligence-globe" element={
