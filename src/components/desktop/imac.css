@@ -86,6 +86,12 @@
      answers the tube's fill contract answers it here unchanged. */
   .imac-bare {
     min-height: 100dvh;
+    /* No crown, no chin and no menu margin stand on this seat, so the two numbers a
+       desk surface measures itself against are zero: a key or a bar that lifts clear
+       of the moulding sits at the window's own edge instead of floating where the
+       machine used to be. */
+    --imac-top: 0px;
+    --imac-bottom: 0px;
   }
   .imac-bare:has(> [data-tube-fill]) {
     display: flex;

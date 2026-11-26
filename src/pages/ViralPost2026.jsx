@@ -63,7 +63,7 @@ export default function ViralPost2026() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: NAVY_DEEP }}>
+      <div className="min-h-dvh flex items-center justify-center" style={{ background: NAVY_DEEP }}>
         <Loader2 className="w-10 h-10 animate-spin" style={{ color: GOLD }} />
       </div>
     );
@@ -71,7 +71,7 @@ export default function ViralPost2026() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: NAVY_DEEP, color: CREAM }}>
+      <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center" style={{ background: NAVY_DEEP, color: CREAM }}>
         <AlertCircle className="w-10 h-10 mb-4" style={{ color: COPPER }} />
         <h1 className="font-serif text-2xl font-bold mb-2">Couldn't load the series.</h1>
         <p className="text-sm mb-8" style={{ color: 'rgba(250,248,245,0.65)' }}>{error?.message || 'Please try again shortly.'}</p>
@@ -83,7 +83,15 @@ export default function ViralPost2026() {
   const posts = data || [];
 
   return (
-    <div className="min-h-screen" style={{ background: CREAM, color: NAVY }}>
+    /* Read with the case down: the surface fills the seat it is given — the whole
+       glass on a phone, the whole window on a desk — and scrolls inside it rather
+       than asking the document to. The foot band is kept clear on the glass, where
+       the console's own key floats. */
+    <div
+      data-tube-fill
+      className="min-h-dvh pb-16 md:min-h-0 md:overflow-y-auto md:pb-0"
+      style={{ background: CREAM, color: NAVY }}
+    >
       {/* MASTHEAD */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${NAVY_DEEP} 0%, ${NAVY} 70%, transparent 100%)` }} />
